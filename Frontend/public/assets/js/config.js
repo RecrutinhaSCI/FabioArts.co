@@ -7,4 +7,4 @@
      window.__FA_API_BASE__ = '/api';                       // mesmo domínio
      window.__FA_API_BASE__ = 'https://api.fabioarts.co';   // subdomínio
    ============================================================ */
-window.__FA_API_BASE__ = window.__FA_API_BASE__ || 'http://localhost:3333/api';
+window.__FA_API_BASE__ = 'https://fabioarts-co.onrender.com/api';
