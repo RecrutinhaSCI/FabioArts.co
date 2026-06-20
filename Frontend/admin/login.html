@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — FabioArts Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --gold: #ffc000; --gold-dim: rgba(255,192,0,0.12); --gold-glow: rgba(255,192,0,0.3);
+      --gold-border: rgba(255,192,0,0.25);
+      --bg-base: #09090b; --bg-card: #111113; --bg-input: #1a1a1d;
+      --border: rgba(255,255,255,0.07); --border-focus: rgba(255,192,0,0.45);
+      --txt: #f4f4f5; --txt-2: #a1a1aa; --txt-3: #52525b;
+      --red: #ef4444; --green: #22c55e;
+      --ff: 'Inter', -apple-system, sans-serif;
+      --radius: 8px; --radius-lg: 12px; --ease: cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    html { font-size: 16px; }
+    body {
+      font-family: var(--ff);
+      background: var(--bg-base);
+      color: var(--txt);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection { background: var(--gold); color: #000; }
+
+    /* BG effects */
+    .bg-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,192,0,0.06) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+
+    /* Card */
+    .login-card {
+      position: relative; z-index: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+      animation: cardIn 0.5s var(--ease) both;
+    }
+    @keyframes cardIn {
+      from { opacity:0; transform:translateY(24px) scale(0.98); }
+      to   { opacity:1; transform:translateY(0) scale(1); }
+    }
+
+    /* Header */
+    .login-header { text-align: center; margin-bottom: 2rem; }
+    .login-logo-mark {
+      width: 52px; height: 52px;
+      background: var(--gold);
+      border-radius: 12px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1.1rem; color: #000;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 0 30px var(--gold-glow);
+    }
+    .login-title {
+      font-size: 1.4rem; font-weight: 700;
+      letter-spacing: -0.02em; color: var(--txt);
+      margin-bottom: 0.4rem;
+    }
+    .login-subtitle { font-size: 0.84rem; color: var(--txt-3); }
+
+    /* Form */
+    .form-group { margin-bottom: 1.1rem; }
+    .form-label {
+      display: block; font-size: 0.78rem; font-weight: 500;
+      color: var(--txt-2); margin-bottom: 0.4rem;
+    }
+    .form-control {
+      width: 100%; padding: 0.65rem 0.9rem;
+      background: var(--bg-input); border: 1px solid var(--border);
+      border-radius: var(--radius); color: var(--txt);
+      font-size: 0.88rem; font-family: var(--ff);
+      outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-control::placeholder { color: var(--txt-3); }
+    .form-control:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(255,192,0,0.08);
+    }
+    .form-control.error { border-color: var(--red); }
+
+    /* Password wrapper */
+    .input-wrap { position: relative; }
+    .input-wrap .form-control { padding-right: 2.8rem; }
+    .toggle-pass {
+      position: absolute; right: 0.8rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--txt-3); padding: 0;
+      display: flex; align-items: center;
+      transition: color 0.2s;
+    }
+    .toggle-pass:hover { color: var(--txt-2); }
+    .toggle-pass svg { width: 16px; height: 16px; }
+
+    /* Error message */
+    .error-msg {
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
+      border-radius: var(--radius); padding: 0.65rem 0.9rem;
+      font-size: 0.82rem; color: var(--red);
+      margin-bottom: 1.2rem; display: none;
+      align-items: center; gap: 0.5rem;
+    }
+    .error-msg.show { display: flex; }
+    .error-msg svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+    /* Submit button */
+    .btn-submit {
+      width: 100%; padding: 0.75rem;
+      background: var(--gold); color: #000;
+      border: none; border-radius: var(--radius);
+      font-size: 0.9rem; font-weight: 600;
+      font-family: var(--ff); cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.2s, opacity 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+    .btn-submit:hover { box-shadow: 0 6px 25px var(--gold-glow); transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-submit svg { width: 16px; height: 16px; }
+
+    /* Loader ring */
+    .loader-ring {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Footer */
+    .login-footer {
+      text-align: center; margin-top: 1.75rem;
+      font-size: 0.75rem; color: var(--txt-3);
+    }
+    .login-footer a { color: var(--gold); text-decoration: none; }
+    .login-footer a:hover { text-decoration: underline; }
+
+    /* Remember / Forgot row */
+    .form-options {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 0.5rem;
+    }
+    .form-check {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.8rem; color: var(--txt-2); cursor: pointer;
+    }
+    .form-check input[type="checkbox"] {
+      width: 14px; height: 14px; accent-color: var(--gold);
+    }
+    .forgot-link { font-size: 0.8rem; color: var(--gold); text-decoration: none; }
+    .forgot-link:hover { text-decoration: underline; }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin: 1.5rem 0;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .divider span { font-size: 0.75rem; color: var(--txt-3); }
+
+    @media (max-width: 480px) {
+      .login-card { padding: 1.75rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-logo-mark">FA</div>
+      <h1 class="login-title">Bem-vindo de volta</h1>
+      <p class="login-subtitle">Acesse o painel administrativo</p>
+    </div>
+
+    <!-- Error -->
+    <div class="error-msg" id="error-msg">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="error-text">Credenciais inválidas</span>
+    </div>
+
+    <form id="login-form" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="email">E-mail</label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          placeholder="admin@fabioarts.co"
+          autocomplete="email"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Senha</label>
+        <div class="input-wrap">
+          <input
+            type="password"
+            id="password"
+            class="form-control"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          />
+          <button type="button" class="toggle-pass" id="toggle-pass" title="Mostrar senha">
+            <svg id="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-options">
+        <label class="form-check">
+          <input type="checkbox" id="remember" checked/>
+          Lembrar acesso
+        </label>
+        <a href="#" class="forgot-link">Esqueci a senha</a>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submit-btn">
+        <span id="btn-content">
+          Entrar no painel
+        </span>
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p>FabioArts Admin v1.0 &mdash; <a href="../public/index.html" target="_blank">Ver site público</a></p>
+    </div>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script>
+    'use strict';
+
+    const CONFIG = {
+      API_BASE:    (window.__FA_API_BASE__) || 'http://localhost:3333/api',
+      TOKEN_KEY:   'fabioarts_access_token',
+      REFRESH_KEY: 'fabioarts_refresh_token',
+      USER_KEY:    'fabioarts_user',
+    };
+
+    // Redireciona se já logado
+    if (localStorage.getItem(CONFIG.TOKEN_KEY)) {
+      window.location.href = 'dashboard.html';
+    }
+
+    const form      = document.getElementById('login-form');
+    const emailEl   = document.getElementById('email');
+    const passEl    = document.getElementById('password');
+    const submitBtn = document.getElementById('submit-btn');
+    const btnContent = document.getElementById('btn-content');
+    const errorMsg  = document.getElementById('error-msg');
+    const errorText = document.getElementById('error-text');
+    const toggleBtn = document.getElementById('toggle-pass');
+
+    // Toggle senha visível
+    toggleBtn.addEventListener('click', () => {
+      const isPass = passEl.type === 'password';
+      passEl.type = isPass ? 'text' : 'password';
+      document.getElementById('eye-icon').innerHTML = isPass
+        ? `<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`
+        : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+    });
+
+    // Show error
+    function showError(msg) {
+      errorText.textContent = msg;
+      errorMsg.classList.add('show');
+      emailEl.classList.add('error');
+      passEl.classList.add('error');
+    }
+
+    function hideError() {
+      errorMsg.classList.remove('show');
+      emailEl.classList.remove('error');
+      passEl.classList.remove('error');
+    }
+
+    // Loading state
+    function setLoading(loading) {
+      submitBtn.disabled = loading;
+      btnContent.innerHTML = loading
+        ? `<div class="loader-ring"></div> Entrando...`
+        : `Entrar no painel`;
+    }
+
+    // Submit
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
+
+      const email    = emailEl.value.trim();
+      const password = passEl.value;
+
+      if (!email || !password) {
+        showError('Preencha e-mail e senha');
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const res = await fetch(`${CONFIG.API_BASE}/auth/login`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showError(data.message || 'Credenciais inválidas');
+          setLoading(false);
+          return;
+        }
+
+        // Salva sessão
+        localStorage.setItem(CONFIG.TOKEN_KEY,   data.data.accessToken);
+        localStorage.setItem(CONFIG.REFRESH_KEY, data.data.refreshToken);
+        localStorage.setItem(CONFIG.USER_KEY,    JSON.stringify(data.data.user));
+
+        // Redireciona
+        window.location.href = 'dashboard.html';
+
+      } catch (err) {
+        showError('Erro de conexão com o servidor');
+        setLoading(false);
+      }
+    });
+
+    // Enter no input
+    [emailEl, passEl].forEach(el => {
+      el.addEventListener('input', hideError);
+    });
+  </script>
+</body>
+</html>

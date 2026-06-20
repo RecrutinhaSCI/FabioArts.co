@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Serviços — FabioArts Admin</title>
+  <link rel="stylesheet" href="assets/css/admin.css"/>
+  <style>
+    .pagination-wrap { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1.2rem; border-top: 1px solid var(--border); }
+    .pagination-info { font-size: .75rem; color: var(--txt-3); }
+    .pagination-btns { display: flex; gap: .3rem; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="main-wrapper">
+    <header class="topbar" id="topbar"></header>
+    <div class="page">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Serviços</h1>
+          <p class="page-subtitle">Gerencie os serviços que aparecem no site público.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary btn-sm" id="btn-refresh">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+            Atualizar
+          </button>
+          <button class="btn btn-primary" id="btn-new">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo serviço
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-toolbar" style="display:flex;gap:.5rem;align-items:center;padding:.75rem 1.2rem;border-bottom:1px solid var(--border)">
+          <input type="text" class="form-control" id="filter-search" placeholder="Buscar serviços..." style="max-width:280px"/>
+          <label style="display:flex;align-items:center;gap:.4rem;color:var(--txt-2);font-size:.82rem;margin-left:auto">
+            <input type="checkbox" id="filter-active" checked> Mostrar apenas ativos
+          </label>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Preço</th>
+                <th>Ordem</th>
+                <th>Status</th>
+                <th style="width:90px"></th>
+              </tr>
+            </thead>
+            <tbody id="services-tbody">
+              <tr><td colspan="6" class="table-empty">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-wrap">
+          <span class="pagination-info" id="pagination-info"></span>
+          <div class="pagination-btns" id="pagination-btns"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL Novo/Editar -->
+<div class="modal-overlay" id="modal-service">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Novo Serviço</div>
+      <button class="modal-close" data-modal-close="modal-service">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="f-id"/>
+      <div class="form-group">
+        <label class="form-label">Nome <span class="req">*</span></label>
+        <input type="text" class="form-control" id="f-name" placeholder="Ex: Design Automotivo"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descrição <span class="req">*</span></label>
+        <textarea class="form-control" id="f-description" rows="3" placeholder="O que esse serviço entrega…"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Preço inicial (R$)</label>
+          <input type="number" class="form-control" id="f-price" placeholder="1500" min="0" step="0.01"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ordem de exibição</label>
+          <input type="number" class="form-control" id="f-order" placeholder="0" min="0"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Imagem (URL)</label>
+        <input type="text" class="form-control" id="f-image" placeholder="https://..."/>
+      </div>
+      <div class="form-row">
+        <div class="form-group" style="display:flex;align-items:center;gap:1rem;padding-top:1.4rem">
+          <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.82rem;color:var(--txt-2)">
+            <input type="checkbox" id="f-active" checked> Ativo
+          </label>
+          <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.82rem;color:var(--txt-2)">
+            <input type="checkbox" id="f-featured"> Destaque
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="modal-service">Cancelar</button>
+      <button class="btn btn-primary" id="btn-save">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/admin.js"></script>
+<script src="assets/js/services.js"></script>
+</body>
+</html>

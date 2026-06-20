@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Configurações — FabioArts Admin</title>
+  <link rel="stylesheet" href="assets/css/admin.css"/>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="main-wrapper">
+    <header class="topbar" id="topbar"></header>
+    <div class="page">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Configurações do Site</h1>
+          <p class="page-subtitle">Dados públicos exibidos no portfólio (FabioArts).</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary btn-sm" id="btn-reload">Recarregar</button>
+          <button class="btn btn-primary" id="btn-save">Salvar alterações</button>
+        </div>
+      </div>
+
+      <div class="card" id="settings-card" style="padding:1.4rem">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nome da marca</label>
+            <input type="text" class="form-control" id="f-companyName" placeholder="FabioArts"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">E-mail de contato</label>
+            <input type="email" class="form-control" id="f-email" placeholder="contato@fabioarts.co"/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Bio / Descrição</label>
+          <textarea class="form-control" id="f-bio" rows="4" placeholder="Apresentação curta da marca…"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">WhatsApp</label>
+            <input type="text" class="form-control" id="f-whatsapp" placeholder="+55 11 99999-9999"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Instagram</label>
+            <input type="text" class="form-control" id="f-instagram" placeholder="@fabioarts"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Behance</label>
+            <input type="text" class="form-control" id="f-behance" placeholder="behance.net/fabioarts"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">LinkedIn</label>
+            <input type="text" class="form-control" id="f-linkedin" placeholder="linkedin.com/in/fabioarts"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Logo (URL)</label>
+            <input type="text" class="form-control" id="f-logo" placeholder="https://..."/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Banner (URL)</label>
+            <input type="text" class="form-control" id="f-banner" placeholder="https://..."/>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/admin.js"></script>
+<script src="assets/js/settings.js"></script>
+</body>
+</html>

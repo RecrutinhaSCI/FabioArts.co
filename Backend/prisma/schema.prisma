@@ -1,0 +1,198 @@
+// ============================================================
+// FABIOARTS — PRISMA SCHEMA COMPLETO
+// PostgreSQL + Prisma ORM
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum Role {
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum QuoteStatus {
+  PENDING
+  REPLIED
+  CLOSED
+  CANCELLED
+}
+
+enum ProjectCategory {
+  AUTOMOTIVE
+  TSHIRT
+  STICKER
+  BRANDING
+  SOCIAL_MEDIA
+  LOGO
+  PACKAGING
+  ILLUSTRATION
+  OTHER
+}
+
+// ============================================================
+// USER (ADMIN)
+// ============================================================
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(ADMIN)
+  avatar    String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+// ============================================================
+// REFRESH TOKENS
+// ============================================================
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+// ============================================================
+// CLIENTS
+// ============================================================
+
+model Client {
+  id          String   @id @default(uuid())
+  name        String
+  company     String?
+  logo        String?
+  testimonial String?
+  instagram   String?
+  website     String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  projects Project[]
+
+  @@map("clients")
+}
+
+// ============================================================
+// PROJECTS
+// ============================================================
+
+model Project {
+  id          String          @id @default(uuid())
+  title       String
+  slug        String          @unique
+  description String
+  category    ProjectCategory
+  thumbnail   String
+  tags        String[]
+  clientId    String?
+  isFeatured  Boolean         @default(false)
+  isPublished Boolean         @default(true)
+  projectDate DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  client Client?        @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  images ProjectImage[]
+
+  @@map("projects")
+}
+
+model ProjectImage {
+  id        String   @id @default(uuid())
+  url       String
+  alt       String?
+  order     Int      @default(0)
+  projectId String
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_images")
+}
+
+// ============================================================
+// SERVICES
+// ============================================================
+
+model Service {
+  id            String   @id @default(uuid())
+  name          String
+  description   String
+  startingPrice Float?
+  image         String?
+  isFeatured    Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("services")
+}
+
+// ============================================================
+// QUOTES (ORÇAMENTOS)
+// ============================================================
+
+model Quote {
+  id              String      @id @default(uuid())
+  name            String
+  email           String
+  whatsapp        String
+  company         String?
+  projectType     String
+  description     String
+  estimatedBudget String?
+  status          QuoteStatus @default(PENDING)
+  adminNotes      String?
+  repliedAt       DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("quotes")
+}
+
+// ============================================================
+// SITE SETTINGS
+// ============================================================
+
+model SiteSettings {
+  id          String   @id @default(uuid())
+  companyName String   @default("FabioArts")
+  bio         String?
+  instagram   String?
+  behance     String?
+  linkedin    String?
+  whatsapp    String?
+  email       String?
+  logo        String?
+  banner      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("site_settings")
+}

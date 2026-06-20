@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — FabioArts Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="assets/css/admin.css"/>
+
+  <style>
+    /* ── Dashboard específico ── */
+    .recent-client-item {
+      display:      flex;
+      align-items:  center;
+      gap:          0.75rem;
+      padding:      0.7rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .recent-client-item:last-child { border-bottom: none; }
+
+    .chart-card { height: 100%; }
+    .chart-card .card-body { height: calc(100% - 50px); }
+
+    .revenue-chart-wrap { height: 220px; }
+    .category-chart-wrap { height: 220px; }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+    }
+
+    .quick-action-btn {
+      display:       flex;
+      align-items:   center;
+      gap:           0.6rem;
+      padding:       0.75rem;
+      background:    var(--bg-input);
+      border:        1px solid var(--border);
+      border-radius: var(--radius);
+      color:         var(--txt-2);
+      font-size:     0.8rem;
+      font-weight:   500;
+      cursor:        pointer;
+      transition:    all 0.2s;
+      text-decoration: none;
+    }
+
+    .quick-action-btn:hover {
+      background:   var(--bg-card-hover);
+      border-color: var(--gold-border);
+      color:        var(--gold);
+    }
+
+    .quick-action-btn svg {
+      width:  16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    .welcome-card {
+      background:    linear-gradient(135deg, rgba(255,192,0,0.1) 0%, rgba(255,192,0,0.04) 100%);
+      border:        1px solid var(--gold-border);
+      border-radius: var(--radius-lg);
+      padding:       1.5rem;
+      display:       flex;
+      align-items:   center;
+      justify-content: space-between;
+      gap:           1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap:     wrap;
+    }
+
+    .welcome-text h2 {
+      font-size:      1.25rem;
+      font-weight:    700;
+      color:          var(--txt);
+      letter-spacing: -0.01em;
+    }
+
+    .welcome-text p {
+      font-size:  0.84rem;
+      color:      var(--txt-2);
+      margin-top: 0.25rem;
+    }
+
+    .welcome-text span { color: var(--gold); }
+
+    .welcome-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+
+    .section-gap { margin-bottom: 1rem; }
+
+    /* Pending badge pulsando */
+    .pulse-badge {
+      animation: pulseBadge 2s ease-in-out infinite;
+    }
+    @keyframes pulseBadge {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,192,0,0.4); }
+      50%       { box-shadow: 0 0 0 6px rgba(255,192,0,0);  }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Page Loader -->
+<div class="page-loader" id="page-loader">
+  <div class="loader-ring"></div>
+</div>
+
+<!-- Sidebar Overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<!-- Layout -->
+<div class="admin-layout">
+
+  <!-- ═══════════════════════ SIDEBAR ═══════════════════════ -->
+  <aside class="sidebar" id="sidebar">
+
+    <!-- Logo -->
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">FA</div>
+      <div class="sidebar-logo-text">
+        FabioArts
+        <span class="sidebar-logo-sub">Admin Panel</span>
+      </div>
+    </div>
+
+    <!-- Toggle -->
+    <button class="sidebar-toggle" id="sidebar-toggle" title="Recolher sidebar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+
+    <!-- Nav -->
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Principal</div>
+
+      <a href="dashboard.html" class="nav-item active">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </span>
+        <span class="nav-label">Dashboard</span>
+      </a>
+
+            <a href="clients.html" class="nav-item">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+          </svg>
+        </span>
+        <span class="nav-label">Clientes</span>
+      </a>
+
+      <a href="projects.html" class="nav-item">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </span>
+        <span class="nav-label">Projetos</span>
+      </a>
+
+      <a href="orcamentos.html" class="nav-item">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+          </svg>
+        </span>
+        <span class="nav-label">Orçamentos</span>
+        <span class="nav-badge pulse-badge" id="nav-pending-count">0</span>
+      </a>
+
+      <div class="nav-section-label">Sistema</div>
+
+      <a href="services.html" class="nav-item">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/>
+          </svg>
+        </span>
+        <span class="nav-label">Serviços</span>
+      </a>
+
+      <a href="settings.html" class="nav-item">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+          </svg>
+        </span>
+        <span class="nav-label">Configurações</span>
+      </a>
+    </nav>
+
+    <!-- Footer -->
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebar-avatar">FA</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebar-user-name">Carregando...</div>
+          <div class="sidebar-user-role" id="sidebar-user-role">Admin</div>
+        </div>
+      </div>
+      <button class="nav-item" style="width:100%;text-align:left;" data-action="logout">
+        <span class="nav-icon" style="color:var(--red)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+            <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </span>
+        <span class="nav-label" style="color:var(--red)">Sair</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════ MAIN ═══════════════════════════ -->
+  <div class="main-wrapper">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-btn topbar-menu-btn" id="topbar-menu-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <div>
+          <div class="topbar-page-title">Dashboard</div>
+          <div class="topbar-breadcrumb">
+            <span>FabioArts</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            Dashboard
+          </div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-clock" id="topbar-clock"></div>
+
+        <button class="topbar-btn" title="Notificações">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 01-3.46 0"/>
+          </svg>
+          <span class="topbar-notif-dot"></span>
+        </button>
+
+        <div class="topbar-divider"></div>
+
+        <div class="topbar-user" id="topbar-user">
+          <div class="topbar-avatar" id="topbar-avatar">FA</div>
+          <div>
+            <div class="topbar-user-name" id="topbar-user-name">Carregando...</div>
+            <div class="topbar-user-role" id="topbar-user-role">Admin</div>
+          </div>
+        </div>
+
+        <button class="topbar-btn" data-action="logout" title="Sair">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+            <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="main-content animate-fade-in">
+
+      <!-- Welcome -->
+      <div class="welcome-card">
+        <div class="welcome-text">
+          <h2>Olá, <span id="welcome-name">Admin</span> 👋</h2>
+          <p>Aqui está o resumo do seu negócio hoje.</p>
+        </div>
+        <div class="welcome-actions">
+          <a href="projects.html?action=new" class="btn btn-primary btn-sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Projeto
+          </a>
+          <a href="orcamentos.html" class="btn btn-secondary btn-sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Ver Orçamentos
+          </a>
+        </div>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div class="stat-grid section-gap">
+
+        <!-- Projetos -->
+        <div class="stat-card animate-fade-up delay-1">
+          <div class="stat-card-header">
+            <span class="stat-card-label">Projetos</span>
+            <div class="stat-icon stat-icon-gold">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-value" id="stat-projects">—</div>
+          <div class="stat-change neutral">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
+            <span id="stat-published">—</span> publicados
+          </div>
+        </div>
+
+        <!-- Clientes -->
+        <div class="stat-card animate-fade-up delay-2">
+          <div class="stat-card-header">
+            <span class="stat-card-label">Clientes</span>
+            <div class="stat-icon stat-icon-blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-value" id="stat-clients">—</div>
+          <div class="stat-change up">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+            Ativos no portfólio
+          </div>
+        </div>
+
+        <!-- Orçamentos pendentes -->
+        <div class="stat-card animate-fade-up delay-3">
+          <div class="stat-card-header">
+            <span class="stat-card-label">Orçamentos Pendentes</span>
+            <div class="stat-icon stat-icon-purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-value" id="stat-pending">—</div>
+          <div class="stat-change neutral">
+            <span id="stat-quotes">—</span> total recebidos
+          </div>
+        </div>
+
+        <!-- Serviços -->
+        <div class="stat-card animate-fade-up delay-4">
+          <div class="stat-card-header">
+            <span class="stat-card-label">Serviços Ativos</span>
+            <div class="stat-icon stat-icon-green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/>
+              </svg>
+            </div>
+          </div>
+          <div class="stat-value" id="stat-services">—</div>
+          <div class="stat-change neutral">
+            <span id="stat-featured">—</span> em destaque
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="grid-cols-6-4 section-gap">
+
+        <!-- Faturamento -->
+        <div class="card animate-fade-up">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Faturamento Mensal</div>
+            </div>
+            <div class="flex gap-1 items-center">
+              <span class="text-xs text-muted">Últimos 6 meses</span>
+            </div>
+          </div>
+          <div class="revenue-chart-wrap">
+            <canvas id="revenue-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- Categorias -->
+        <div class="card animate-fade-up">
+          <div class="card-header">
+            <div class="card-title">Projetos por Categoria</div>
+          </div>
+          <div class="category-chart-wrap">
+            <canvas id="category-chart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TABLES ROW -->
+      <div class="grid-cols-6-4">
+
+        <!-- Últimos Orçamentos -->
+        <div class="card animate-fade-up">
+          <div class="card-header">
+            <div class="card-title">Últimos Orçamentos</div>
+            <a href="orcamentos.html" class="card-action">Ver todos →</a>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Tipo</th>
+                  <th>Budget</th>
+                  <th>Status</th>
+                  <th>Data</th>
+                </tr>
+              </thead>
+              <tbody id="recent-quotes-body">
+                <tr>
+                  <td colspan="5" class="table-empty">
+                    <div class="skeleton skeleton-text" style="width:80%;margin:0 auto;"></div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Últimos Clientes -->
+        <div class="card animate-fade-up">
+          <div class="card-header">
+            <div class="card-title">Clientes Recentes</div>
+            <a href="clients.html" class="card-action">Ver todos →</a>
+          </div>
+          <div id="recent-clients-list">
+            <div class="skeleton skeleton-card" style="height:240px;"></div>
+          </div>
+
+          <div class="quick-actions" style="margin-top:1rem;">
+            <a href="projects.html?action=new" class="quick-action-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+              </svg>
+              Novo Projeto
+            </a>
+            <a href="clients.html?action=new" class="quick-action-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="8.5" cy="7" r="4"/>
+                <line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/>
+              </svg>
+              Novo Cliente
+            </a>
+            <a href="orcamentos.html" class="quick-action-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+              </svg>
+              Orçamentos
+            </a>
+            <a href="settings.html" class="quick-action-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+              </svg>
+              Configurações
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div><!-- /main-wrapper -->
+</div><!-- /admin-layout -->
+
+<!-- Confirm Modal -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Confirmar ação</div>
+      </div>
+      <button class="modal-close" data-modal-close="confirm-modal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p id="confirm-message" style="color:var(--txt-2);font-size:.9rem;line-height:1.6;">Tem certeza que deseja continuar?</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="confirm-cancel" data-modal-close="confirm-modal">Cancelar</button>
+      <button class="btn btn-danger" id="confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/admin.js"></script>
+<script src="assets/js/dashboard.js"></script>
+<script>
+  // Welcome name
+  document.addEventListener('DOMContentLoaded', () => {
+    const user = Auth.getUser();
+    if (user) {
+      const firstName = (user.name || 'Admin').split(' ')[0];
+      document.getElementById('welcome-name').textContent = firstName;
+    }
+  });
+
+  // Pending badge no nav
+  async function updatePendingBadge() {
+    try {
+      const res = await API.get('/dashboard/stats');
+      const count = res.data?.pendingQuotes || 0;
+      const badge = document.getElementById('nav-pending-count');
+      if (badge) {
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'inline-block' : 'none';
+      }
+    } catch {}
+  }
+
+  document.addEventListener('DOMContentLoaded', updatePendingBadge);
+</script>
+</body>
+</html>

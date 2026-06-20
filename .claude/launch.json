@@ -1,0 +1,29 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "backend",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "Backend", "run", "dev"],
+      "port": 3333
+    },
+    {
+      "name": "backend-prod",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "Backend", "start"],
+      "port": 3333
+    },
+    {
+      "name": "admin",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--yes", "http-server", "Frontend/admin", "-p", "5500", "-c-1", "--cors"],
+      "port": 5500
+    },
+    {
+      "name": "public",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--yes", "http-server", "Frontend/public", "-p", "5501", "-c-1", "--cors"],
+      "port": 5501
+    }
+  ]
+}

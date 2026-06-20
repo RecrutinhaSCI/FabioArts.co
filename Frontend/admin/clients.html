@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clientes — FABIOARTS.CO</title>
+
+  <!-- Fonte canônica do admin: Inter (mesma da tela de login) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ══════════════════════════════════════════════════
+       TOKENS — alinhados ao login (FabioArts gold/dark)
+    ══════════════════════════════════════════════════ */
+:root {
+  /* BASE DARK */
+  --bg: #09090b;
+  --bg-card: #111113;
+  --bg-hover: #161618;
+  --bg-input: #1a1a1d;
+
+  --border: rgba(255, 255, 255, 0.07);
+
+  /* TEXTOS */
+  --text: #f4f4f5;
+  --text-muted: #52525b;
+  --text-soft: #a1a1aa;
+
+  /* ACENTO — gold canônico */
+  --accent: #ffc000;
+  --accent-light: #ffd44d;
+  --accent-dark: #d4a000;
+  --accent-glow: rgba(255, 192, 0, 0.35);
+
+  /* ESTADOS */
+  --danger:  #ef4444;
+  --success: #22c55e;
+  --warning: #f59e0b;
+
+  /* UI */
+  --radius: 8px;
+  --radius-lg: 12px;
+
+  --shadow: 0 4px 24px rgba(0,0,0,.45);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.3);
+
+  --transition: .18s cubic-bezier(.4,0,.2,1);
+
+  /* Tipografia */
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Inter', sans-serif;
+}
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── LAYOUT ── */
+    .page-wrapper {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar — placeholder; substitua pelo sidebar real do projeto */
+    .sidebar {
+      width: 220px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      padding: 28px 0;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .sidebar-logo {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+      padding: 0 24px 28px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo span { color: var(--accent); }
+    .sidebar-nav { padding: 20px 0; flex: 1; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 24px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: var(--transition);
+      border-left: 3px solid transparent;
+    }
+    .nav-item:hover { color: var(--text); background: var(--bg-hover); }
+    .nav-item.active { color: var(--accent-light); border-left-color: var(--accent); background: var(--accent-glow); }
+    .nav-item svg { opacity: .7; flex-shrink: 0; }
+    .nav-item.active svg { opacity: 1; }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .topbar-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -.5px;
+    }
+    .topbar-sub { color: var(--text-muted); font-size: 12px; margin-top: 1px; }
+
+    /* ── PAGE CONTENT ── */
+    .content {
+      padding: 32px;
+      flex: 1;
+    }
+
+    /* ── TOOLBAR ── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .toolbar-left { display: flex; align-items: center; gap: 12px; flex: 1; }
+
+    .search-wrap {
+      position: relative;
+      width: 280px;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px 12px 9px 38px;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      outline: none;
+      transition: var(--transition);
+    }
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+    .count-badge {
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .count-badge strong { color: var(--text); }
+
+    /* ── BUTTONS ── */
+    .fa-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      border-radius: var(--radius);
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 9px 18px;
+      white-space: nowrap;
+    }
+    .fa-btn--primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .fa-btn--primary:hover { background: var(--accent-light); transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-glow); }
+    .fa-btn--primary:active { transform: translateY(0); }
+
+    .fa-btn--ghost {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .fa-btn--ghost:hover { color: var(--text); border-color: var(--text-muted); background: var(--bg-hover); }
+
+    .fa-btn--danger-ghost {
+      background: transparent;
+      color: var(--danger);
+      border: 1px solid transparent;
+    }
+    .fa-btn--danger-ghost:hover { background: rgba(255,77,109,.1); border-color: var(--danger); }
+
+    .fa-btn--icon {
+      padding: 7px;
+      border-radius: 8px;
+    }
+    .fa-btn--danger.fa-btn--icon:hover { color: var(--danger); background: rgba(255,77,109,.1); }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    /* ── TABLE ── */
+    .table-wrapper { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead th {
+      padding: 12px 16px;
+      text-align: left;
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      white-space: nowrap;
+    }
+    .fa-table__row {
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+    .fa-table__row:last-child { border-bottom: none; }
+    .fa-table__row:hover { background: var(--bg-hover); }
+    td {
+      padding: 13px 16px;
+      vertical-align: middle;
+    }
+    .td-logo { width: 56px; }
+    .td-actions { width: 80px; text-align: right; }
+    .td-actions { display: flex; gap: 4px; justify-content: flex-end; align-items: center; }
+
+    /* Logo thumb */
+    .client-logo-thumb {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      object-fit: contain;
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      display: block;
+    }
+    .client-logo-placeholder {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent-glow), var(--bg-hover));
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-light);
+      letter-spacing: .5px;
+    }
+
+    .client-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text);
+      display: block;
+    }
+    .client-company {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .fa-link {
+      color: var(--accent-light);
+      text-decoration: none;
+      font-size: 13px;
+    }
+    .fa-link:hover { text-decoration: underline; }
+
+    .fa-muted { color: var(--text-muted); }
+
+    .testimonial-preview {
+      font-size: 13px;
+      color: var(--text-soft);
+      font-style: italic;
+      cursor: help;
+    }
+
+    /* ── EMPTY / LOADING ── */
+    .table-empty, .table-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 64px 24px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .table-empty svg, .table-loading svg { opacity: .35; }
+    .table-empty p { font-size: 14px; }
+    .table-empty small { font-size: 12px; }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── MODAL OVERLAY ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.65);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition);
+    }
+    .modal-overlay.is-open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-overlay.is-open .modal-box {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 540px;
+      box-shadow: var(--shadow);
+      transform: translateY(16px) scale(.98);
+      opacity: 0;
+      transition: transform .25s cubic-bezier(.4,0,.2,1), opacity .25s;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg-card);
+      z-index: 1;
+    }
+    .modal-header h2 {
+      font-family: var(--font-display);
+      font-size: 17px;
+      font-weight: 700;
+    }
+    .modal-close {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    .modal-close:hover { background: var(--bg-hover); color: var(--text); }
+
+    .modal-body { padding: 24px; }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      background: var(--bg-card);
+      position: sticky;
+      bottom: 0;
+    }
+
+    /* ── FORM ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-grid .full { grid-column: 1 / -1; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-soft);
+      letter-spacing: .3px;
+    }
+    .form-label .required { color: var(--danger); margin-left: 2px; }
+
+    .form-control {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px 12px;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      outline: none;
+      width: 100%;
+      transition: var(--transition);
+    }
+    .form-control::placeholder { color: var(--text-muted); }
+    .form-control:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-glow); }
+    .form-control.is-invalid { border-color: var(--danger); }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.5;
+    }
+
+    .field-error {
+      font-size: 11.5px;
+      color: var(--danger);
+      display: none;
+    }
+
+    .form-hint { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── DELETE MODAL ── */
+    .delete-box {
+      max-width: 420px;
+    }
+    .delete-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: rgba(255,77,109,.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      color: var(--danger);
+    }
+    .delete-box .modal-body { text-align: center; }
+    .delete-box h3 {
+      font-family: var(--font-display);
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+    .delete-box p { color: var(--text-muted); font-size: 14px; line-height: 1.5; }
+    .delete-box strong { color: var(--text); }
+
+    .fa-btn--danger {
+      background: var(--danger);
+      color: #fff;
+    }
+    .fa-btn--danger:hover { background: var(--danger-light); }
+
+    /* ── TOAST ── */
+    .fa-toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 9999;
+      padding: 13px 20px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: var(--shadow);
+      max-width: 340px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity .25s, transform .25s;
+      pointer-events: none;
+    }
+    .fa-toast--visible { opacity: 1; transform: translateY(0); }
+    .fa-toast--success { background: #0d2e1f; border: 1px solid var(--success); color: var(--success); }
+    .fa-toast--error   { background: #2e0d16; border: 1px solid var(--danger);  color: var(--danger); }
+    .fa-toast--info    { background: #161633; border: 1px solid var(--accent);  color: var(--accent-light); }
+
+    /* ── BTN SPINNER ── */
+    .btn-spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+
+    /* ── UTILS ── */
+    .modal-open { overflow: hidden; }
+
+    @media (max-width: 680px) {
+      .sidebar { display: none; }
+      .content { padding: 20px 16px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .search-wrap { width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="page-wrapper">
+
+  <!-- ════════════ SIDEBAR ════════════ -->
+  <!-- Substitua por include/componecsnte do sidebar real do projeto -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">FABIO<span>ARTS</span></div>
+    <nav class="sidebar-nav">
+      <a href="/Frontend/admin/dashboard.html" class="nav-item">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="/Frontend/admin/clients.html" class="nav-item active">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-5-3.87M9 20H4v-2a4 4 0 015-3.87m6-4.13a4 4 0 11-8 0 4 4 0 018 0zm6 0a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Clientes
+      </a>
+      <a href="/Frontend/admin/projects.html" class="nav-item">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0121 9.414V19a2 2 0 01-2 2z"/></svg>
+        Projetos
+      </a>
+      <a href="/Frontend/admin/services.html" class="nav-item">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Serviços
+      </a>
+      <a href="/Frontend/admin/settings.html" class="nav-item">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+        Configurações
+      </a>
+    </nav>
+  </aside>
+
+  <!-- ════════════ MAIN ════════════ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Clientes</div>
+        <div class="topbar-sub">Gestão completa de clientes da agência</div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <div class="search-wrap">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
+            <input type="text" id="clients-search" class="search-input" placeholder="Buscar por nome ou empresa…" autocomplete="off" />
+          </div>
+          <div class="count-badge">
+            <strong id="clients-total">0</strong> clientes
+          </div>
+        </div>
+        <button id="btn-new-client" class="fa-btn fa-btn--primary">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Novo Cliente
+        </button>
+      </div>
+
+      <!-- Table Card -->
+      <div class="card">
+        <!-- Loading -->
+        <div id="clients-loading" class="table-loading">
+          <div class="spinner"></div>
+          <span>Carregando clientes…</span>
+        </div>
+
+        <!-- Empty -->
+        <div id="clients-empty" class="table-empty" style="display:none">
+          <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-5-3.87M9 20H4v-2a4 4 0 015-3.87m6-4.13a4 4 0 11-8 0 4 4 0 018 0zm6 0a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <p>Nenhum cliente encontrado</p>
+          <small>Clique em "Novo Cliente" para adicionar o primeiro.</small>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>Cliente</th>
+                <th>Instagram</th>
+                <th>Website</th>
+                <th>Depoimento</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="clients-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /page-wrapper -->
+
+
+<!-- ════════════ MODAL: CRIAR / EDITAR ════════════ -->
+<div id="client-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-box">
+
+    <div class="modal-header">
+      <h2 id="modal-title">Novo Cliente</h2>
+      <button class="modal-close" data-close-modal aria-label="Fechar">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <form id="client-form" novalidate>
+        <div class="form-grid">
+
+          <!-- Nome -->
+          <div class="form-group">
+            <label class="form-label" for="field-name">Nome <span class="required">*</span></label>
+            <input id="field-name" type="text" class="form-control" placeholder="Ex: João Silva" autocomplete="off" />
+            <span class="field-error"></span>
+          </div>
+
+          <!-- Empresa -->
+          <div class="form-group">
+            <label class="form-label" for="field-company">Empresa</label>
+            <input id="field-company" type="text" class="form-control" placeholder="Ex: Acme Ltda" autocomplete="off" />
+            <span class="field-error"></span>
+          </div>
+
+          <!-- Instagram -->
+          <div class="form-group">
+            <label class="form-label" for="field-instagram">Instagram</label>
+            <input id="field-instagram" type="text" class="form-control" placeholder="@usuario" autocomplete="off" />
+            <span class="field-error"></span>
+          </div>
+
+          <!-- Website -->
+          <div class="form-group">
+            <label class="form-label" for="field-website">Website</label>
+            <input id="field-website" type="url" class="form-control" placeholder="https://..." autocomplete="off" />
+            <span class="field-error"></span>
+          </div>
+
+          <!-- Logo URL -->
+          <div class="form-group full">
+            <label class="form-label" for="field-logo">URL do Logo</label>
+            <input id="field-logo" type="url" class="form-control" placeholder="https://...imagem.png" autocomplete="off" />
+            <span class="form-hint">Cole a URL direta da imagem do logo.</span>
+            <span class="field-error"></span>
+          </div>
+
+          <!-- Depoimento -->
+          <div class="form-group full">
+            <label class="form-label" for="field-testimonial">Depoimento</label>
+            <textarea id="field-testimonial" class="form-control" placeholder="O que o cliente disse sobre o serviço…" rows="3"></textarea>
+            <span class="field-error"></span>
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="fa-btn fa-btn--ghost" data-close-modal>Cancelar</button>
+      <button id="btn-save-client" class="fa-btn fa-btn--primary">
+        <span id="btn-save-text">Salvar Cliente</span>
+        <span id="btn-save-spinner" class="btn-spinner"></span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ════════════ MODAL: CONFIRMAR DELETE ════════════ -->
+<div id="delete-modal" class="modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal-box delete-box">
+
+    <div class="modal-header">
+      <h2>Confirmar exclusão</h2>
+      <button class="modal-close" data-close-delete-modal aria-label="Fechar">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="delete-icon">
+          <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+        </div>
+        <h3>Remover cliente?</h3>
+        <p>Você está prestes a remover <strong id="delete-client-name"></strong>. Essa ação não pode ser desfeita.</p>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button id="btn-cancel-delete" class="fa-btn fa-btn--ghost" data-close-delete-modal>Cancelar</button>
+      <button id="btn-confirm-delete" class="fa-btn fa-btn--danger">Sim, remover</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ════════════ SCRIPTS ════════════ -->
+<script src="assets/js/config.js"></script>
+<script src="assets/js/admin.js"></script>
+<script src="assets/js/clients.js"></script>
+
+</body>
+</html>
