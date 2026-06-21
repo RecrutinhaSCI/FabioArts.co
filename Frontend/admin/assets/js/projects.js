@@ -16,6 +16,7 @@
   let totalPages = 1;
   const PER_PAGE = 12;
   let filterFeatured = false;
+  let filterCategory = 'all';   // 'all' | 'AUTOMOTIVE' | 'TSHIRT' | ...
   let searchQuery = '';
   let editingId = null;
   let deletingId = null;
@@ -58,6 +59,7 @@
       });
       if (searchQuery) params.set('search', searchQuery);
       if (filterFeatured) params.set('isFeatured', 'true');
+      if (filterCategory && filterCategory !== 'all') params.set('category', filterCategory);
 
       const res = await API.get(`/projects?${params.toString()}`);
       projects = res.data || [];
@@ -278,6 +280,17 @@
     filterFeatured = filterFeat.checked;
     currentPage = 1;
     loadList();
+  });
+
+  // Filtros de categoria (botões .filter-btn[data-filter])
+  document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterCategory = btn.dataset.filter || 'all';
+      currentPage = 1;
+      loadList();
+    });
   });
 
   tbody?.addEventListener('click', e => {

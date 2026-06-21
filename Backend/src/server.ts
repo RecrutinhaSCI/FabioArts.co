@@ -27,14 +27,34 @@ app.use(helmet({
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
 
+// CORS_ORIGIN aceita strings exatas E padrões com `*` no início
+// (ex: "https://*.vercel.app" cobre todos os preview deploys da Vercel).
+function originAllowed(origin: string): boolean {
+  return env.CORS_ORIGIN.some(allowed => {
+    if (allowed === origin) return true;
+    if (allowed.includes('*')) {
+      // converte "https://*.vercel.app" → /^https:\/\/.+\.vercel\.app$/
+      const pattern = '^' + allowed
+        .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+        .replace(/\*/g, '.+') + '$';
+      return new RegExp(pattern).test(origin);
+    }
+    return false;
+  });
+}
+
 app.use(cors({
   origin(origin, callback) {
-    // Permite requisições sem origin (Postman, curl, mobile) em dev
-    if (!origin && env.isDevelopment) return callback(null, true);
-    if (!origin || env.CORS_ORIGIN.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error(`CORS: origem não permitida — ${origin}`));
+    // Sem origin (Postman, curl, server-to-server) sempre passa
+    if (!origin) return callback(null, true);
+    // Dev local libera tudo
+    if (env.isDevelopment) return callback(null, true);
+    // Produção: checa whitelist (com suporte a wildcard)
+    if (originAllowed(origin)) return callback(null, true);
+    // Rejeita SEM jogar erro — devolve resposta sem headers CORS,
+    // o navegador bloqueia limpo (200/204), sem 500 confuso nos logs.
+    logger.warn(`[CORS] origin rejeitada: ${origin}`);
+    return callback(null, false);
   },
   credentials:     true,
   methods:         ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
