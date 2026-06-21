@@ -290,20 +290,58 @@
     document.body.style.overflow = 'hidden';
   }
 
-  // ─── HAMBURGER (mobile) ─────────────────────────────────────────────────────
+  // ─── HAMBURGER (mobile + desktop collapse) ──────────────────────────────────
+  // Mobile (<1024px): toggle .mobile-open na sidebar (slide-in lateral) + overlay.
+  // Desktop (>=1024px): toggle .collapsed (sidebar 240→72px só ícones), persiste em localStorage.
   function setupHamburger() {
-    const btn = document.getElementById('topbar-menu-btn');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
+    const btn      = document.getElementById('topbar-menu-btn');
+    const sidebar  = document.getElementById('sidebar');
+    const overlay  = document.getElementById('sidebar-overlay');
+    const toggleIn = document.getElementById('sidebar-toggle'); // chevron interno do sidebar
     if (!btn || !sidebar) return;
-    const toggle = () => {
-      sidebar.classList.toggle('mobile-open');
-      overlay?.classList.toggle('visible');
-    };
-    btn.addEventListener('click', toggle);
-    overlay?.addEventListener('click', () => {
+
+    const isMobile = () => window.matchMedia('(max-width: 1023px)').matches;
+
+    // Estado inicial (desktop): respeita preferência salva
+    if (!isMobile() && localStorage.getItem('fabioarts_sidebar_collapsed') === '1') {
+      sidebar.classList.add('collapsed');
+      document.body.classList.add('sidebar-collapsed');
+    }
+
+    const closeMobile = () => {
       sidebar.classList.remove('mobile-open');
-      overlay.classList.remove('visible');
+      overlay?.classList.remove('visible');
+    };
+
+    const onHamburger = () => {
+      if (isMobile()) {
+        const opening = !sidebar.classList.contains('mobile-open');
+        sidebar.classList.toggle('mobile-open');
+        overlay?.classList.toggle('visible', opening);
+      } else {
+        const collapsed = sidebar.classList.toggle('collapsed');
+        document.body.classList.toggle('sidebar-collapsed', collapsed);
+        localStorage.setItem('fabioarts_sidebar_collapsed', collapsed ? '1' : '0');
+      }
+    };
+
+    btn.addEventListener('click', onHamburger);
+    toggleIn?.addEventListener('click', onHamburger);
+    overlay?.addEventListener('click', closeMobile);
+
+    // Fechar mobile-open ao clicar em qualquer link da nav
+    sidebar.addEventListener('click', e => {
+      if (e.target.closest('.nav-item') && isMobile()) closeMobile();
+    });
+
+    // Ao redimensionar para desktop, sempre limpa estado mobile
+    window.addEventListener('resize', () => {
+      if (!isMobile()) closeMobile();
+    });
+
+    // Esc fecha sidebar mobile
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && isMobile()) closeMobile();
     });
   }
 

@@ -5,37 +5,185 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Financeiro — FabioArts Admin</title>
   <link rel="stylesheet" href="assets/css/admin.css"/>
+  <link rel="stylesheet" href="assets/css/admin-shell.css"/>
+  <style>
+    /* Placeholder visual da página Financeiro */
+    .fin-hero {
+      display: grid; grid-template-columns: 1.1fr .9fr; gap: 1.25rem;
+      align-items: stretch;
+    }
+    @media (max-width: 900px) { .fin-hero { grid-template-columns: 1fr; } }
+
+    .fin-card-coming {
+      padding: 2rem; display: flex; flex-direction: column; justify-content: center;
+      background:
+        radial-gradient(circle at top right, var(--gold-dim), transparent 60%),
+        var(--bg-card);
+    }
+    .fin-tag {
+      display: inline-flex; align-items: center; gap: .35rem;
+      font-size: .66rem; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--gold);
+      background: var(--gold-dim); padding: .3rem .65rem;
+      border-radius: 999px; border: 1px solid var(--gold-border);
+      width: max-content;
+    }
+    .fin-title {
+      font-size: 1.6rem; font-weight: 700; color: var(--txt);
+      letter-spacing: -.025em; line-height: 1.2;
+      margin: 1rem 0 .55rem;
+    }
+    .fin-sub {
+      font-size: .9rem; color: var(--txt-2); line-height: 1.6;
+      max-width: 460px;
+    }
+    .fin-actions { display: flex; gap: .55rem; flex-wrap: wrap; margin-top: 1.4rem; }
+
+    .fin-mock {
+      padding: 1.4rem;
+      background: var(--bg-card);
+      display: flex; flex-direction: column;
+    }
+    .fin-mock-title {
+      font-size: .68rem; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--txt-3); font-weight: 700; margin-bottom: 1rem;
+    }
+    .fin-mock-row {
+      display: flex; align-items: center; gap: .85rem;
+      padding: .65rem 0;
+      border-bottom: 1px solid var(--border-card);
+    }
+    .fin-mock-row:last-child { border-bottom: none; }
+    .fin-mock-ic {
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .fin-mock-ic.in  { background: var(--green-dim); color: var(--green); }
+    .fin-mock-ic.out { background: var(--red-dim);   color: var(--red); }
+    .fin-mock-ic svg { width: 14px; height: 14px; }
+    .fin-mock-text { flex: 1; min-width: 0; }
+    .fin-mock-text-t { font-size: .78rem; color: var(--txt); font-weight: 500; }
+    .fin-mock-text-s { font-size: .68rem; color: var(--txt-3); }
+    .fin-mock-val { font-size: .8rem; font-weight: 600; }
+    .fin-mock-val.in  { color: var(--green); }
+    .fin-mock-val.out { color: var(--red); }
+    .fin-mock-shimmer { filter: blur(2px); opacity: .55; pointer-events: none; }
+  </style>
 </head>
 <body>
-<div class="app">
+<div class="admin-shell">
   <aside class="sidebar" id="sidebar"></aside>
   <div class="sidebar-overlay" id="sidebar-overlay"></div>
-  <div class="main-wrapper">
+  <div class="admin-main">
     <header class="topbar" id="topbar"></header>
+
     <div class="page">
 
       <div class="page-header">
         <div>
           <h1 class="page-title">Financeiro</h1>
-          <p class="page-subtitle">Receitas, despesas e relação com orçamentos.</p>
+          <p class="page-subtitle">Receitas, despesas e o saldo do estúdio, com vínculo aos orçamentos.</p>
         </div>
       </div>
 
-      <div class="card" style="padding:3.5rem 2rem;text-align:center;max-width:680px;margin:2rem auto">
-        <div style="width:64px;height:64px;border-radius:50%;background:var(--gold-dim);color:var(--gold);display:inline-flex;align-items:center;justify-content:center;margin-bottom:1.2rem">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <line x1="12" y1="1" x2="12" y2="23"/>
-            <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
-          </svg>
+      <!-- Stats placeholder (visualmente reais) -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-label">Receita do mês</span>
+            <div class="stat-icon stat-icon-green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </div>
+          </div>
+          <div class="stat-value">—</div>
+          <div class="stat-change">em breve</div>
         </div>
-        <h2 style="font-size:1.35rem;font-weight:700;color:var(--txt);margin-bottom:.5rem">Financeiro em breve</h2>
-        <p style="font-size:.88rem;color:var(--txt-2);line-height:1.6;max-width:480px;margin:0 auto 1.5rem">
-          Esta área vai registrar receitas, despesas e o saldo do estúdio,
-          com vínculo automático aos orçamentos aprovados. Trabalho em andamento.
-        </p>
-        <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap">
-          <a href="orcamentos.html" class="btn btn-primary">Ver orçamentos</a>
-          <a href="dashboard.html" class="btn btn-secondary">Voltar ao dashboard</a>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-label">Despesas</span>
+            <div class="stat-icon stat-icon-red">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+          </div>
+          <div class="stat-value">—</div>
+          <div class="stat-change">em breve</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-label">Saldo</span>
+            <div class="stat-icon stat-icon-accent">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 100 4h4a2 2 0 110 4H8"/><line x1="12" y1="6" x2="12" y2="18"/></svg>
+            </div>
+          </div>
+          <div class="stat-value">—</div>
+          <div class="stat-change">em breve</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-label">A receber</span>
+            <div class="stat-icon stat-icon-yellow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+          </div>
+          <div class="stat-value">—</div>
+          <div class="stat-change">em breve</div>
+        </div>
+      </div>
+
+      <!-- Hero "em breve" -->
+      <div class="fin-hero">
+        <div class="card fin-card-coming">
+          <span class="fin-tag">em desenvolvimento</span>
+          <h2 class="fin-title">Financeiro chegando em breve</h2>
+          <p class="fin-sub">
+            Em breve você vai registrar entradas e saídas, vincular orçamentos aprovados
+            e acompanhar o saldo real do estúdio direto por aqui — sem planilha avulsa.
+          </p>
+          <div class="fin-actions">
+            <a href="orcamentos.html" class="btn btn-primary">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              Ver orçamentos
+            </a>
+            <a href="dashboard.html" class="btn btn-secondary">Voltar ao dashboard</a>
+          </div>
+        </div>
+        <div class="card fin-mock">
+          <div class="fin-mock-title">Pré-visualização</div>
+          <div class="fin-mock-shimmer">
+            <div class="fin-mock-row">
+              <div class="fin-mock-ic in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div>
+              <div class="fin-mock-text">
+                <div class="fin-mock-text-t">Wrap BMW M3</div>
+                <div class="fin-mock-text-s">Orçamento #A12 · Aprovado</div>
+              </div>
+              <div class="fin-mock-val in">+R$ 3.200</div>
+            </div>
+            <div class="fin-mock-row">
+              <div class="fin-mock-ic out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="5 12 12 19 19 12"/></svg></div>
+              <div class="fin-mock-text">
+                <div class="fin-mock-text-t">Adobe Creative Cloud</div>
+                <div class="fin-mock-text-s">Assinatura mensal</div>
+              </div>
+              <div class="fin-mock-val out">-R$ 290</div>
+            </div>
+            <div class="fin-mock-row">
+              <div class="fin-mock-ic in"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div>
+              <div class="fin-mock-text">
+                <div class="fin-mock-text-t">Coleção Streetrider</div>
+                <div class="fin-mock-text-s">Orçamento #A09 · Pago</div>
+              </div>
+              <div class="fin-mock-val in">+R$ 1.500</div>
+            </div>
+            <div class="fin-mock-row">
+              <div class="fin-mock-ic out"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="5 12 12 19 19 12"/></svg></div>
+              <div class="fin-mock-text">
+                <div class="fin-mock-text-t">Pacote de fontes</div>
+                <div class="fin-mock-text-s">Licença comercial</div>
+              </div>
+              <div class="fin-mock-val out">-R$ 180</div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -47,7 +195,6 @@
 <script src="assets/js/layout.js"></script>
 <script src="assets/js/admin.js"></script>
 <script>
-  // Guarda de autenticação básica
   if (typeof Auth !== 'undefined') Auth.requireAuth();
 </script>
 </body>

@@ -5,105 +5,183 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Projetos — FabioArts Admin</title>
   <link rel="stylesheet" href="assets/css/admin.css"/>
+  <link rel="stylesheet" href="assets/css/admin-shell.css"/>
   <style>
+    /* Estilos específicos da página Projetos (não destoam do shell) */
     .project-thumb {
-      width: 38px; height: 38px; border-radius: 7px;
-      background: var(--bg-4); overflow: hidden; flex-shrink: 0;
+      width: 44px; height: 44px; border-radius: 8px;
+      background: var(--bg-card-hover); overflow: hidden; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      color: var(--txt-3); font-size: .65rem; font-family: var(--mono);
+      color: var(--txt-3); font-size: .68rem; font-weight: 600;
       border: 1px solid var(--border);
     }
     .project-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .project-title-cell { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+    .project-title-cell .title { font-weight: 600; color: var(--txt); font-size: .85rem; line-height: 1.3; }
+    .project-title-cell .slug { font-size: .7rem; color: var(--txt-3); font-family: ui-monospace,Menlo,monospace; margin-top: .1rem; }
+
     .tag {
-      display: inline-block; padding: .1rem .42rem; border-radius: 4px;
-      font-size: .63rem; font-weight: 500; font-family: var(--mono);
-      background: var(--bg-4); color: var(--txt-3); border: 1px solid var(--border);
-      margin-right: .2rem;
+      display: inline-block; padding: .1rem .45rem; border-radius: 4px;
+      font-size: .64rem; font-weight: 500;
+      background: var(--bg-card-hover); color: var(--txt-2); border: 1px solid var(--border);
+      margin-right: .25rem;
     }
-    .pagination-wrap { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1.2rem; border-top: 1px solid var(--border); }
-    .pagination-info { font-size: .75rem; color: var(--txt-3); }
-    .pagination-btns { display: flex; gap: .3rem; }
-    .cat-pill {
-      display: inline-block; padding: .12rem .5rem; border-radius: 4px;
-      font-size: .68rem; font-family: var(--mono); letter-spacing: .03em;
-      background: var(--accent-dim); color: var(--accent-2);
-      border: 1px solid rgba(124,111,255,.2);
+
+    /* Thumbnail preview no modal */
+    .thumb-preview-wrap {
+      margin-top: .55rem;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: .65rem;
+      display: flex; align-items: center; gap: .75rem;
+      background: var(--bg-base);
     }
+    .thumb-preview {
+      width: 64px; height: 64px; border-radius: 8px;
+      background: var(--bg-card-hover);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; flex-shrink: 0;
+      color: var(--txt-3); font-size: .66rem;
+    }
+    .thumb-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .thumb-preview-info { font-size: .74rem; color: var(--txt-2); line-height: 1.4; }
+
+    /* View modal — projeto premium */
+    .pv-hero {
+      width: 100%; height: 180px; border-radius: 12px;
+      background: var(--bg-card-hover);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--txt-3); overflow: hidden;
+      border: 1px solid var(--border);
+      font-size: 1.6rem; font-weight: 700; letter-spacing: -.02em;
+    }
+    .pv-hero img { width: 100%; height: 100%; object-fit: cover; }
+    .pv-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: .75rem; margin-top: 1rem; }
+    .pv-meta-item .lbl { font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--txt-3); }
+    .pv-meta-item .val { font-size: .85rem; color: var(--txt); margin-top: .2rem; }
+    .pv-section { margin-top: 1rem; }
+    .pv-section h4 { font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: .5rem; font-weight: 700; }
+    .pv-section p { font-size: .85rem; color: var(--txt-2); line-height: 1.6; }
+    .pv-tags { display: flex; flex-wrap: wrap; gap: .35rem; }
   </style>
 </head>
 <body>
-<div class="app">
+<div class="admin-shell">
   <aside class="sidebar" id="sidebar"></aside>
   <div class="sidebar-overlay" id="sidebar-overlay"></div>
-  <div class="main-wrapper">
+  <div class="admin-main">
     <header class="topbar" id="topbar"></header>
+
     <div class="page">
 
-      <!-- Header -->
+      <!-- HEADER -->
       <div class="page-header">
         <div>
           <h1 class="page-title">Projetos</h1>
-          <p class="page-subtitle">Gerencie seu portfólio de projetos</p>
+          <p class="page-subtitle">Gerencie o portfólio que aparece no site público.</p>
         </div>
         <div class="page-actions">
           <button class="btn btn-secondary btn-sm" id="btn-refresh">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
             Atualizar
           </button>
           <button class="btn btn-primary" id="btn-new">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Novo Projeto
           </button>
         </div>
       </div>
 
-      <!-- Stats -->
-      <div class="stats-grid mb-2" id="stats-grid">
-        <div class="stat-card"><div class="stat-card-top"><span class="stat-label">Total</span><div class="stat-icon stat-icon-accent"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div></div><div class="stat-value" id="s-total">—</div><div class="stat-change">projetos cadastrados</div></div>
-        <div class="stat-card"><div class="stat-card-top"><span class="stat-label">Publicados</span><div class="stat-icon stat-icon-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div></div><div class="stat-value" id="s-pub">—</div><div class="stat-change up">visíveis no portfólio</div></div>
-        <div class="stat-card"><div class="stat-card-top"><span class="stat-label">Destaque</span><div class="stat-icon stat-icon-yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div><div class="stat-value" id="s-feat">—</div><div class="stat-change">em destaque</div></div>
-        <div class="stat-card"><div class="stat-card-top"><span class="stat-label">Rascunhos</span><div class="stat-icon stat-icon-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div></div><div class="stat-value" id="s-draft">—</div><div class="stat-change">não publicados</div></div>
+      <!-- STATS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-label">Total</span>
+            <div class="stat-icon stat-icon-accent">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
+          </div>
+          <div class="stat-value" id="s-total">—</div>
+          <div class="stat-change">projetos cadastrados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-label">Publicados</span>
+            <div class="stat-icon stat-icon-green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+          </div>
+          <div class="stat-value" id="s-pub">—</div>
+          <div class="stat-change up">visíveis no portfólio</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-label">Destaque</span>
+            <div class="stat-icon stat-icon-yellow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+          </div>
+          <div class="stat-value" id="s-feat">—</div>
+          <div class="stat-change">em destaque</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <span class="stat-label">Rascunhos</span>
+            <div class="stat-icon stat-icon-red">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+          </div>
+          <div class="stat-value" id="s-draft">—</div>
+          <div class="stat-change">não publicados</div>
+        </div>
       </div>
 
-      <!-- Table card -->
-      <div class="card">
-        <!-- Filters -->
-        <div class="filters">
+      <!-- FILTROS -->
+      <div class="filters-bar">
+        <div class="filters-row">
           <button class="filter-btn active" data-filter="all">Todos</button>
           <button class="filter-btn" data-filter="AUTOMOTIVE">Automotivo</button>
           <button class="filter-btn" data-filter="TSHIRT">Camisetas</button>
-          <button class="filter-btn" data-filter="BRANDING">Branding</button>
           <button class="filter-btn" data-filter="STICKER">Adesivos</button>
+          <button class="filter-btn" data-filter="BRANDING">Branding</button>
+          <button class="filter-btn" data-filter="LOGO">Logo</button>
           <button class="filter-btn" data-filter="SOCIAL_MEDIA">Social</button>
-          <div class="filter-sep"></div>
-          <label class="filter-btn" style="cursor:pointer">
-            <input type="checkbox" id="filter-featured" style="margin-right:.3rem"> Destaque
+          <span class="filter-sep"></span>
+          <label class="check-pill" style="padding:.32rem .7rem;font-size:.74rem">
+            <input type="checkbox" id="filter-featured"> Destaque
           </label>
-          <div class="filter-search">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="filter-search" placeholder="Buscar projetos..."/>
-          </div>
+          <label class="check-pill" style="padding:.32rem .7rem;font-size:.74rem">
+            <input type="checkbox" id="filter-published"> Apenas publicados
+          </label>
+          <button class="btn btn-ghost btn-sm" id="btn-clear-filters" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Limpar
+          </button>
         </div>
+        <div class="filter-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="filter-search" placeholder="Buscar por título ou descrição..." autocomplete="off"/>
+        </div>
+      </div>
 
-        <!-- Table -->
+      <!-- TABELA -->
+      <div class="card">
         <div class="table-wrap">
           <table class="table">
             <thead>
               <tr>
-                <th style="width:40px"></th>
                 <th>Projeto</th>
                 <th>Categoria</th>
+                <th>Cliente</th>
                 <th>Tags</th>
                 <th>Status</th>
-                <th>Cliente</th>
                 <th>Data</th>
-                <th style="width:80px"></th>
+                <th style="width:120px;text-align:right">Ações</th>
               </tr>
             </thead>
             <tbody id="projects-tbody">
-              <tr><td colspan="8" class="table-empty">
-                <div class="skeleton skeleton-title" style="width:40%;margin:.5rem auto"></div>
-                <div class="skeleton skeleton-text" style="width:60%;margin:auto"></div>
+              <tr><td colspan="7" class="table-empty">
+                <span class="loader-ring"></span> &nbsp;Carregando projetos...
               </td></tr>
             </tbody>
           </table>
@@ -114,394 +192,160 @@
         </div>
       </div>
 
-    </div><!-- /page -->
-  </div><!-- /main -->
-</div><!-- /app -->
+    </div>
+  </div>
+</div>
 
-<!-- ── MODAL: Novo / Editar Projeto ──────────────────────────────────────── -->
+<!-- ═══════════════ MODAL: Criar / Editar Projeto ═══════════════ -->
 <div class="modal-overlay" id="modal-project">
   <div class="modal modal-lg">
     <div class="modal-header">
       <div>
         <div class="modal-title" id="modal-project-title">Novo Projeto</div>
+        <div class="modal-subtitle">Preencha os blocos abaixo para publicar no portfólio.</div>
       </div>
-      <button class="modal-close" data-modal-close="modal-project">
+      <button class="modal-close" data-modal-close="modal-project" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div class="modal-body">
       <form id="project-form" autocomplete="off">
         <input type="hidden" id="f-id"/>
-        <div class="form-row">
+
+        <!-- Bloco 1: Informações principais -->
+        <div class="form-block">
+          <div class="form-block-title">Informações principais</div>
           <div class="form-group">
-            <label class="form-label">Título <span class="req">*</span></label>
-            <input type="text" class="form-control" id="f-title" placeholder="Nome do projeto"/>
+            <label class="form-label" for="f-title">Título <span class="req">*</span></label>
+            <input type="text" class="form-control" id="f-title" placeholder="Ex: BMW M3 Wrap Premium"/>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f-slug">Slug <span class="req">*</span></label>
+              <input type="text" class="form-control" id="f-slug" placeholder="bmw-m3-wrap-premium"/>
+              <div class="form-hint">Gerado automaticamente a partir do título. URL pública: /projeto/<span id="f-slug-preview" class="text-gold">slug</span></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-date">Data do projeto</label>
+              <input type="date" class="form-control" id="f-date"/>
+            </div>
           </div>
           <div class="form-group">
-            <label class="form-label">Slug <span class="req">*</span></label>
-            <input type="text" class="form-control" id="f-slug" placeholder="meu-projeto"/>
+            <label class="form-label" for="f-description">Descrição</label>
+            <textarea class="form-control" id="f-description" rows="3" placeholder="O que torna esse projeto memorável..."></textarea>
           </div>
         </div>
-        <div class="form-row">
+
+        <!-- Bloco 2: Categoria e tags -->
+        <div class="form-block">
+          <div class="form-block-title">Categoria e tags</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f-category">Categoria <span class="req">*</span></label>
+              <select class="form-control" id="f-category">
+                <option value="">Selecione...</option>
+                <option value="AUTOMOTIVE">Automotivo</option>
+                <option value="TSHIRT">Camisetas</option>
+                <option value="STICKER">Adesivos</option>
+                <option value="BRANDING">Branding</option>
+                <option value="SOCIAL_MEDIA">Social Media</option>
+                <option value="LOGO">Logo</option>
+                <option value="PACKAGING">Embalagem</option>
+                <option value="ILLUSTRATION">Ilustração</option>
+                <option value="OTHER">Outro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-tags">Tags <span class="form-hint" style="display:inline;font-size:.66rem;color:var(--txt-3)">(separadas por vírgula)</span></label>
+              <input type="text" class="form-control" id="f-tags" placeholder="wrap, bmw, preto"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloco 3: Cliente -->
+        <div class="form-block">
+          <div class="form-block-title">Cliente</div>
           <div class="form-group">
-            <label class="form-label">Categoria <span class="req">*</span></label>
-            <select class="form-control" id="f-category">
-              <option value="">Selecione...</option>
-              <option value="AUTOMOTIVE">Automotivo</option>
-              <option value="TSHIRT">Camisetas</option>
-              <option value="STICKER">Adesivos</option>
-              <option value="BRANDING">Branding</option>
-              <option value="SOCIAL_MEDIA">Social Media</option>
-              <option value="LOGO">Logo</option>
-              <option value="PACKAGING">Embalagem</option>
-              <option value="ILLUSTRATION">Ilustração</option>
-              <option value="OTHER">Outro</option>
+            <label class="form-label" for="f-client">Vincular cliente</label>
+            <select class="form-control" id="f-client">
+              <option value="">— Sem cliente —</option>
             </select>
+            <div class="form-hint">O nome do cliente aparece como crédito no portfólio.</div>
           </div>
+        </div>
+
+        <!-- Bloco 4: Imagem -->
+        <div class="form-block">
+          <div class="form-block-title">Imagem / Thumbnail</div>
           <div class="form-group">
-            <label class="form-label">Thumbnail (URL)</label>
-            <input type="text" class="form-control" id="f-thumbnail" placeholder="https://..."/>
+            <label class="form-label" for="f-thumbnail">URL da imagem</label>
+            <input type="url" class="form-control" id="f-thumbnail" placeholder="https://..."/>
+            <div class="form-hint">Cole uma URL pública. Upload de arquivo virá em breve.</div>
+            <div class="thumb-preview-wrap">
+              <div class="thumb-preview" id="thumb-preview-box"><span>sem prévia</span></div>
+              <div class="thumb-preview-info" id="thumb-preview-info">
+                Cole uma URL acima para ver a prévia. Tamanho ideal: 1200×800.
+              </div>
+            </div>
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Descrição</label>
-          <textarea class="form-control" id="f-description" placeholder="Descreva o projeto..."></textarea>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Tags <span class="form-hint" style="display:inline">(separadas por vírgula)</span></label>
-            <input type="text" class="form-control" id="f-tags" placeholder="wrap, carro, preto"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Data do Projeto</label>
-            <input type="date" class="form-control" id="f-date"/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Cliente</label>
-          <select class="form-control" id="f-client">
-            <option value="">— Sem cliente —</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <div class="form-group" style="display:flex;align-items:center;gap:1rem;padding-top:1.4rem">
-            <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.82rem;color:var(--txt-2)">
-              <input type="checkbox" id="f-published" checked> Publicado
+
+        <!-- Bloco 5: Publicação + Destaque -->
+        <div class="form-block">
+          <div class="form-block-title">Publicação no site</div>
+          <div style="display:flex;gap:.65rem;flex-wrap:wrap">
+            <label class="check-pill">
+              <input type="checkbox" id="f-published" checked> Publicado no portfólio
             </label>
-            <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.82rem;color:var(--txt-2)">
-              <input type="checkbox" id="f-featured"> Destaque
+            <label class="check-pill">
+              <input type="checkbox" id="f-featured"> Em destaque
             </label>
+          </div>
+          <div class="form-hint" style="margin-top:.6rem">
+            Projetos não publicados ficam como rascunho e não aparecem no site.
+            Em destaque ganha posição prioritária.
           </div>
         </div>
       </form>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" data-modal-close="modal-project">Cancelar</button>
-      <button class="btn btn-primary" id="btn-save">Salvar Projeto</button>
+      <button class="btn btn-secondary" data-modal-close="modal-project" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="btn-save" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Salvar Projeto
+      </button>
     </div>
   </div>
 </div>
 
-<!-- ── MODAL: Ver Projeto ────────────────────────────────────────────────── -->
+<!-- ═══════════════ MODAL: Visualizar Projeto ═══════════════ -->
 <div class="modal-overlay" id="modal-view">
-  <div class="modal modal-md">
+  <div class="modal modal-lg">
     <div class="modal-header">
-      <div class="modal-title" id="view-title">Projeto</div>
-      <button class="modal-close" data-modal-close="modal-view">
+      <div>
+        <div class="modal-title" id="view-title">Projeto</div>
+        <div class="modal-subtitle" id="view-subtitle">slug</div>
+      </div>
+      <button class="modal-close" data-modal-close="modal-view" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
     <div class="modal-body" id="view-body"></div>
     <div class="modal-footer">
-      <button class="btn btn-secondary" data-modal-close="modal-view">Fechar</button>
-      <button class="btn btn-primary" id="view-edit-btn">Editar</button>
+      <button class="btn btn-secondary" data-modal-close="modal-view" type="button">Fechar</button>
+      <button class="btn btn-primary" id="view-edit-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Editar
+      </button>
     </div>
   </div>
 </div>
 
-<div class="toast-stack" id="toast-stack"></div>
+<div class="toast-container" id="toast-container"></div>
 
 <script src="assets/js/config.js"></script>
 <script src="assets/js/layout.js"></script>
 <script src="assets/js/admin.js"></script>
 <script src="assets/js/projects.js"></script>
-<script>
-'use strict';
-
-// ── State ──────────────────────────────────────────────────
-let state = { page:1, limit:12, category:'', search:'', featured:false, projects:[], total:0, totalPages:0 };
-let editingId = null;
-let debounceTimer = null;
-const MOCK = !window.CFG; // use mock data if no API configured
-
-// ── Mock data ──────────────────────────────────────────────
-const MOCK_DATA = {
-  projects: [
-    { id:'1', title:'Phantom Wrap GT', slug:'phantom-wrap-gt', category:'AUTOMOTIVE', thumbnail:'', tags:['wrap','supercar','preto'], clientId:null, clientName:'João Silva', isFeatured:true, isPublished:true, projectDate:'2024-11-15', createdAt:'2024-11-20T10:00:00Z', updatedAt:'2024-11-20T10:00:00Z', description:'Arte conceitual de wrapping para superesportivo.' },
-    { id:'2', title:'Streetrider Collection', slug:'streetrider-collection', category:'TSHIRT', thumbnail:'', tags:['streetwear','moto'], clientId:null, clientName:'Marca X', isFeatured:false, isPublished:true, projectDate:'2024-10-01', createdAt:'2024-10-05T10:00:00Z', updatedAt:'2024-10-05T10:00:00Z', description:'Coleção de estampas para streetwear.' },
-    { id:'3', title:'Thunder Motorsport ID', slug:'thunder-motorsport', category:'BRANDING', thumbnail:'', tags:['branding','corrida'], clientId:null, clientName:'Thunder MS', isFeatured:true, isPublished:true, projectDate:'2024-09-10', createdAt:'2024-09-15T10:00:00Z', updatedAt:'2024-09-15T10:00:00Z', description:'Identidade visual completa para equipe.' },
-    { id:'4', title:'Skull Speed Kit', slug:'skull-speed-kit', category:'STICKER', thumbnail:'', tags:['adesivo','capacete'], clientId:null, clientName:null, isFeatured:false, isPublished:true, projectDate:'2024-08-20', createdAt:'2024-08-25T10:00:00Z', updatedAt:'2024-08-25T10:00:00Z', description:'Kit de adesivos para capacete.' },
-    { id:'5', title:'Neon Racer Livery', slug:'neon-racer-livery', category:'AUTOMOTIVE', thumbnail:'', tags:['livery','neon','corrida'], clientId:null, clientName:'Speed Co', isFeatured:false, isPublished:false, projectDate:'2024-07-01', createdAt:'2024-07-10T10:00:00Z', updatedAt:'2024-07-10T10:00:00Z', description:'Livery estilo Le Mans com paleta neon.' },
-  ]
-};
-
-// ── Fetch projects ─────────────────────────────────────────
-async function fetchProjects() {
-  const tbody = document.getElementById('projects-tbody');
-  tbody.innerHTML = `<tr><td colspan="8" class="table-empty"><div class="skeleton skeleton-title" style="width:40%;margin:.5rem auto"></div><div class="skeleton skeleton-text" style="width:60%;margin:auto"></div></td></tr>`;
-
-  try {
-    let items, total;
-    if (typeof API !== 'undefined') {
-      const params = new URLSearchParams({ page: state.page, limit: state.limit });
-      if (state.category) params.set('category', state.category);
-      if (state.search)   params.set('search', state.search);
-      if (state.featured) params.set('isFeatured', 'true');
-      const res = await API.get('/projects?' + params.toString());
-      items = res.data;
-      total = res.pagination?.total || items.length;
-      state.totalPages = res.pagination?.totalPages || 1;
-    } else {
-      // Mock
-      let d = [...MOCK_DATA.projects];
-      if (state.category) d = d.filter(p => p.category === state.category);
-      if (state.search)   d = d.filter(p => p.title.toLowerCase().includes(state.search.toLowerCase()));
-      if (state.featured) d = d.filter(p => p.isFeatured);
-      items = d.slice((state.page-1)*state.limit, state.page*state.limit);
-      total = d.length;
-      state.totalPages = Math.ceil(total / state.limit) || 1;
-    }
-    state.projects = items;
-    state.total = total;
-    renderTable(items, total);
-    fetchStats();
-  } catch(e) {
-    tbody.innerHTML = `<tr><td colspan="8" class="table-empty" style="color:var(--red)">${e.message || 'Erro ao carregar projetos'}</td></tr>`;
-    Toast.error('Erro ao carregar projetos');
-  }
-}
-
-// ── Render table ───────────────────────────────────────────
-const CAT_LABELS = { AUTOMOTIVE:'Automotivo', TSHIRT:'Camiseta', STICKER:'Adesivo', BRANDING:'Branding', SOCIAL_MEDIA:'Social', LOGO:'Logo', PACKAGING:'Embalagem', ILLUSTRATION:'Ilustração', OTHER:'Outro' };
-
-function renderTable(items, total) {
-  const tbody = document.getElementById('projects-tbody');
-  const info  = document.getElementById('pagination-info');
-  const btns  = document.getElementById('pagination-btns');
-
-  if (!items.length) {
-    tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div class="empty-title">Nenhum projeto encontrado</div><div class="empty-text">Adicione um novo projeto ou ajuste os filtros.</div><div class="empty-action"><button class="btn btn-primary btn-sm" id="empty-new">Novo Projeto</button></div></div></td></tr>`;
-    document.getElementById('empty-new')?.addEventListener('click', () => openModal());
-    info.textContent = '';
-    btns.innerHTML = '';
-    return;
-  }
-
-  tbody.innerHTML = items.map(p => `
-    <tr data-id="${p.id}">
-      <td>
-        <div class="project-thumb">
-          ${p.thumbnail ? `<img src="${p.thumbnail}" alt="${p.title}" loading="lazy"/>` : `<span>${(p.category||'?')[0]}</span>`}
-        </div>
-      </td>
-      <td>
-        <div class="table-name">${p.title}</div>
-        <div class="table-sub text-mono">${p.slug}</div>
-      </td>
-      <td><span class="cat-pill">${CAT_LABELS[p.category] || p.category}</span></td>
-      <td>${(p.tags||[]).slice(0,3).map(t=>`<span class="tag">${t}</span>`).join('')}</td>
-      <td>
-        ${p.isPublished
-          ? `<span class="badge badge-green"><span class="badge-dot"></span>Publicado</span>`
-          : `<span class="badge badge-grey"><span class="badge-dot"></span>Rascunho</span>`}
-        ${p.isFeatured ? `<span class="badge badge-yellow" style="margin-left:.3rem"><span class="badge-dot"></span>Destaque</span>` : ''}
-      </td>
-      <td>${p.clientName ? `<span class="text-sm">${p.clientName}</span>` : '<span class="text-muted text-sm">—</span>'}</td>
-      <td class="text-muted text-sm text-mono">${p.projectDate ? new Date(p.projectDate).toLocaleDateString('pt-BR') : '—'}</td>
-      <td>
-        <div class="flex gap-1">
-          <button class="btn btn-icon btn-ghost" title="Ver" data-action="view" data-id="${p.id}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-          <button class="btn btn-icon btn-ghost" title="Editar" data-action="edit" data-id="${p.id}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-          </button>
-          <button class="btn btn-icon btn-ghost" style="color:var(--red)" title="Excluir" data-action="delete" data-id="${p.id}" data-title="${p.title}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-          </button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-
-  const offset = (state.page-1)*state.limit;
-  info.textContent = `Mostrando ${offset+1}–${Math.min(offset+items.length, total)} de ${total} projetos`;
-  renderPagination(btns, { page: state.page, totalPages: state.totalPages }, (p) => { state.page=p; fetchProjects(); });
-}
-
-// ── Fetch stats ────────────────────────────────────────────
-async function fetchStats() {
-  try {
-    let s;
-    if (typeof API !== 'undefined') {
-      const res = await API.get('/projects/stats');
-      s = res.data;
-    } else {
-      const all = MOCK_DATA.projects;
-      s = { total: all.length, published: all.filter(p=>p.isPublished).length, featured: all.filter(p=>p.isFeatured).length };
-    }
-    document.getElementById('s-total').textContent = Fmt.number(s.total);
-    document.getElementById('s-pub').textContent   = Fmt.number(s.published);
-    document.getElementById('s-feat').textContent  = Fmt.number(s.featured);
-    document.getElementById('s-draft').textContent = Fmt.number(s.total - s.published);
-  } catch {}
-}
-
-// ── Open modal ─────────────────────────────────────────────
-function openModal(project) {
-  editingId = project?.id || null;
-  document.getElementById('modal-project-title').textContent = project ? 'Editar Projeto' : 'Novo Projeto';
-  document.getElementById('f-id').value          = project?.id          || '';
-  document.getElementById('f-title').value       = project?.title       || '';
-  document.getElementById('f-slug').value        = project?.slug        || '';
-  document.getElementById('f-category').value    = project?.category    || '';
-  document.getElementById('f-thumbnail').value   = project?.thumbnail   || '';
-  document.getElementById('f-description').value = project?.description || '';
-  document.getElementById('f-tags').value        = (project?.tags||[]).join(', ');
-  document.getElementById('f-date').value        = project?.projectDate ? project.projectDate.split('T')[0] : '';
-  document.getElementById('f-published').checked = project ? project.isPublished : true;
-  document.getElementById('f-featured').checked  = project?.isFeatured || false;
-  Modal.open('modal-project');
-}
-
-// ── Auto-slug from title ────────────────────────────────────
-document.getElementById('f-title').addEventListener('input', function() {
-  if (!editingId) {
-    document.getElementById('f-slug').value = this.value
-      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-      .toLowerCase().trim()
-      .replace(/\s+/g,'-').replace(/[^\w-]+/g,'').replace(/--+/g,'-');
-  }
-});
-
-// ── Save ───────────────────────────────────────────────────
-document.getElementById('btn-save').addEventListener('click', async () => {
-  const title    = document.getElementById('f-title').value.trim();
-  const slug     = document.getElementById('f-slug').value.trim();
-  const category = document.getElementById('f-category').value;
-  if (!title)    { Toast.error('Título é obrigatório'); return; }
-  if (!slug)     { Toast.error('Slug é obrigatório'); return; }
-  if (!category) { Toast.error('Categoria é obrigatória'); return; }
-
-  const payload = {
-    title,  slug,  category,
-    description: document.getElementById('f-description').value.trim() || null,
-    thumbnail:   document.getElementById('f-thumbnail').value.trim()   || null,
-    tags:        document.getElementById('f-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
-    projectDate: document.getElementById('f-date').value || null,
-    isPublished: document.getElementById('f-published').checked,
-    isFeatured:  document.getElementById('f-featured').checked,
-  };
-
-  const btn = document.getElementById('btn-save');
-  btnLoad(btn, true);
-  try {
-    if (typeof API !== 'undefined') {
-      if (editingId) await API.put(`/projects/${editingId}`, payload);
-      else           await API.post('/projects', payload);
-    } else {
-      // Mock save
-      if (editingId) {
-        const idx = MOCK_DATA.projects.findIndex(p=>p.id===editingId);
-        if (idx>-1) Object.assign(MOCK_DATA.projects[idx], payload);
-      } else {
-        MOCK_DATA.projects.unshift({ id: Date.now().toString(), ...payload, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), clientId: null, clientName: null });
-      }
-    }
-    Modal.close('modal-project');
-    Toast.success(editingId ? 'Projeto atualizado!' : 'Projeto criado!');
-    fetchProjects();
-  } catch(e) {
-    Toast.error(e.message || 'Erro ao salvar');
-  } finally {
-    btnLoad(btn, false);
-  }
-});
-
-// ── Table actions ──────────────────────────────────────────
-document.getElementById('projects-tbody').addEventListener('click', async (e) => {
-  const btn = e.target.closest('[data-action]');
-  if (!btn) return;
-  const id = btn.dataset.id;
-  const action = btn.dataset.action;
-
-  if (action === 'view') {
-    const p = state.projects.find(x=>x.id===id);
-    if (!p) return;
-    document.getElementById('view-title').textContent = p.title;
-    document.getElementById('view-body').innerHTML = `
-      <div style="display:flex;gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
-        <span class="cat-pill">${CAT_LABELS[p.category]||p.category}</span>
-        ${p.isPublished ? `<span class="badge badge-green"><span class="badge-dot"></span>Publicado</span>` : `<span class="badge badge-grey"><span class="badge-dot"></span>Rascunho</span>`}
-        ${p.isFeatured  ? `<span class="badge badge-yellow"><span class="badge-dot"></span>Destaque</span>` : ''}
-      </div>
-      ${p.thumbnail ? `<img src="${p.thumbnail}" style="width:100%;border-radius:8px;margin-bottom:1rem;max-height:240px;object-fit:cover"/>` : ''}
-      ${p.description ? `<p style="color:var(--txt-2);font-size:.85rem;line-height:1.6;margin-bottom:1rem">${p.description}</p>` : ''}
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.8rem">
-        <div><span class="text-muted">Slug:</span> <span class="text-mono">${p.slug}</span></div>
-        <div><span class="text-muted">Data:</span> ${p.projectDate ? new Date(p.projectDate).toLocaleDateString('pt-BR') : '—'}</div>
-        <div><span class="text-muted">Cliente:</span> ${p.clientName||'—'}</div>
-        <div><span class="text-muted">Criado:</span> ${Fmt.date(p.createdAt)}</div>
-      </div>
-      ${p.tags?.length ? `<div style="margin-top:.75rem">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>` : ''}
-    `;
-    document.getElementById('view-edit-btn').onclick = () => { Modal.close('modal-view'); openModal(p); };
-    Modal.open('modal-view');
-  }
-
-  if (action === 'edit') {
-    const p = state.projects.find(x=>x.id===id);
-    if (p) openModal(p);
-  }
-
-  if (action === 'delete') {
-    const title = btn.dataset.title;
-    const ok = await confirm(`Excluir "${title}"? Esta ação não pode ser desfeita.`);
-    if (!ok) return;
-    try {
-      if (typeof API !== 'undefined') await API.del(`/projects/${id}`);
-      else MOCK_DATA.projects = MOCK_DATA.projects.filter(p=>p.id!==id);
-      Toast.success('Projeto excluído');
-      fetchProjects();
-    } catch(e) { Toast.error(e.message || 'Erro ao excluir'); }
-  }
-});
-
-// ── Filters ────────────────────────────────────────────────
-document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.filter-btn[data-filter]').forEach(b=>b.classList.remove('active'));
-    this.classList.add('active');
-    state.category = this.dataset.filter === 'all' ? '' : this.dataset.filter;
-    state.page = 1;
-    fetchProjects();
-  });
-});
-document.getElementById('filter-featured').addEventListener('change', function() {
-  state.featured = this.checked; state.page = 1; fetchProjects();
-});
-document.getElementById('filter-search').addEventListener('input', function() {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => { state.search = this.value; state.page = 1; fetchProjects(); }, 400);
-});
-document.getElementById('btn-new').addEventListener('click', () => openModal());
-document.getElementById('btn-refresh').addEventListener('click', fetchProjects);
-
-// ── Init ───────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  if (typeof Auth !== 'undefined') Auth.check();
-  fetchProjects();
-});
-</script>
 </body>
 </html>
