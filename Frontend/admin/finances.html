@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Financeiro — FabioArts Admin</title>
+  <link rel="stylesheet" href="assets/css/admin.css"/>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="main-wrapper">
+    <header class="topbar" id="topbar"></header>
+    <div class="page">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Financeiro</h1>
+          <p class="page-subtitle">Receitas, despesas e relação com orçamentos.</p>
+        </div>
+      </div>
+
+      <div class="card" style="padding:3.5rem 2rem;text-align:center;max-width:680px;margin:2rem auto">
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--gold-dim);color:var(--gold);display:inline-flex;align-items:center;justify-content:center;margin-bottom:1.2rem">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+          </svg>
+        </div>
+        <h2 style="font-size:1.35rem;font-weight:700;color:var(--txt);margin-bottom:.5rem">Financeiro em breve</h2>
+        <p style="font-size:.88rem;color:var(--txt-2);line-height:1.6;max-width:480px;margin:0 auto 1.5rem">
+          Esta área vai registrar receitas, despesas e o saldo do estúdio,
+          com vínculo automático aos orçamentos aprovados. Trabalho em andamento.
+        </p>
+        <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap">
+          <a href="orcamentos.html" class="btn btn-primary">Ver orçamentos</a>
+          <a href="dashboard.html" class="btn btn-secondary">Voltar ao dashboard</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/admin.js"></script>
+<script>
+  // Guarda de autenticação básica
+  if (typeof Auth !== 'undefined') Auth.requireAuth();
+</script>
+</body>
+</html>
