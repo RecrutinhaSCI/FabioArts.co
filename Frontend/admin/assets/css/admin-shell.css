@@ -241,11 +241,12 @@ body.sidebar-collapsed .main-content { margin-left: var(--shell-sidebar-w-col); 
 /* ─── PAGE CONTAINER ────────────────────────────────────────────── */
 .page,
 .page-container,
+.main-content,
 .main-content > .container,
 .main-wrapper > .page,
 .main > .page,
 .main > .container {
-  max-width: var(--shell-page-max);
+  max-width: var(--shell-page-max) !important;
   margin: 0 auto;
   padding: 1.5rem var(--shell-page-pad-x) 2.5rem;
   width: 100%;

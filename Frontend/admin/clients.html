@@ -1,623 +1,116 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clientes — FABIOARTS.CO</title>
-
-  <!-- Fonte canônica do admin: Inter (mesma da tela de login) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clientes — FabioArts Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="assets/css/admin.css"/>
   <link rel="stylesheet" href="assets/css/admin-shell.css"/>
-
   <style>
-    /* ══════════════════════════════════════════════════
-       TOKENS — alinhados ao login (FabioArts gold/dark)
-    ══════════════════════════════════════════════════ */
-:root {
-  /* BASE DARK */
-  --bg: #09090b;
-  --bg-card: #111113;
-  --bg-hover: #161618;
-  --bg-input: #1a1a1d;
-
-  --border: rgba(255, 255, 255, 0.07);
-
-  /* TEXTOS */
-  --text: #f4f4f5;
-  --text-muted: #52525b;
-  --text-soft: #a1a1aa;
-
-  /* ACENTO — gold canônico */
-  --accent: #ffc000;
-  --accent-light: #ffd44d;
-  --accent-dark: #d4a000;
-  --accent-glow: rgba(255, 192, 0, 0.35);
-
-  /* ESTADOS */
-  --danger:  #ef4444;
-  --success: #22c55e;
-  --warning: #f59e0b;
-
-  /* UI */
-  --radius: 8px;
-  --radius-lg: 12px;
-
-  --shadow: 0 4px 24px rgba(0,0,0,.45);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,.3);
-
-  --transition: .18s cubic-bezier(.4,0,.2,1);
-
-  /* Tipografia */
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-display: 'Inter', sans-serif;
-}
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: var(--font-body);
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      font-size: 14px;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* ── LAYOUT ── */
-    .page-wrapper {
-      display: flex;
-      min-height: 100vh;
-    }
-
-    /* Sidebar — placeholder; substitua pelo sidebar real do projeto */
-    .sidebar {
-      width: 220px;
-      background: var(--bg-card);
-      border-right: 1px solid var(--border);
-      padding: 28px 0;
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-    }
-    .sidebar-logo {
-      font-family: var(--font-display);
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -.5px;
-      padding: 0 24px 28px;
-      color: var(--text);
-      border-bottom: 1px solid var(--border);
-    }
-    .sidebar-logo span { color: var(--accent); }
-    .sidebar-nav { padding: 20px 0; flex: 1; }
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 24px;
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 13.5px;
-      font-weight: 500;
-      transition: var(--transition);
-      border-left: 3px solid transparent;
-    }
-    .nav-item:hover { color: var(--text); background: var(--bg-hover); }
-    .nav-item.active { color: var(--accent-light); border-left-color: var(--accent); background: var(--accent-glow); }
-    .nav-item svg { opacity: .7; flex-shrink: 0; }
-    .nav-item.active svg { opacity: 1; }
-
-    /* ── MAIN ── */
-    .main {
-      flex: 1;
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ── TOPBAR ── */
-    .topbar {
-      background: var(--bg-card);
-      border-bottom: 1px solid var(--border);
-      padding: 16px 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .topbar-title {
-      font-family: var(--font-display);
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -.5px;
-    }
-    .topbar-sub { color: var(--text-muted); font-size: 12px; margin-top: 1px; }
-
-    /* ── PAGE CONTENT ── */
-    .content {
-      padding: 32px;
-      flex: 1;
-    }
-
-    /* ── TOOLBAR ── */
-    .toolbar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-    }
-    .toolbar-left { display: flex; align-items: center; gap: 12px; flex: 1; }
-
-    .search-wrap {
-      position: relative;
-      width: 280px;
-    }
-    .search-wrap svg {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      pointer-events: none;
-    }
-    .search-input {
-      width: 100%;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 9px 12px 9px 38px;
-      color: var(--text);
-      font-family: var(--font-body);
-      font-size: 13.5px;
-      outline: none;
-      transition: var(--transition);
-    }
-    .search-input::placeholder { color: var(--text-muted); }
-    .search-input:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-glow); }
-
-    .count-badge {
-      background: var(--bg-hover);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 4px 12px;
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-    .count-badge strong { color: var(--text); }
-
-    /* ── BUTTONS ── */
-    .fa-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border: none;
-      border-radius: var(--radius);
-      font-family: var(--font-body);
-      font-size: 13.5px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      padding: 9px 18px;
-      white-space: nowrap;
-    }
-    .fa-btn--primary {
-      background: var(--accent);
-      color: #fff;
-    }
-    .fa-btn--primary:hover { background: var(--accent-light); transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-glow); }
-    .fa-btn--primary:active { transform: translateY(0); }
-
-    .fa-btn--ghost {
-      background: transparent;
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-    }
-    .fa-btn--ghost:hover { color: var(--text); border-color: var(--text-muted); background: var(--bg-hover); }
-
-    .fa-btn--danger-ghost {
-      background: transparent;
-      color: var(--danger);
-      border: 1px solid transparent;
-    }
-    .fa-btn--danger-ghost:hover { background: rgba(255,77,109,.1); border-color: var(--danger); }
-
-    .fa-btn--icon {
-      padding: 7px;
-      border-radius: 8px;
-    }
-    .fa-btn--danger.fa-btn--icon:hover { color: var(--danger); background: rgba(255,77,109,.1); }
-
-    /* ── CARD ── */
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-    }
-
-    /* ── TABLE ── */
-    .table-wrapper { overflow-x: auto; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    thead th {
-      padding: 12px 16px;
-      text-align: left;
-      font-family: var(--font-display);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .8px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border);
-      background: var(--bg);
-      white-space: nowrap;
-    }
-    .fa-table__row {
-      border-bottom: 1px solid var(--border);
-      transition: background var(--transition);
-    }
-    .fa-table__row:last-child { border-bottom: none; }
-    .fa-table__row:hover { background: var(--bg-hover); }
-    td {
-      padding: 13px 16px;
-      vertical-align: middle;
-    }
-    .td-logo { width: 56px; }
-    .td-actions { width: 80px; text-align: right; }
-    .td-actions { display: flex; gap: 4px; justify-content: flex-end; align-items: center; }
-
-    /* Logo thumb */
+    /* Estilos específicos da página Clientes (não conflitam com shell) */
+    .client-cell { display: flex; align-items: center; gap: .75rem; min-width: 0; }
     .client-logo-thumb {
-      width: 38px;
-      height: 38px;
-      border-radius: 8px;
-      object-fit: contain;
-      background: var(--bg-hover);
+      width: 38px; height: 38px; border-radius: 8px;
+      object-fit: cover;
+      background: var(--bg-card-hover); flex-shrink: 0;
       border: 1px solid var(--border);
-      display: block;
     }
     .client-logo-placeholder {
-      width: 38px;
-      height: 38px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, var(--accent-glow), var(--bg-hover));
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-display);
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--accent-light);
-      letter-spacing: .5px;
+      width: 38px; height: 38px; border-radius: 8px;
+      background: var(--gold-dim); color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 700; letter-spacing: .02em;
+      flex-shrink: 0;
     }
-
-    .client-name {
-      font-weight: 600;
-      font-size: 14px;
-      color: var(--text);
-      display: block;
-    }
-    .client-company {
-      font-size: 12px;
-      color: var(--text-muted);
-      display: block;
-      margin-top: 2px;
-    }
-
-    .fa-link {
-      color: var(--accent-light);
-      text-decoration: none;
-      font-size: 13px;
-    }
-    .fa-link:hover { text-decoration: underline; }
-
-    .fa-muted { color: var(--text-muted); }
-
+    .client-name { font-weight: 600; color: var(--txt); font-size: .85rem; line-height: 1.25; }
+    .client-company { font-size: .7rem; color: var(--txt-3); margin-top: .12rem; }
     .testimonial-preview {
-      font-size: 13px;
-      color: var(--text-soft);
-      font-style: italic;
-      cursor: help;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden; color: var(--txt-2); font-size: .76rem;
+      max-width: 260px; line-height: 1.4;
     }
-
-    /* ── EMPTY / LOADING ── */
-    .table-empty, .table-loading {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      padding: 64px 24px;
-      color: var(--text-muted);
-      text-align: center;
-    }
-    .table-empty svg, .table-loading svg { opacity: .35; }
-    .table-empty p { font-size: 14px; }
-    .table-empty small { font-size: 12px; }
-
-    .spinner {
-      width: 32px;
-      height: 32px;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── MODAL OVERLAY ── */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.65);
-      backdrop-filter: blur(4px);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity var(--transition);
-    }
-    .modal-overlay.is-open {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .modal-overlay.is-open .modal-box {
-      transform: translateY(0) scale(1);
-      opacity: 1;
-    }
-
-    .modal-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      width: 100%;
-      max-width: 540px;
-      box-shadow: var(--shadow);
-      transform: translateY(16px) scale(.98);
-      opacity: 0;
-      transition: transform .25s cubic-bezier(.4,0,.2,1), opacity .25s;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 24px 16px;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      background: var(--bg-card);
-      z-index: 1;
-    }
-    .modal-header h2 {
-      font-family: var(--font-display);
-      font-size: 17px;
-      font-weight: 700;
-    }
-    .modal-close {
-      width: 30px;
-      height: 30px;
-      border-radius: 8px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: var(--transition);
-    }
-    .modal-close:hover { background: var(--bg-hover); color: var(--text); }
-
-    .modal-body { padding: 24px; }
-
-    .modal-footer {
-      padding: 16px 24px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      background: var(--bg-card);
-      position: sticky;
-      bottom: 0;
-    }
-
-    /* ── FORM ── */
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-    .form-grid .full { grid-column: 1 / -1; }
-
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-soft);
-      letter-spacing: .3px;
-    }
-    .form-label .required { color: var(--danger); margin-left: 2px; }
-
-    .form-control {
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 9px 12px;
-      color: var(--text);
-      font-family: var(--font-body);
-      font-size: 13.5px;
-      outline: none;
-      width: 100%;
-      transition: var(--transition);
-    }
-    .form-control::placeholder { color: var(--text-muted); }
-    .form-control:focus { border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-glow); }
-    .form-control.is-invalid { border-color: var(--danger); }
-
-    textarea.form-control {
-      resize: vertical;
-      min-height: 80px;
-      line-height: 1.5;
-    }
-
+    .fa-link { color: var(--gold); text-decoration: none; font-size: .78rem; }
+    .fa-link:hover { text-decoration: underline; }
     .field-error {
-      font-size: 11.5px;
-      color: var(--danger);
-      display: none;
+      font-size: .68rem; color: var(--red);
+      margin-top: .25rem; display: none;
     }
-
-    .form-hint { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
-
-    /* ── DELETE MODAL ── */
-    .delete-box {
-      max-width: 420px;
-    }
-    .delete-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      background: rgba(255,77,109,.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
-      color: var(--danger);
-    }
-    .delete-box .modal-body { text-align: center; }
-    .delete-box h3 {
-      font-family: var(--font-display);
-      font-size: 17px;
-      margin-bottom: 8px;
-    }
-    .delete-box p { color: var(--text-muted); font-size: 14px; line-height: 1.5; }
-    .delete-box strong { color: var(--text); }
-
-    .fa-btn--danger {
-      background: var(--danger);
-      color: #fff;
-    }
-    .fa-btn--danger:hover { background: var(--danger-light); }
-
-    /* ── TOAST ── */
-    .fa-toast {
-      position: fixed;
-      bottom: 28px;
-      right: 28px;
-      z-index: 9999;
-      padding: 13px 20px;
-      border-radius: var(--radius);
-      font-size: 14px;
-      font-weight: 500;
-      box-shadow: var(--shadow);
-      max-width: 340px;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity .25s, transform .25s;
-      pointer-events: none;
-    }
-    .fa-toast--visible { opacity: 1; transform: translateY(0); }
-    .fa-toast--success { background: #0d2e1f; border: 1px solid var(--success); color: var(--success); }
-    .fa-toast--error   { background: #2e0d16; border: 1px solid var(--danger);  color: var(--danger); }
-    .fa-toast--info    { background: #161633; border: 1px solid var(--accent);  color: var(--accent-light); }
-
-    /* ── BTN SPINNER ── */
+    .is-invalid + .field-error { display: block; }
+    .form-control.is-invalid { border-color: var(--red); }
     .btn-spinner {
-      display: none;
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255,255,255,.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .6s linear infinite;
+      display: none; width: 14px; height: 14px;
+      border: 2px solid rgba(0,0,0,.25); border-top-color: #000;
+      border-radius: 50%; animation: spin .7s linear infinite;
     }
-
-    /* ── UTILS ── */
-    .modal-open { overflow: hidden; }
-
-    @media (max-width: 680px) {
-      .sidebar { display: none; }
-      .content { padding: 20px 16px; }
-      .form-grid { grid-template-columns: 1fr; }
-      .search-wrap { width: 100%; }
+    /* delete-modal usa estrutura própria também */
+    .delete-modal-icon {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: rgba(239,68,68,.1); color: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
     }
   </style>
 </head>
-
 <body>
-<div class="page-wrapper">
-
-  <!-- Sidebar (preenchida por layout.js) -->
+<div class="admin-shell">
   <aside class="sidebar" id="sidebar"></aside>
   <div class="sidebar-overlay" id="sidebar-overlay"></div>
-
-  <!-- ════════════ MAIN ════════════ -->
-  <div class="main">
-
-    <!-- Topbar (preenchida por layout.js) -->
+  <div class="admin-main">
     <header class="topbar" id="topbar"></header>
 
-    <!-- Content -->
-    <div class="content">
+    <div class="page">
 
-      <!-- Toolbar -->
-      <div class="toolbar">
-        <div class="toolbar-left">
-          <div class="search-wrap">
-            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
-            <input type="text" id="clients-search" class="search-input" placeholder="Buscar por nome ou empresa…" autocomplete="off" />
-          </div>
-          <div class="count-badge">
-            <strong id="clients-total">0</strong> clientes
-          </div>
+      <!-- HEADER -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Clientes</h1>
+          <p class="page-subtitle">Gestão completa de clientes da agência.</p>
         </div>
-        <button id="btn-new-client" class="fa-btn fa-btn--primary">
-          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-          Novo Cliente
-        </button>
+        <div class="page-actions">
+          <button class="btn btn-primary" id="btn-new-client" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo Cliente
+          </button>
+        </div>
       </div>
 
-      <!-- Table Card -->
+      <!-- FILTROS -->
+      <div class="filters-bar">
+        <div class="filter-search" style="flex:1;max-width:320px;margin-left:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="clients-search" placeholder="Buscar por nome ou empresa..." autocomplete="off"/>
+        </div>
+        <div style="margin-left:auto;font-size:.75rem;color:var(--txt-3)">
+          <strong id="clients-total" style="color:var(--gold);font-weight:600">0</strong> clientes
+        </div>
+      </div>
+
+      <!-- TABELA -->
       <div class="card">
-        <!-- Loading -->
-        <div id="clients-loading" class="table-loading">
-          <div class="spinner"></div>
-          <span>Carregando clientes…</span>
+        <div id="clients-loading" class="table-empty" style="display:none">
+          <span class="loader-ring"></span> &nbsp;Carregando clientes...
         </div>
 
-        <!-- Empty -->
-        <div id="clients-empty" class="table-empty" style="display:none">
-          <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-5-3.87M9 20H4v-2a4 4 0 015-3.87m6-4.13a4 4 0 11-8 0 4 4 0 018 0zm6 0a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          <p>Nenhum cliente encontrado</p>
-          <small>Clique em "Novo Cliente" para adicionar o primeiro.</small>
+        <div id="clients-empty" class="state-block" style="display:none">
+          <div class="state-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <div class="state-title">Nenhum cliente cadastrado</div>
+          <div class="state-text">Comece adicionando o primeiro cliente da sua agência.</div>
         </div>
 
-        <div class="table-wrapper">
-          <table>
+        <div class="table-wrap">
+          <table class="table">
             <thead>
               <tr>
-                <th></th>
                 <th>Cliente</th>
                 <th>Instagram</th>
                 <th>Website</th>
                 <th>Depoimento</th>
-                <th></th>
+                <th style="width:120px;text-align:right">Ações</th>
               </tr>
             </thead>
             <tbody id="clients-tbody"></tbody>
@@ -625,120 +118,101 @@
         </div>
       </div>
 
-    </div><!-- /content -->
-  </div><!-- /main -->
-</div><!-- /page-wrapper -->
+    </div>
+  </div>
+</div>
 
-
-<!-- ════════════ MODAL: CRIAR / EDITAR ════════════ -->
-<div id="client-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-  <div class="modal-box">
-
+<!-- ═══════════════ MODAL: Criar / Editar Cliente ═══════════════ -->
+<div class="modal-overlay" id="client-modal" role="dialog" aria-modal="true">
+  <div class="modal modal-md">
     <div class="modal-header">
-      <h2 id="modal-title">Novo Cliente</h2>
-      <button class="modal-close" data-close-modal aria-label="Fechar">
-        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      <div>
+        <div class="modal-title" id="modal-title">Novo Cliente</div>
+        <div class="modal-subtitle">Cadastre marcas que aparecem no portfólio.</div>
+      </div>
+      <button class="modal-close" data-close-modal type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-
     <div class="modal-body">
-      <form id="client-form" novalidate>
-        <div class="form-grid">
-
-          <!-- Nome -->
+      <form id="client-form" autocomplete="off">
+        <div class="form-row">
           <div class="form-group">
-            <label class="form-label" for="field-name">Nome <span class="required">*</span></label>
-            <input id="field-name" type="text" class="form-control" placeholder="Ex: João Silva" autocomplete="off" />
-            <span class="field-error"></span>
+            <label class="form-label">Nome <span class="req">*</span></label>
+            <input id="field-name" type="text" class="form-control" placeholder="Ex: João Silva"/>
+            <div class="field-error"></div>
           </div>
-
-          <!-- Empresa -->
           <div class="form-group">
-            <label class="form-label" for="field-company">Empresa</label>
-            <input id="field-company" type="text" class="form-control" placeholder="Ex: Acme Ltda" autocomplete="off" />
-            <span class="field-error"></span>
+            <label class="form-label">Empresa</label>
+            <input id="field-company" type="text" class="form-control" placeholder="Ex: Acme Ltda"/>
+            <div class="field-error"></div>
           </div>
-
-          <!-- Instagram -->
+        </div>
+        <div class="form-row">
           <div class="form-group">
-            <label class="form-label" for="field-instagram">Instagram</label>
-            <input id="field-instagram" type="text" class="form-control" placeholder="@usuario" autocomplete="off" />
-            <span class="field-error"></span>
+            <label class="form-label">Instagram</label>
+            <input id="field-instagram" type="text" class="form-control" placeholder="@usuario"/>
+            <div class="field-error"></div>
           </div>
-
-          <!-- Website -->
           <div class="form-group">
-            <label class="form-label" for="field-website">Website</label>
-            <input id="field-website" type="url" class="form-control" placeholder="https://..." autocomplete="off" />
-            <span class="field-error"></span>
+            <label class="form-label">Website</label>
+            <input id="field-website" type="url" class="form-control" placeholder="https://..."/>
+            <div class="field-error"></div>
           </div>
-
-          <!-- Logo URL -->
-          <div class="form-group full">
-            <label class="form-label" for="field-logo">URL do Logo</label>
-            <input id="field-logo" type="url" class="form-control" placeholder="https://...imagem.png" autocomplete="off" />
-            <span class="form-hint">Cole a URL direta da imagem do logo.</span>
-            <span class="field-error"></span>
-          </div>
-
-          <!-- Depoimento -->
-          <div class="form-group full">
-            <label class="form-label" for="field-testimonial">Depoimento</label>
-            <textarea id="field-testimonial" class="form-control" placeholder="O que o cliente disse sobre o serviço…" rows="3"></textarea>
-            <span class="field-error"></span>
-          </div>
-
+        </div>
+        <div class="form-group">
+          <label class="form-label">URL do logo</label>
+          <input id="field-logo" type="url" class="form-control" placeholder="https://...imagem.png"/>
+          <div class="form-hint">Cole a URL direta da imagem do logo.</div>
+          <div class="field-error"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Depoimento</label>
+          <textarea id="field-testimonial" class="form-control" rows="3" placeholder="O que o cliente disse sobre o serviço..."></textarea>
+          <div class="field-error"></div>
         </div>
       </form>
     </div>
-
     <div class="modal-footer">
-      <button class="fa-btn fa-btn--ghost" data-close-modal>Cancelar</button>
-      <button id="btn-save-client" class="fa-btn fa-btn--primary">
+      <button class="btn btn-secondary" data-close-modal type="button">Cancelar</button>
+      <button class="btn btn-primary" id="btn-save-client" type="button">
         <span id="btn-save-text">Salvar Cliente</span>
         <span id="btn-save-spinner" class="btn-spinner"></span>
       </button>
     </div>
-
   </div>
 </div>
 
-
-<!-- ════════════ MODAL: CONFIRMAR DELETE ════════════ -->
-<div id="delete-modal" class="modal-overlay" role="dialog" aria-modal="true">
-  <div class="modal-box delete-box">
-
+<!-- ═══════════════ MODAL: Confirmar Exclusão ═══════════════ -->
+<div class="modal-overlay" id="delete-modal" role="dialog" aria-modal="true">
+  <div class="modal" style="max-width:440px">
     <div class="modal-header">
-      <h2>Confirmar exclusão</h2>
-      <button class="modal-close" data-close-delete-modal aria-label="Fechar">
-        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      <div class="modal-title">Excluir cliente</div>
+      <button class="modal-close" data-close-delete-modal type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-
-    <div class="modal-body">
-      <div style="display:flex;flex-direction:column;align-items:center;">
-        <div class="delete-icon">
-          <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-        </div>
-        <h3>Remover cliente?</h3>
-        <p>Você está prestes a remover <strong id="delete-client-name"></strong>. Essa ação não pode ser desfeita.</p>
+    <div class="modal-body" style="text-align:center">
+      <div class="delete-modal-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       </div>
+      <p style="color:var(--txt-2);font-size:.85rem;line-height:1.55">
+        Tem certeza que deseja remover <strong style="color:var(--txt)" id="delete-client-name"></strong>?<br>
+        Essa ação não pode ser desfeita.
+      </p>
     </div>
-
     <div class="modal-footer">
-      <button id="btn-cancel-delete" class="fa-btn fa-btn--ghost" data-close-delete-modal>Cancelar</button>
-      <button id="btn-confirm-delete" class="fa-btn fa-btn--danger">Sim, remover</button>
+      <button class="btn btn-secondary" id="btn-cancel-delete" data-close-delete-modal type="button">Cancelar</button>
+      <button class="btn btn-danger" id="btn-confirm-delete" type="button">Sim, remover</button>
     </div>
-
   </div>
 </div>
 
+<div class="toast-container" id="toast-container"></div>
 
-<!-- ════════════ SCRIPTS ════════════ -->
 <script src="assets/js/config.js"></script>
 <script src="assets/js/layout.js"></script>
 <script src="assets/js/admin.js"></script>
 <script src="assets/js/clients.js"></script>
-
 </body>
 </html>
