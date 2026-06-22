@@ -10,6 +10,7 @@
   --shell-sidebar-w:     240px;
   --shell-sidebar-w-col: 72px;
   --shell-topbar-h:      62px;
+  --shell-page-top:      2rem;        /* respiro entre topbar e page-header (32px) */
   --shell-page-max:      1320px;
   --shell-page-pad-x:    1.75rem;
   --shell-gap:           1.1rem;
@@ -56,9 +57,21 @@ body { background: var(--bg-base); }
 }
 
 /* Main: empurra à direita da sidebar; padding-top reserva topbar */
-.main, .main-wrapper, .main-content {
+.main, .main-wrapper, .admin-main {
   margin-left: var(--shell-sidebar-w);
   padding-top: var(--shell-topbar-h);
+  min-height: 100vh;
+  transition: margin-left .25s var(--shell-ease);
+}
+/* Dashboard usa <main class="main-content"> dentro de .main-wrapper.
+   O wrapper já compensa a topbar; aqui só precisa do respiro extra. */
+.main-wrapper > .main-content {
+  padding-top: var(--shell-page-top);
+}
+/* Caso .main-content seja root (sem wrapper) — fallback */
+body > .main-content {
+  margin-left: var(--shell-sidebar-w);
+  padding-top: calc(var(--shell-topbar-h) + var(--shell-page-top));
   min-height: 100vh;
   transition: margin-left .25s var(--shell-ease);
 }
@@ -77,9 +90,11 @@ body { background: var(--bg-base); }
 body.sidebar-collapsed .topbar { left: var(--shell-sidebar-w-col); }
 .sidebar.collapsed ~ .main,
 .sidebar.collapsed ~ .main-wrapper,
+.sidebar.collapsed ~ .admin-main,
 body.sidebar-collapsed .main,
 body.sidebar-collapsed .main-wrapper,
-body.sidebar-collapsed .main-content { margin-left: var(--shell-sidebar-w-col); }
+body.sidebar-collapsed .main-content,
+body.sidebar-collapsed .admin-main { margin-left: var(--shell-sidebar-w-col); }
 
 /* Overlay (mobile) */
 .sidebar-overlay {
@@ -95,7 +110,7 @@ body.sidebar-collapsed .main-content { margin-left: var(--shell-sidebar-w-col); 
 /* Mobile: sidebar fora da viewport por padrão; overlay quando aberta */
 @media (max-width: 1023px) {
   .topbar { left: 0 !important; }
-  .main, .main-wrapper, .main-content { margin-left: 0 !important; }
+  .main, .main-wrapper, .main-content, .admin-main { margin-left: 0 !important; }
   .sidebar { transform: translateX(-110%) !important; }
   .sidebar.mobile-open { transform: translateX(0) !important; }
 }
@@ -241,19 +256,27 @@ body.sidebar-collapsed .main-content { margin-left: var(--shell-sidebar-w-col); 
 /* ─── PAGE CONTAINER ────────────────────────────────────────────── */
 .page,
 .page-container,
-.main-content,
 .main-content > .container,
 .main-wrapper > .page,
 .main > .page,
-.main > .container {
-  max-width: var(--shell-page-max) !important;
+.main > .container,
+.admin-main > .page {
+  max-width: var(--shell-page-max);
   margin: 0 auto;
-  padding: 1.5rem var(--shell-page-pad-x) 2.5rem;
+  padding: var(--shell-page-top) var(--shell-page-pad-x) 2.5rem;
   width: 100%;
 }
+/* Dashboard (.main-content sem .page interno) — limita largura sem mexer no padding-top */
+.main-content {
+  max-width: calc(var(--shell-page-max) + var(--shell-sidebar-w));
+  /* o max-width compõe com o margin-left para visualmente bater nas outras páginas */
+  padding-left: var(--shell-page-pad-x);
+  padding-right: var(--shell-page-pad-x);
+  padding-bottom: 2.5rem;
+}
 @media (max-width: 640px) {
-  .page, .page-container { padding: 1.25rem 1rem 2rem; }
-  :root { --shell-page-pad-x: 1rem; }
+  .page, .page-container, .main-content { padding-left: 1rem; padding-right: 1rem; }
+  :root { --shell-page-pad-x: 1rem; --shell-page-top: 1.5rem; }
 }
 
 /* ─── PAGE HEADER PADRÃO ────────────────────────────────────────── */
