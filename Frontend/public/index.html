@@ -1277,11 +1277,6 @@ async function loadPortfolio(){
 // ── SERVIÇOS ─────────────────────────────────────────────────────────
 const SRV_ICONS = ['🚗','👕','⚡','◈','📱','✦','◉','◆'];
 
-function fmtPrice(v){
-  if (v == null) return '';
-  return 'a partir de ' + new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}).format(v);
-}
-
 async function loadServices(){
   const grid=document.getElementById('srv-grid');
   try{
