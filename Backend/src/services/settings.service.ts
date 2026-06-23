@@ -1,6 +1,7 @@
 import prisma from '../prisma/client';
 
 export interface UpdateSettingsDTO {
+  // Geral
   companyName?: string;
   bio?:         string | null;
   instagram?:   string | null;
@@ -10,7 +11,61 @@ export interface UpdateSettingsDTO {
   email?:       string | null;
   logo?:        string | null;
   banner?:      string | null;
+
+  // Hero
+  heroLabel?:               string | null;
+  heroTitle?:               string | null;
+  heroSubtitle?:            string | null;
+  heroPrimaryText?:         string | null;
+  heroPrimaryUrl?:          string | null;
+  heroSecondaryText?:       string | null;
+  heroSecondaryUrl?:        string | null;
+  heroImage?:               string | null;
+
+  // Sobre
+  aboutLabel?:              string | null;
+  aboutTitle?:              string | null;
+  aboutText1?:              string | null;
+  aboutText2?:              string | null;
+  aboutImage1?:             string | null;
+  aboutImage2?:             string | null;
+
+  // Mentoria
+  mentorshipLabel?:         string | null;
+  mentorshipTitle?:         string | null;
+  mentorshipSubtitle?:      string | null;
+  mentorshipPrimaryText?:   string | null;
+  mentorshipPrimaryUrl?:    string | null;
+  mentorshipSecondaryText?: string | null;
+  mentorshipSecondaryUrl?:  string | null;
+  mentorshipChannelName?:   string | null;
+  mentorshipOnlineCount?:   number | null;
+
+  // Processo
+  processLabel?:            string | null;
+  processTitle?:            string | null;
+  processSubtitle?:         string | null;
+
+  // Footer
+  footerCopyright?:         string | null;
 }
+
+// Todos os campos que admin pode atualizar via PUT /settings
+const UPDATABLE_FIELDS = [
+  'companyName', 'bio', 'instagram', 'behance', 'linkedin',
+  'whatsapp', 'email', 'logo', 'banner',
+  'heroLabel', 'heroTitle', 'heroSubtitle',
+  'heroPrimaryText', 'heroPrimaryUrl',
+  'heroSecondaryText', 'heroSecondaryUrl', 'heroImage',
+  'aboutLabel', 'aboutTitle', 'aboutText1', 'aboutText2',
+  'aboutImage1', 'aboutImage2',
+  'mentorshipLabel', 'mentorshipTitle', 'mentorshipSubtitle',
+  'mentorshipPrimaryText', 'mentorshipPrimaryUrl',
+  'mentorshipSecondaryText', 'mentorshipSecondaryUrl',
+  'mentorshipChannelName', 'mentorshipOnlineCount',
+  'processLabel', 'processTitle', 'processSubtitle',
+  'footerCopyright',
+] as const;
 
 // SiteSettings é um singleton: existe sempre exatamente uma linha.
 // get() cria a linha default se não existir; update() opera sobre ela.
@@ -31,19 +86,16 @@ export const SettingsService = {
   async update(dto: UpdateSettingsDTO) {
     const current = await this.get();
 
+    const data: Record<string, unknown> = {};
+    for (const field of UPDATABLE_FIELDS) {
+      if (dto[field as keyof UpdateSettingsDTO] !== undefined) {
+        data[field] = dto[field as keyof UpdateSettingsDTO];
+      }
+    }
+
     return prisma.siteSettings.update({
       where: { id: current.id },
-      data: {
-        ...(dto.companyName !== undefined && { companyName: dto.companyName }),
-        ...(dto.bio         !== undefined && { bio:         dto.bio }),
-        ...(dto.instagram   !== undefined && { instagram:   dto.instagram }),
-        ...(dto.behance     !== undefined && { behance:     dto.behance }),
-        ...(dto.linkedin    !== undefined && { linkedin:    dto.linkedin }),
-        ...(dto.whatsapp    !== undefined && { whatsapp:    dto.whatsapp }),
-        ...(dto.email       !== undefined && { email:       dto.email }),
-        ...(dto.logo        !== undefined && { logo:        dto.logo }),
-        ...(dto.banner      !== undefined && { banner:      dto.banner }),
-      },
+      data,
     });
   },
 };

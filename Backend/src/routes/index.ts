@@ -6,7 +6,9 @@ import clientRoutes    from './client.routes';
 import serviceRoutes   from './service.routes';
 import quoteRoutes     from './quote.routes';
 import settingsRoutes  from './settings.routes';
-import dashboardRoutes from './dashboard.routes'
+import dashboardRoutes from './dashboard.routes';
+import contentRoutes   from './content.routes';
+import financialRoutes from './financial.routes';
 
 const router = Router();
 
@@ -18,7 +20,9 @@ router.use('/clients',   clientRoutes);
 router.use('/services',  serviceRoutes);
 router.use('/quotes',    quoteRoutes);
 router.use('/settings',  settingsRoutes);
-router.use('/dashboard', dashboardRoutes)
+router.use('/dashboard', dashboardRoutes);
+router.use('/',          contentRoutes);   // about-stats, courses, footer-*, etc
+router.use('/financial', financialRoutes);
 
 // ─── API info ─────────────────────────────────────────────────────────────────
 

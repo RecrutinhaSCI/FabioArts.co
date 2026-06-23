@@ -40,6 +40,23 @@ enum ProjectCategory {
   OTHER
 }
 
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum FinancialType {
+  INCOME
+  EXPENSE
+}
+
+enum FinancialStatus {
+  PAID
+  PENDING
+  CANCELLED
+}
+
 // ============================================================
 // USER (ADMIN)
 // ============================================================
@@ -93,6 +110,7 @@ model Client {
   updatedAt   DateTime @updatedAt
 
   projects Project[]
+  financialEntries FinancialEntry[]
 
   @@map("clients")
 }
@@ -118,6 +136,7 @@ model Project {
 
   client Client?        @relation(fields: [clientId], references: [id], onDelete: SetNull)
   images ProjectImage[]
+  financialEntries FinancialEntry[]
 
   @@map("projects")
 }
@@ -173,6 +192,8 @@ model Quote {
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
+  financialEntries FinancialEntry[]
+
   @@map("quotes")
 }
 
@@ -191,8 +212,181 @@ model SiteSettings {
   email       String?
   logo        String?
   banner      String?
+
+  // ── Hero (Fase E) ───────────────────────────────────────
+  heroLabel               String?
+  heroTitle               String?
+  heroSubtitle            String?
+  heroPrimaryText         String?
+  heroPrimaryUrl          String?
+  heroSecondaryText       String?
+  heroSecondaryUrl        String?
+  heroImage               String?
+
+  // ── Sobre (Fase E) ──────────────────────────────────────
+  aboutLabel              String?
+  aboutTitle              String?
+  aboutText1              String?
+  aboutText2              String?
+  aboutImage1             String?
+  aboutImage2             String?
+
+  // ── Mentoria (Fase E) ───────────────────────────────────
+  mentorshipLabel         String?
+  mentorshipTitle         String?
+  mentorshipSubtitle      String?
+  mentorshipPrimaryText   String?
+  mentorshipPrimaryUrl    String?
+  mentorshipSecondaryText String?
+  mentorshipSecondaryUrl  String?
+  mentorshipChannelName   String?
+  mentorshipOnlineCount   Int?
+
+  // ── Processo (Fase E) ──────────────────────────────────
+  processLabel            String?
+  processTitle            String?
+  processSubtitle         String?
+
+  // ── Footer (Fase E) ────────────────────────────────────
+  footerCopyright         String?
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@map("site_settings")
+}
+
+// ============================================================
+// CONTENT COLLECTIONS (Fase E)
+// ============================================================
+
+model AboutStat {
+  id        String   @id @default(uuid())
+  number    String
+  suffix    String?
+  label     String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("about_stats")
+}
+
+model MentorshipFeature {
+  id        String   @id @default(uuid())
+  icon      String?
+  text      String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("mentorship_features")
+}
+
+model ProcessStep {
+  id          String   @id @default(uuid())
+  stepNumber  String
+  title       String
+  description String
+  icon        String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("process_steps")
+}
+
+model Course {
+  id          String       @id @default(uuid())
+  title       String
+  category    String
+  description String
+  level       CourseLevel  @default(BEGINNER)
+  duration    String?
+  price       String?
+  image       String?
+  externalUrl String?
+  label       String?
+  isActive    Boolean      @default(true)
+  isFeatured  Boolean      @default(false)
+  order       Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("courses")
+}
+
+model FooterColumn {
+  id        String       @id @default(uuid())
+  title     String
+  order     Int          @default(0)
+  isActive  Boolean      @default(true)
+  links     FooterLink[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@map("footer_columns")
+}
+
+model FooterLink {
+  id         String        @id @default(uuid())
+  columnId   String
+  column     FooterColumn  @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  label      String
+  url        String
+  isExternal Boolean       @default(false)
+  order      Int           @default(0)
+  isActive   Boolean       @default(true)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@map("footer_links")
+}
+
+model CTAButton {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  label       String
+  url         String
+  isExternal  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("cta_buttons")
+}
+
+// ============================================================
+// FINANCIAL (Fase D)
+// NB: amount usa Float por enquanto (MVP). Em uma versão futura,
+// migrar para Decimal para precisão monetária real.
+// ============================================================
+
+model FinancialEntry {
+  id            String           @id @default(uuid())
+  type          FinancialType
+  amount        Float
+  currency      String           @default("BRL")
+  description   String
+  category      String?
+  status        FinancialStatus  @default(PAID)
+  occurredAt    DateTime
+  dueDate       DateTime?
+  paymentMethod String?
+  notes         String?
+
+  clientId   String?
+  client     Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  projectId  String?
+  project    Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  quoteId    String?
+  quote      Quote?   @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("financial_entries")
 }
