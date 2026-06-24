@@ -16,6 +16,13 @@
     { href: 'orcamentos.html',  label: 'Orçamentos',    icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z' },
     { section: 'Financeiro' },
     { href: 'finances.html',    label: 'Financeiro',    icon: 'M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6' },
+    { section: 'Conteúdo do site' },
+    { href: 'about-stats.html',          label: 'Sobre',     icon: 'M21 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75M7 21v-2a4 4 0 014-4h2a4 4 0 014 4v2M12 11a4 4 0 100-8 4 4 0 000 8z' },
+    { href: 'mentorship-features.html',  label: 'Mentoria',  icon: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100 8 4 4 0 000-8z' },
+    { href: 'courses.html',              label: 'Cursos',    icon: 'M2 3h20v14H2zM2 21h20M8 17v4M16 17v4' },
+    { href: 'process-steps.html',        label: 'Processo',  icon: 'M22 11.08V12a10 10 0 11-5.93-9.14M22 4L12 14.01l-3-3' },
+    { href: 'footer-links.html',         label: 'Footer',    icon: 'M3 3h18v18H3zM3 16h18' },
+    { href: 'cta-buttons.html',          label: 'CTAs',      icon: 'M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11' },
     { section: 'Sistema' },
     { href: 'services.html',    label: 'Serviços',      icon: 'M12 9a3 3 0 100 6 3 3 0 000-6zM19 5a10 10 0 010 14M5 5a10 10 0 000 14' },
     { href: 'settings.html',    label: 'Configurações', icon: 'M12 9a3 3 0 100 6 3 3 0 000-6z' },
@@ -26,13 +33,19 @@
   }
   function pageTitle() {
     const titles = {
-      'dashboard.html':  'Dashboard',
-      'clients.html':    'Clientes',
-      'projects.html':   'Projetos',
-      'orcamentos.html': 'Orçamentos',
-      'services.html':   'Serviços',
-      'finances.html':   'Financeiro',
-      'settings.html':   'Configurações',
+      'dashboard.html':            'Dashboard',
+      'clients.html':              'Clientes',
+      'projects.html':             'Projetos',
+      'orcamentos.html':           'Orçamentos',
+      'services.html':             'Serviços',
+      'finances.html':             'Financeiro',
+      'settings.html':             'Configurações',
+      'about-stats.html':          'Sobre',
+      'mentorship-features.html':  'Mentoria',
+      'courses.html':              'Cursos',
+      'process-steps.html':        'Processo',
+      'footer-links.html':         'Footer',
+      'cta-buttons.html':          'CTAs',
     };
     return titles[currentFile()] || 'Admin';
   }

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Footer — Links — FabioArts Admin</title>
+  <link rel="stylesheet" href="assets/css/admin.css"/>
+  <link rel="stylesheet" href="assets/css/admin-shell.css"/>
+  <style>
+    .col-card { padding: 1rem 1.1rem; margin-bottom: 1rem; }
+    .col-card-head {
+      display: flex; align-items: center; gap: .75rem;
+      margin-bottom: .75rem;
+    }
+    .col-card-title {
+      font-size: .92rem; font-weight: 600; color: var(--txt);
+      flex: 1; min-width: 0;
+    }
+    .links-list { margin-top: .65rem; }
+    .link-row {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .55rem .65rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: .35rem;
+      background: var(--bg-base);
+      font-size: .82rem;
+    }
+    .link-row .lbl { font-weight: 500; color: var(--txt); }
+    .link-row .url { font-family: ui-monospace,Menlo,monospace; font-size: .72rem; color: var(--txt-3); margin-left: .55rem; }
+    .link-row .acts { margin-left: auto; display: flex; gap: .3rem; }
+  </style>
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="admin-main">
+    <header class="topbar" id="topbar"></header>
+    <div class="page">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Footer — Colunas e Links</h1>
+          <p class="page-subtitle">Estrutura do rodapé do site público: colunas com seus respectivos links.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary btn-sm" id="btn-refresh" type="button">Atualizar</button>
+          <button class="btn btn-primary" id="btn-new-column" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova coluna
+          </button>
+        </div>
+      </div>
+
+      <div id="columns-wrap">
+        <div class="card">
+          <div class="table-empty">
+            <span class="loader-ring"></span> &nbsp;Carregando...
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal Coluna -->
+<div class="modal-overlay" id="column-modal" role="dialog" aria-modal="true">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <div class="modal-title" id="column-modal-title">Nova coluna</div>
+      <button class="modal-close" data-modal-close="column-modal" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Título <span class="req">*</span></label>
+        <input type="text" class="form-control" id="col-title" placeholder="Navegação, Serviços, Contato..."/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Ordem</label>
+          <input type="number" min="0" class="form-control" id="col-order"/>
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;padding-top:1.4rem">
+          <label class="check-pill">
+            <input type="checkbox" id="col-isActive" checked> Ativa
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="column-modal" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="btn-col-save" type="button">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Link -->
+<div class="modal-overlay" id="link-modal" role="dialog" aria-modal="true">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <div class="modal-title" id="link-modal-title">Novo link</div>
+      <button class="modal-close" data-modal-close="link-modal" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Coluna <span class="req">*</span></label>
+        <select class="form-control" id="lnk-columnId"></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Label <span class="req">*</span></label>
+          <input type="text" class="form-control" id="lnk-label" placeholder="Sobre, Portfólio, Instagram..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">URL <span class="req">*</span></label>
+          <input type="text" class="form-control" id="lnk-url" placeholder="#sobre, https://..."/>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Ordem</label>
+          <input type="number" min="0" class="form-control" id="lnk-order"/>
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;padding-top:1.4rem;gap:.5rem;flex-wrap:wrap">
+          <label class="check-pill">
+            <input type="checkbox" id="lnk-isExternal"> Externo (abre em nova aba)
+          </label>
+          <label class="check-pill">
+            <input type="checkbox" id="lnk-isActive" checked> Ativo
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="link-modal" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="btn-lnk-save" type="button">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/admin.js"></script>
+<script src="assets/js/footer-links.js"></script>
+</body>
+</html>

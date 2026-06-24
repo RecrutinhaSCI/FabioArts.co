@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CTAs — FabioArts Admin</title>
+  <link rel="stylesheet" href="assets/css/admin.css"/>
+  <link rel="stylesheet" href="assets/css/admin-shell.css"/>
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="admin-main">
+    <header class="topbar" id="topbar"></header>
+    <div class="page">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">CTAs</h1>
+          <p class="page-subtitle">Botões e chamadas para ação reutilizáveis pelo site público (ex: hero-primary, cta-quote, mentorship-primary).</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary btn-sm" id="btn-refresh" type="button">Atualizar</button>
+          <button class="btn btn-primary" id="btn-new" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo CTA
+          </button>
+        </div>
+      </div>
+
+      <div class="filters-bar">
+        <div class="filter-search" style="flex:1;max-width:280px;margin-left:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="filter-search" placeholder="Buscar..."/>
+        </div>
+        <label class="check-pill" style="margin-left:auto;font-size:.74rem">
+          <input type="checkbox" id="filter-active"> Apenas ativos
+        </label>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Label</th>
+                <th>URL</th>
+                <th>Tipo</th>
+                <th>Status</th>
+                <th style="width:90px;text-align:right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="crud-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="crud-modal" role="dialog" aria-modal="true">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Novo CTA</div>
+      <button class="modal-close" data-modal-close="crud-modal" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="crud-modal" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="btn-save" type="button">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/admin.js"></script>
+<script>
+  window.__CRUD_CONFIG__ = {
+    endpoint:     '/cta-buttons',
+    itemSingular: 'CTA',
+    itemPlural:   'CTAs',
+    upsertMode:   true,
+    defaults:     { isActive: true, isExternal: false },
+    fields: [
+      { name: 'key',        label: 'Key (identificador único)', type: 'text', required: true,
+        placeholder: 'hero-primary, cta-quote, mentorship-primary...',
+        hint: 'Use kebab-case. O frontend referencia este CTA por essa key. Não pode ser alterado depois.' },
+      { name: 'label',      label: 'Texto do botão', type: 'text', required: true, placeholder: 'Solicitar orçamento' },
+      { name: 'url',        label: 'URL/ação', type: 'text', required: true, placeholder: '#cta, https://wa.me/..., mailto:...' },
+      { name: 'isExternal', label: 'Abre em nova aba (link externo)', type: 'checkbox' },
+      { name: 'isActive',   label: 'Ativo', type: 'checkbox' },
+    ],
+    tableColumns: [
+      { key: 'key', render: it => `<code style="font-size:.78rem;color:var(--gold)">${(it.key||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</code>` },
+      { key: 'label' },
+      { key: 'url', render: it => `<span class="text-muted text-sm" style="font-family:ui-monospace,Menlo,monospace">${(it.url||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</span>` },
+      { key: 'isExternal', render: it => it.isExternal ? '<span class="badge badge-blue">externo</span>' : '<span class="badge">interno</span>' },
+      { key: 'isActive', render: it => it.isActive
+          ? '<span class="badge badge-green"><span class="badge-dot"></span>Ativo</span>'
+          : '<span class="badge badge-grey"><span class="badge-dot"></span>Inativo</span>' },
+    ],
+  };
+</script>
+<script src="assets/js/crud-collection.js"></script>
+</body>
+</html>

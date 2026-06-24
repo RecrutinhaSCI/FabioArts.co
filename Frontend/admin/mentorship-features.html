@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mentoria — Features — FabioArts Admin</title>
+  <link rel="stylesheet" href="assets/css/admin.css"/>
+  <link rel="stylesheet" href="assets/css/admin-shell.css"/>
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="admin-main">
+    <header class="topbar" id="topbar"></header>
+    <div class="page">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Mentoria — Features</h1>
+          <p class="page-subtitle">Os bullets/diferenciais que aparecem na seção Mentoria.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary btn-sm" id="btn-refresh" type="button">Atualizar</button>
+          <button class="btn btn-primary" id="btn-new" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova feature
+          </button>
+        </div>
+      </div>
+
+      <div class="filters-bar">
+        <div class="filter-search" style="flex:1;max-width:280px;margin-left:0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="filter-search" placeholder="Buscar..."/>
+        </div>
+        <label class="check-pill" style="margin-left:auto;font-size:.74rem">
+          <input type="checkbox" id="filter-active"> Apenas ativos
+        </label>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width:60px">Ícone</th>
+                <th>Texto</th>
+                <th>Ordem</th>
+                <th>Status</th>
+                <th style="width:90px;text-align:right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="crud-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="crud-modal" role="dialog" aria-modal="true">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Nova feature</div>
+      <button class="modal-close" data-modal-close="crud-modal" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="crud-modal" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="btn-save" type="button">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/admin.js"></script>
+<script>
+  window.__CRUD_CONFIG__ = {
+    endpoint:     '/mentorship-features',
+    itemSingular: 'feature',
+    itemPlural:   'features',
+    defaults:     { isActive: true, order: 0 },
+    fields: [
+      { name: 'icon',    label: 'Ícone (emoji)', type: 'text', placeholder: '🎯, 💬, 🤝...' },
+      { name: 'text',    label: 'Texto', type: 'text', required: true, placeholder: 'Aulas ao vivo semanais com feedback direto' },
+      { name: 'order',   label: 'Ordem', type: 'number', min: 0 },
+      { name: 'isActive',label: 'Ativo (aparece no site)', type: 'checkbox' },
+    ],
+    tableColumns: [
+      { key: 'icon', render: it => it.icon ? `<span style="font-size:1.3rem">${it.icon}</span>` : '<span class="text-muted">—</span>' },
+      { key: 'text' },
+      { key: 'order' },
+      { key: 'isActive', render: it => it.isActive
+          ? '<span class="badge badge-green"><span class="badge-dot"></span>Ativo</span>'
+          : '<span class="badge badge-grey"><span class="badge-dot"></span>Inativo</span>' },
+    ],
+  };
+</script>
+<script src="assets/js/crud-collection.js"></script>
+</body>
+</html>

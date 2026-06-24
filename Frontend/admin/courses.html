@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cursos — FabioArts Admin</title>
+  <link rel="stylesheet" href="assets/css/admin.css"/>
+  <link rel="stylesheet" href="assets/css/admin-shell.css"/>
+  <style>
+    .course-thumb {
+      width: 44px; height: 44px; border-radius: 8px;
+      background: var(--bg-card-hover); overflow: hidden; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--txt-3); font-size: .65rem; font-weight: 600;
+      border: 1px solid var(--border);
+    }
+    .course-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  </style>
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="admin-main">
+    <header class="topbar" id="topbar"></header>
+    <div class="page">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Cursos</h1>
+          <p class="page-subtitle">Cursos gravados que aparecem na seção Cursos do site público.</p>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-secondary btn-sm" id="btn-refresh" type="button">Atualizar</button>
+          <button class="btn btn-primary" id="btn-new" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Novo curso
+          </button>
+        </div>
+      </div>
+
+      <div class="filters-bar">
+        <div class="filters-row">
+          <button class="filter-btn active" data-filter="all" type="button">Todos</button>
+          <button class="filter-btn" data-filter="BEGINNER" type="button">Iniciante</button>
+          <button class="filter-btn" data-filter="INTERMEDIATE" type="button">Intermediário</button>
+          <button class="filter-btn" data-filter="ADVANCED" type="button">Avançado</button>
+          <span class="filter-sep"></span>
+          <label class="check-pill" style="padding:.32rem .7rem;font-size:.74rem">
+            <input type="checkbox" id="filter-featured"> Destaque
+          </label>
+          <label class="check-pill" style="padding:.32rem .7rem;font-size:.74rem">
+            <input type="checkbox" id="filter-active"> Apenas ativos
+          </label>
+        </div>
+        <div class="filter-search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="filter-search" placeholder="Buscar título ou descrição..."/>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Curso</th>
+                <th>Categoria</th>
+                <th>Nível</th>
+                <th>Duração</th>
+                <th>Preço</th>
+                <th>Status</th>
+                <th style="width:90px;text-align:right">Ações</th>
+              </tr>
+            </thead>
+            <tbody id="crud-tbody">
+              <tr><td colspan="7" class="table-empty">
+                <span class="loader-ring"></span> &nbsp;Carregando...
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal Curso -->
+<div class="modal-overlay" id="course-modal" role="dialog" aria-modal="true">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-title">Novo curso</div>
+        <div class="modal-subtitle">Detalhes do curso para a vitrine pública.</div>
+      </div>
+      <button class="modal-close" data-modal-close="course-modal" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+
+      <div class="form-block">
+        <div class="form-block-title">Informações principais</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Título <span class="req">*</span></label>
+            <input type="text" class="form-control" id="f-title" placeholder="Wrapping do Zero ao Pro"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Categoria <span class="req">*</span></label>
+            <input type="text" class="form-control" id="f-category" placeholder="Design Automotivo"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descrição <span class="req">*</span></label>
+          <textarea class="form-control" id="f-description" rows="3" placeholder="O que o aluno aprende neste curso..."></textarea>
+        </div>
+      </div>
+
+      <div class="form-block">
+        <div class="form-block-title">Vitrine</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nível</label>
+            <select class="form-control" id="f-level">
+              <option value="BEGINNER">Iniciante</option>
+              <option value="INTERMEDIATE">Intermediário</option>
+              <option value="ADVANCED">Avançado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Duração</label>
+            <input type="text" class="form-control" id="f-duration" placeholder="12h, 2 meses..."/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Preço</label>
+            <input type="text" class="form-control" id="f-price" placeholder="R$ 197"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Label / Chip (canto da capa)</label>
+            <input type="text" class="form-control" id="f-label" placeholder="WRAP, STW, BRAND..."/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Link externo (comprar)</label>
+            <input type="url" class="form-control" id="f-externalUrl" placeholder="https://hotmart.com/..."/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Imagem / Capa (URL)</label>
+          <input type="url" class="form-control" id="f-image" placeholder="https://..."/>
+        </div>
+      </div>
+
+      <div class="form-block">
+        <div class="form-block-title">Publicação</div>
+        <div style="display:flex;gap:.65rem;flex-wrap:wrap">
+          <label class="check-pill">
+            <input type="checkbox" id="f-isActive" checked> Ativo (visível no site)
+          </label>
+          <label class="check-pill">
+            <input type="checkbox" id="f-isFeatured"> Em destaque
+          </label>
+        </div>
+        <div class="form-group" style="margin-top:.6rem">
+          <label class="form-label">Ordem</label>
+          <input type="number" min="0" class="form-control" id="f-order" placeholder="0"/>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-modal-close="course-modal" type="button">Cancelar</button>
+      <button class="btn btn-primary" id="btn-save" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Salvar curso
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/layout.js"></script>
+<script src="assets/js/admin.js"></script>
+<script src="assets/js/courses.js"></script>
+</body>
+</html>
