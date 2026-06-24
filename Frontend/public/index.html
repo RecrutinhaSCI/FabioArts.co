@@ -527,7 +527,126 @@ section{padding:7rem 2rem}
   border-radius:100px;font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
   transition:box-shadow .25s,transform .25s;
 }
-.curso-btn:hover{box-shadow:0 8px 24px var(--gold-glow);transform:translateY(-1px)}
+/* PREÇOS DOS CURSOS */
+.curso-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.curso-price-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.curso-price-old {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #9ca3af;
+  letter-spacing: 0.04em;
+}
+
+.old-price-label {
+  color: #888;
+}
+
+.old-price-value {
+  position: relative;
+  display: inline-block;
+  color: #b0b0b0;
+  opacity: 0.95;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.old-price-value::before,
+.old-price-value::after {
+  content: "";
+  position: absolute;
+  left: -6%;
+  top: 50%;
+  width: 112%;
+  height: 2px;
+  background: #ff2d2d;
+  border-radius: 999px;
+  transform-origin: center;
+  box-shadow: 0 0 8px rgba(255, 45, 45, 0.75);
+}
+
+.old-price-value::before {
+  transform: rotate(14deg);
+  animation: oldPriceSlashOne 0.7s ease forwards;
+}
+
+.old-price-value::after {
+  transform: rotate(-14deg);
+  animation: oldPriceSlashTwo 0.85s ease forwards;
+}
+
+.curso-price-new {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.new-price-label {
+  font-size: 0.9rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+}
+
+.new-price-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.05rem;
+  line-height: 1;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 14px rgba(255, 192, 0, 0.45);
+  animation: pricePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes oldPriceSlashOne {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+
+  to {
+    width: 112%;
+    opacity: 1;
+  }
+}
+
+@keyframes oldPriceSlashTwo {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+
+  to {
+    width: 112%;
+    opacity: 1;
+  }
+}
+
+@keyframes pricePulse {
+  0%, 100% {
+    transform: scale(1);
+    text-shadow: 0 0 14px rgba(255, 192, 0, 0.45);
+  }
+
+  50% {
+    transform: scale(1.05);
+    text-shadow: 0 0 22px rgba(255, 192, 0, 0.85);
+  }
+}
+
 
 /* PROCESSO */
 #processo{background:var(--bg0)}
@@ -742,20 +861,20 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
         <p class="sobre-text" style="margin-top:-1rem">Não sou só um designer. Sou um criador de identidades. Cada projeto carrega propósito, atitude e estética que falam antes mesmo de você ler uma palavra.</p>
         <div class="sobre-stats">
           <div class="stat-card stagger-child">
-            <div class="stat-num">+100</div>
-            <div class="stat-label">Projetos entregues</div>
-          </div>
-          <div class="stat-card stagger-child">
-            <div class="stat-num">+300</div>
-            <div class="stat-label">Alunos mentorados</div>
-          </div>
-          <div class="stat-card stagger-child">
-            <div class="stat-num">+500</div>
-            <div class="stat-label">Artes produzidas</div>
-          </div>
-          <div class="stat-card stagger-child">
-            <div class="stat-num">+80</div>
+            <div class="stat-num">+1000</div>
             <div class="stat-label">Clientes atendidos</div>
+          </div>
+          <div class="stat-card stagger-child">
+            <div class="stat-num">+100</div>
+            <div class="stat-label">Alunos em cursos</div>
+          </div>
+          <div class="stat-card stagger-child">
+            <div class="stat-num">+2</div>
+            <div class="stat-label">Milhões de visualizações na internet</div>
+          </div>
+          <div class="stat-card stagger-child">
+            <div class="stat-num">+10</div>
+            <div class="stat-label">Países atendidos</div>
           </div>
         </div>
       </div>
@@ -954,7 +1073,15 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
     </h2>
     <p class="cta-sub reveal">A diferença entre ser ignorado e ser lembrado está na identidade visual. Vamos construir a sua.</p>
     <div class="reveal" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-      <button type="button" class="btn-primary" id="open-quote-modal" style="font-size:1rem;padding:1rem 2.8rem;border:none;cursor:pointer">Solicitar orçamento</button>
+      <a
+        href="https://wa.me/555496840497?text=Ol%C3%A1%2C%20Fabio!%20Vim%20pelo%20site%20e%20gostaria%20de%20solicitar%20um%20or%C3%A7amento."
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-primary"
+        style="font-size:1rem;padding:1rem 2.8rem;border:none;cursor:pointer;text-decoration:none"
+      >
+        Solicitar orçamento
+      </a>
       <a href="#portfolio" class="btn-outline" style="font-size:1rem;padding:1rem 2.8rem">Ver portfólio</a>
     </div>
   </div>
@@ -1277,6 +1404,11 @@ async function loadPortfolio(){
 // ── SERVIÇOS ─────────────────────────────────────────────────────────
 const SRV_ICONS = ['🚗','👕','⚡','◈','📱','✦','◉','◆'];
 
+function fmtPrice(v){
+  if (v == null) return '';
+  return 'a partir de ' + new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}).format(v);
+}
+
 async function loadServices(){
   const grid=document.getElementById('srv-grid');
   try{
@@ -1351,14 +1483,6 @@ async function loadSettings(){
     }
     // se não houver whatsapp, mantém href="#cta" (que abre seção de orçamento)
 
-    // ── Botão "Comprar" dos cursos → fallback p/ modal de orçamento
-    document.querySelectorAll('.curso-btn').forEach(btn => {
-      btn.addEventListener('click', e => {
-        e.preventDefault();
-        document.getElementById('open-quote-modal')?.click();
-      });
-    });
-
   }catch(e){
     console.warn('settings:', e.message);
   }
@@ -1396,57 +1520,84 @@ document.getElementById('modal-close2').addEventListener('click',closeModal);
 document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
 
 // COURSES DATA
-const cursos=[
+const fabioWhatsapp = '555496840497';
+
+const whatsappBranding = `https://wa.me/${fabioWhatsapp}?text=${encodeURIComponent(
+  'Olá, Fabio! Vim pelo site e tenho interesse na Mentoria Completa para Designers e Criadores do Segmento Automotivo.'
+)}`;
+
+const cursos = [
   {
-    cat:'Design Automotivo',
-    title:'Wrapping do Zero ao Pro',
-    desc:'Aprenda a criar artes profissionais para wrapping automotivo com Photoshop e Illustrator.',
-    dur:'12h de conteúdo',
-    level:'init',levelLabel:'Iniciante',
-    price:'R$ 197',
-    bg:'linear-gradient(135deg,#1a0f00,#0d0800)',
-    label:'WRAP'
+    cat: 'Criação de Artes Básico',
+    title: 'CURSO CRIAÇÃO DE ARTES 2.0 - BÁSICO',
+    desc: 'Aprenda os fundamentos para desenhar carros com técnica, proporção e estilo profissional.',
+    level: 'init',
+    levelLabel: 'Iniciante',
+    oldPrice: 'R$ 119,99',
+    price: 'R$ 37,90',
+    bg: 'linear-gradient(135deg,#1a0f00,#0d0800)',
+    label: 'BASIC',
+    url: 'https://payfast.greenn.com.br/hx5rhbn',
+    showPrice: true
   },
   {
-    cat:'Streetwear Design',
-    title:'Estampas que Vendem',
-    desc:'Do conceito à produção: crie estampas de camiseta com identidade, técnica e mercado.',
-    dur:'8h de conteúdo',
-    level:'inter',levelLabel:'Intermediário',
-    price:'R$ 147',
-    bg:'linear-gradient(135deg,#0a0f1a,#060a10)',
-    label:'STW'
+    cat: 'Criação de Artes Avançado',
+    title: 'CURSO CRIAÇÃO DE ARTES 2.0 - COMPLETO',
+    desc: 'Evolua seus desenhos automotivos com mais técnica, acabamento, estilo e apresentação profissional.',
+    level: 'inter',
+    levelLabel: 'Intermediário',
+    oldPrice: 'R$ 249,90',
+    price: 'R$ 117,90',
+    bg: 'linear-gradient(135deg,#0a0f1a,#060a10)',
+    label: 'PLUS',
+    url: 'https://payfast.greenn.com.br/152420/offer/FZAP4p',
+    showPrice: true
   },
   {
-    cat:'Identidade Visual',
-    title:'Branding Automotivo',
-    desc:'Construa marcas completas para o mercado automotivo: logo, aplicações e manual.',
-    dur:'16h de conteúdo',
-    level:'adv',levelLabel:'Avançado',
-    price:'R$ 297',
-    bg:'linear-gradient(135deg,#0f0a1a,#08051a)',
-    label:'BRAND'
+    cat: 'Mentoria completa para designers',
+    title: 'Mentoria Completa para Designers e Criadores do Segmento Automotivo',
+    desc: 'Quer aprender não apenas a criar artes profissionais, mas também a transformar seu conhecimento em vendas e construir uma presença forte nas redes sociais? Na minha mentoria, você terá acesso a um método prático e direto ao ponto, onde ensino tudo o que utilizo no dia a dia para desenvolver e vender projetos com consistência.',
+    level: 'adv',
+    levelLabel: 'Expert',
+    bg: 'linear-gradient(135deg,#0f0a1a,#08051a)',
+    label: 'BRAND',
+    url: whatsappBranding,
+    showPrice: false
   },
 ];
-document.getElementById('cursos-grid').innerHTML=cursos.map(c=>`
+
+document.getElementById('cursos-grid').innerHTML = cursos.map(c => `
   <div class="curso-card stagger-child">
     <div class="curso-thumb" style="background:${c.bg}">
       <div style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:rgba(255,192,0,.2);letter-spacing:.06em">${c.label}</div>
       <span class="curso-level level-${c.level}">${c.levelLabel}</span>
     </div>
+
     <div class="curso-body">
       <div class="curso-cat">${c.cat}</div>
       <div class="curso-title">${c.title}</div>
       <div class="curso-desc">${c.desc}</div>
-      <div class="curso-meta">
-        <span class="curso-meta-item">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          ${c.dur}
-        </span>
-      </div>
+
       <div class="curso-footer">
-        <div class="curso-price">${c.price}</div>
-        <a href="#" class="curso-btn">Comprar</a>
+        ${
+          c.showPrice
+            ? `
+              <div class="curso-price-box">
+                <div class="curso-price-old">
+                  <span class="old-price-label">DE:</span>
+                  <span class="old-price-value">${c.oldPrice}</span>
+                </div>
+
+                <div class="curso-price-new">
+                  <span class="new-price-label">POR:</span>
+                  <span class="new-price-value">${c.price}</span>
+                </div>
+              </div>
+            `
+            : `<div></div>`
+        }
+
+        <a href="${c.url}" target="_blank" rel="noopener noreferrer" class="curso-btn">Comprar</a>
       </div>
     </div>
   </div>
