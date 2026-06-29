@@ -1404,11 +1404,6 @@ async function loadPortfolio(){
 // ── SERVIÇOS ─────────────────────────────────────────────────────────
 const SRV_ICONS = ['🚗','👕','⚡','◈','📱','✦','◉','◆'];
 
-function fmtPrice(v){
-  if (v == null) return '';
-  return 'a partir de ' + new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}).format(v);
-}
-
 async function loadServices(){
   const grid=document.getElementById('srv-grid');
   try{
@@ -1423,7 +1418,7 @@ async function loadServices(){
         <div class="srv-icon">${SRV_ICONS[i % SRV_ICONS.length]}</div>
         <div class="srv-title">${escHtml(s.name)}</div>
         <div class="srv-desc">${escHtml(s.description)}</div>
-        ${s.startingPrice ? `<div style="margin-top:1rem;color:var(--gold);font-weight:600;font-size:.85rem">${fmtPrice(s.startingPrice)}</div>` : ''}
+        <a href="#cta" class="srv-cta" style="display:inline-block;margin-top:1rem;color:var(--gold);font-weight:600;font-size:.8rem;letter-spacing:.05em;text-decoration:none;border-bottom:1px solid transparent;transition:border-color .2s">Solicitar orçamento →</a>
       </div>
     `).join('');
     initStagger();
