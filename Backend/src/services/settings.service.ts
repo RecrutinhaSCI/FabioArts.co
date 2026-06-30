@@ -48,6 +48,29 @@ export interface UpdateSettingsDTO {
 
   // Footer
   footerCopyright?:         string | null;
+
+  // Headers de seção
+  ctaLabel?:                string | null;
+  ctaTitle?:                string | null;
+  ctaSubtitle?:             string | null;
+  portfolioLabel?:          string | null;
+  portfolioTitle?:          string | null;
+  servicesLabel?:           string | null;
+  servicesTitle?:           string | null;
+  servicesSubtitle?:        string | null;
+  coursesLabel?:            string | null;
+  coursesTitle?:            string | null;
+  coursesSubtitle?:         string | null;
+  reviewsLabel?:            string | null;
+  reviewsSubtitle?:         string | null;
+
+  // Google Reviews
+  googleEnabled?:           boolean;
+  googlePlaceId?:           string | null;
+  googleMapsUrl?:           string | null;
+  googleReviewUrl?:         string | null;
+  googleRatingManual?:      number | null;
+  googleReviewsCount?:      number | null;
 }
 
 // Todos os campos que admin pode atualizar via PUT /settings
@@ -65,6 +88,13 @@ const UPDATABLE_FIELDS = [
   'mentorshipChannelName', 'mentorshipOnlineCount',
   'processLabel', 'processTitle', 'processSubtitle',
   'footerCopyright',
+  'ctaLabel', 'ctaTitle', 'ctaSubtitle',
+  'portfolioLabel', 'portfolioTitle',
+  'servicesLabel', 'servicesTitle', 'servicesSubtitle',
+  'coursesLabel', 'coursesTitle', 'coursesSubtitle',
+  'reviewsLabel', 'reviewsSubtitle',
+  'googleEnabled', 'googlePlaceId', 'googleMapsUrl', 'googleReviewUrl',
+  'googleRatingManual', 'googleReviewsCount',
 ] as const;
 
 // SiteSettings é um singleton: existe sempre exatamente uma linha.

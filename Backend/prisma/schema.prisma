@@ -109,7 +109,7 @@ model Client {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  projects Project[]
+  projects         Project[]
   financialEntries FinancialEntry[]
 
   @@map("clients")
@@ -134,8 +134,8 @@ model Project {
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
-  client Client?        @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  images ProjectImage[]
+  client           Client?          @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  images           ProjectImage[]
   financialEntries FinancialEntry[]
 
   @@map("projects")
@@ -202,8 +202,8 @@ model Quote {
 // ============================================================
 
 model SiteSettings {
-  id          String   @id @default(uuid())
-  companyName String   @default("FabioArts")
+  id          String  @id @default(uuid())
+  companyName String  @default("FabioArts")
   bio         String?
   instagram   String?
   behance     String?
@@ -214,22 +214,22 @@ model SiteSettings {
   banner      String?
 
   // ── Hero (Fase E) ───────────────────────────────────────
-  heroLabel               String?
-  heroTitle               String?
-  heroSubtitle            String?
-  heroPrimaryText         String?
-  heroPrimaryUrl          String?
-  heroSecondaryText       String?
-  heroSecondaryUrl        String?
-  heroImage               String?
+  heroLabel         String?
+  heroTitle         String?
+  heroSubtitle      String?
+  heroPrimaryText   String?
+  heroPrimaryUrl    String?
+  heroSecondaryText String?
+  heroSecondaryUrl  String?
+  heroImage         String?
 
   // ── Sobre (Fase E) ──────────────────────────────────────
-  aboutLabel              String?
-  aboutTitle              String?
-  aboutText1              String?
-  aboutText2              String?
-  aboutImage1             String?
-  aboutImage2             String?
+  aboutLabel  String?
+  aboutTitle  String?
+  aboutText1  String?
+  aboutText2  String?
+  aboutImage1 String?
+  aboutImage2 String?
 
   // ── Mentoria (Fase E) ───────────────────────────────────
   mentorshipLabel         String?
@@ -243,15 +243,38 @@ model SiteSettings {
   mentorshipOnlineCount   Int?
 
   // ── Processo (Fase E) ──────────────────────────────────
-  processLabel            String?
-  processTitle            String?
-  processSubtitle         String?
+  processLabel    String?
+  processTitle    String?
+  processSubtitle String?
 
   // ── Footer (Fase E) ────────────────────────────────────
-  footerCopyright         String?
+  footerCopyright String?
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  // ── Headers comerciais das seções (R10B) ───────────────
+  ctaLabel         String?
+  ctaTitle         String?
+  ctaSubtitle      String?
+  portfolioLabel   String?
+  portfolioTitle   String?
+  servicesLabel    String?
+  servicesTitle    String?
+  servicesSubtitle String?
+  coursesLabel     String?
+  coursesTitle     String?
+  coursesSubtitle  String?
+  reviewsLabel     String?
+  reviewsSubtitle  String?
+
+  // ── Google Reviews (R9B) ───────────────────────────────
+  googleEnabled      Boolean @default(false)
+  googlePlaceId      String?
+  googleMapsUrl      String?
+  googleReviewUrl    String?
+  googleRatingManual Float?
+  googleReviewsCount Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("site_settings")
 }
@@ -300,21 +323,21 @@ model ProcessStep {
 }
 
 model Course {
-  id          String       @id @default(uuid())
+  id          String      @id @default(uuid())
   title       String
   category    String
   description String
-  level       CourseLevel  @default(BEGINNER)
+  level       CourseLevel @default(BEGINNER)
   duration    String?
   price       String?
   image       String?
   externalUrl String?
   label       String?
-  isActive    Boolean      @default(true)
-  isFeatured  Boolean      @default(false)
-  order       Int          @default(0)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  isActive    Boolean     @default(true)
+  isFeatured  Boolean     @default(false)
+  order       Int         @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   @@map("courses")
 }
@@ -332,29 +355,29 @@ model FooterColumn {
 }
 
 model FooterLink {
-  id         String        @id @default(uuid())
+  id         String       @id @default(uuid())
   columnId   String
-  column     FooterColumn  @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  column     FooterColumn @relation(fields: [columnId], references: [id], onDelete: Cascade)
   label      String
   url        String
-  isExternal Boolean       @default(false)
-  order      Int           @default(0)
-  isActive   Boolean       @default(true)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+  isExternal Boolean      @default(false)
+  order      Int          @default(0)
+  isActive   Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
   @@map("footer_links")
 }
 
 model CTAButton {
-  id          String   @id @default(uuid())
-  key         String   @unique
-  label       String
-  url         String
-  isExternal  Boolean  @default(false)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(uuid())
+  key        String   @unique
+  label      String
+  url        String
+  isExternal Boolean  @default(false)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("cta_buttons")
 }
@@ -366,24 +389,24 @@ model CTAButton {
 // ============================================================
 
 model FinancialEntry {
-  id            String           @id @default(uuid())
+  id            String          @id @default(uuid())
   type          FinancialType
   amount        Float
-  currency      String           @default("BRL")
+  currency      String          @default("BRL")
   description   String
   category      String?
-  status        FinancialStatus  @default(PAID)
+  status        FinancialStatus @default(PAID)
   occurredAt    DateTime
   dueDate       DateTime?
   paymentMethod String?
   notes         String?
 
-  clientId   String?
-  client     Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  projectId  String?
-  project    Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  quoteId    String?
-  quote      Quote?   @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  clientId  String?
+  client    Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  quoteId   String?
+  quote     Quote?   @relation(fields: [quoteId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -9,6 +9,7 @@ import settingsRoutes  from './settings.routes';
 import dashboardRoutes from './dashboard.routes';
 import contentRoutes   from './content.routes';
 import financialRoutes from './financial.routes';
+import reviewsRoutes   from './reviews.routes';
 
 const router = Router();
 
@@ -23,6 +24,7 @@ router.use('/settings',  settingsRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/',          contentRoutes);   // about-stats, courses, footer-*, etc
 router.use('/financial', financialRoutes);
+router.use('/reviews',   reviewsRoutes);
 
 // ─── API info ─────────────────────────────────────────────────────────────────
 
