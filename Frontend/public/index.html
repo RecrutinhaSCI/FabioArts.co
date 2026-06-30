@@ -821,17 +821,17 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
   <div class="hero-inner">
     <div class="hero-badge">
       <span class="hero-badge-dot"></span>
-      Disponível para novos projetos
+      <span id="hero-badge-text">Disponível para novos projetos</span>
     </div>
-    <h1 class="hero-h1">
+    <h1 class="hero-h1" id="hero-title">
       Arte que
       <span>transforma</span>
       ideias
     </h1>
-    <p class="hero-sub">Design automotivo, streetwear e criação visual fora do padrão. Para marcas que querem ser inesquecíveis.</p>
+    <p class="hero-sub" id="hero-sub">Design automotivo, streetwear e criação visual fora do padrão. Para marcas que querem ser inesquecíveis.</p>
     <div class="hero-btns">
-      <a href="#portfolio" class="btn-primary">Ver Portfólio</a>
-      <a href="#mentoria" class="btn-outline">Entrar na Mentoria</a>
+      <a id="hero-btn-primary" href="#portfolio" class="btn-primary">Ver Portfólio</a>
+      <a id="hero-btn-secondary" href="#mentoria" class="btn-outline">Entrar na Mentoria</a>
       <a href="#cta" class="btn-ghost">Solicitar orçamento →</a>
     </div>
   </div>
@@ -846,7 +846,7 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
   <div class="container">
     <div class="sobre-grid">
       <div class="reveal-left">
-        <div class="sobre-img-placeholder">
+        <div class="sobre-img-placeholder" id="about-image-wrap">
           <div style="position:relative;z-index:1;text-align:center">
             <div style="font-family:var(--ff-head);font-size:5rem;color:var(--gold);opacity:.5;letter-spacing:.05em">FA</div>
             <div style="font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--txt3);margin-top:.5rem">Foto do artista</div>
@@ -855,11 +855,11 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
         <div class="sobre-glow"></div>
       </div>
       <div class="reveal-right">
-        <div class="section-label">Sobre o artista</div>
-        <h2 class="section-h2">Fabio<br/>Arts</h2>
-        <p class="sobre-text">Criando artes visuais para carros, camisetas e marcas que querem se destacar. Mais de uma década mergulhado na cultura automotiva, streetwear e no design underground que move o mercado criativo.</p>
-        <p class="sobre-text" style="margin-top:-1rem">Não sou só um designer. Sou um criador de identidades. Cada projeto carrega propósito, atitude e estética que falam antes mesmo de você ler uma palavra.</p>
-        <div class="sobre-stats">
+        <div class="section-label" id="about-label">Sobre o artista</div>
+        <h2 class="section-h2" id="about-title">Fabio<br/>Arts</h2>
+        <p class="sobre-text" id="about-text-1">Criando artes visuais para carros, camisetas e marcas que querem se destacar. Mais de uma década mergulhado na cultura automotiva, streetwear e no design underground que move o mercado criativo.</p>
+        <p class="sobre-text" id="about-text-2" style="margin-top:-1rem">Não sou só um designer. Sou um criador de identidades. Cada projeto carrega propósito, atitude e estética que falam antes mesmo de você ler uma palavra.</p>
+        <div class="sobre-stats" id="about-stats">
           <div class="stat-card stagger-child">
             <div class="stat-num">+1000</div>
             <div class="stat-label">Clientes atendidos</div>
@@ -887,8 +887,8 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
   <div class="container">
     <div class="port-header reveal">
       <div>
-        <div class="section-label">Trabalhos selecionados</div>
-        <h2 class="section-h2">Portfólio</h2>
+        <div class="section-label" id="port-label">Trabalhos selecionados</div>
+        <h2 class="section-h2" id="port-title">Portfólio</h2>
       </div>
       <div class="port-filters">
         <button class="filter-btn active" data-filter="all">Todos</button>
@@ -918,13 +918,61 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
   </div>
 </div>
 
+<!-- AVALIAÇÕES NO GOOGLE -->
+<style>
+  #reviews{padding:6rem 0;display:none}
+  #reviews.is-on{display:block}
+  .rv-head{text-align:center;max-width:640px;margin:0 auto 2.5rem}
+  .rv-summary{display:inline-flex;align-items:center;gap:.85rem;background:rgba(255,192,0,.06);border:1px solid rgba(255,192,0,.22);padding:.85rem 1.4rem;border-radius:999px;margin-top:1rem;flex-wrap:wrap;justify-content:center}
+  .rv-stars{color:#ffc000;letter-spacing:.08em;font-size:1.05rem;line-height:1}
+  .rv-rating{color:#f4f4f5;font-weight:700;font-size:1.1rem;letter-spacing:-.01em}
+  .rv-count{color:#a1a1aa;font-size:.85rem}
+  .rv-sub{color:var(--txt3);font-weight:300;line-height:1.7;margin-top:1.2rem;font-size:.95rem}
+  .rv-ctas{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:2rem}
+  .rv-ctas .btn-primary,.rv-ctas .btn-outline{font-size:.95rem;padding:.95rem 2rem}
+  .rv-grid{display:none;gap:1.2rem;overflow-x:auto;scroll-snap-type:x mandatory;padding:.5rem .25rem 1.5rem;margin-top:2.5rem;scrollbar-width:thin;scrollbar-color:rgba(255,192,0,.3) transparent}
+  .rv-grid.is-on{display:flex}
+  .rv-grid::-webkit-scrollbar{height:6px}
+  .rv-grid::-webkit-scrollbar-thumb{background:rgba(255,192,0,.3);border-radius:6px}
+  .rv-card{flex:0 0 320px;scroll-snap-align:start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.4rem;display:flex;flex-direction:column;gap:.75rem}
+  .rv-card-head{display:flex;align-items:center;gap:.75rem}
+  .rv-avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,192,0,.15);color:#ffc000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;overflow:hidden;flex-shrink:0}
+  .rv-avatar img{width:100%;height:100%;object-fit:cover}
+  .rv-author{font-size:.88rem;color:#f4f4f5;font-weight:600;line-height:1.2}
+  .rv-when{font-size:.7rem;color:#71717a;margin-top:.15rem}
+  .rv-card-stars{color:#ffc000;font-size:.85rem;letter-spacing:.06em}
+  .rv-text{font-size:.85rem;color:#d4d4d8;line-height:1.55;display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+  .rv-attrib{margin-top:1.5rem;text-align:center;font-size:.7rem;color:#52525b;letter-spacing:.05em}
+  @media(max-width:520px){ .rv-summary{padding:.7rem 1rem} .rv-rating{font-size:1rem} .rv-card{flex-basis:78%} }
+</style>
+<section id="reviews">
+  <div class="container">
+    <div class="rv-head reveal">
+      <div class="section-label" id="rv-label" style="justify-content:center">Prova social</div>
+      <h2 class="section-h2">Avaliações<br/>no Google</h2>
+      <div class="rv-summary" id="rv-summary" aria-label="Resumo das avaliações">
+        <span class="rv-stars" id="rv-stars">★★★★★</span>
+        <span class="rv-rating" id="rv-rating">5,0</span>
+        <span class="rv-count" id="rv-count">avaliações</span>
+      </div>
+      <p class="rv-sub" id="rv-subtitle">Centenas de clientes já confiaram nos meus projetos. Veja o que estão dizendo no Google.</p>
+      <div class="rv-ctas">
+        <a id="rv-btn-maps" class="btn-primary" href="#" target="_blank" rel="noopener noreferrer">Ver avaliações no Google</a>
+        <a id="rv-btn-write" class="btn-outline" href="#" target="_blank" rel="noopener noreferrer" style="display:none">Avaliar no Google</a>
+      </div>
+    </div>
+    <div class="rv-grid" id="rv-grid" role="list" aria-label="Avaliações"></div>
+    <div class="rv-attrib" id="rv-attrib" style="display:none">Avaliações do Google</div>
+  </div>
+</section>
+
 <!-- SERVIÇOS -->
 <section id="servicos">
   <div class="container">
     <div class="reveal" style="text-align:center;max-width:600px;margin:0 auto 0">
-      <div class="section-label" style="justify-content:center">O que eu faço</div>
-      <h2 class="section-h2">Serviços</h2>
-      <p style="color:var(--txt3);font-weight:300;line-height:1.7">Criação visual com identidade. Cada serviço é executado com obsessão por detalhe e propósito estético.</p>
+      <div class="section-label" id="srv-label" style="justify-content:center">O que eu faço</div>
+      <h2 class="section-h2" id="srv-title">Serviços</h2>
+      <p id="srv-subtitle" style="color:var(--txt3);font-weight:300;line-height:1.7">Criação visual com identidade. Cada serviço é executado com obsessão por detalhe e propósito estético.</p>
     </div>
     <div class="srv-grid" id="srv-grid">
       <!-- Cards renderizados via API /api/services -->
@@ -937,10 +985,10 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
   <div class="container">
     <div class="ment-grid">
       <div class="reveal-left">
-        <div class="section-label">Comunidade exclusiva</div>
-        <h2 class="section-h2">Mentoria<br/>Discord</h2>
-        <p style="color:var(--txt3);font-weight:300;line-height:1.75;margin-bottom:1rem">Não é só um servidor. É uma comunidade de designers que levam o trabalho a sério. Acompanhamento real, feedback honesto e networking com quem está no mesmo nível.</p>
-        <div class="ment-features">
+        <div class="section-label" id="mentorship-label">Comunidade exclusiva</div>
+        <h2 class="section-h2" id="mentorship-title">Mentoria<br/>Discord</h2>
+        <p id="mentorship-subtitle" style="color:var(--txt3);font-weight:300;line-height:1.75;margin-bottom:1rem">Não é só um servidor. É uma comunidade de designers que levam o trabalho a sério. Acompanhamento real, feedback honesto e networking com quem está no mesmo nível.</p>
+        <div class="ment-features" id="ment-features">
           <div class="ment-feat">
             <div class="ment-feat-icon">🎯</div>
             <span class="ment-feat-text">Aulas ao vivo semanais com feedback direto</span>
@@ -972,8 +1020,8 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
           <div class="discord-topbar">
             <svg width="20" height="20" viewBox="0 0 71 55" fill="none"><path d="M60.105 4.898A58.55 58.55 0 0045.653.667a40.52 40.52 0 00-1.836 3.767 54.122 54.122 0 00-16.258 0A40.566 40.566 0 0025.705.667 58.418 58.418 0 0011.242 4.91C1.62 19.062-.992 32.83.314 46.41c6.056 4.43 11.913 7.12 17.678 8.889a44.282 44.282 0 003.826-6.207 38.383 38.383 0 01-6.025-2.895c.506-.369 1.002-.751 1.482-1.133 11.617 5.335 24.208 5.335 35.685 0l1.494 1.133a38.365 38.365 0 01-6.037 2.904 44.04 44.04 0 003.826 6.207c5.777-1.768 11.646-4.456 17.702-8.9 1.519-15.826-2.596-29.48-10.84-41.51z" fill="#5865F2"/></svg>
             <span class="discord-hash">#</span>
-            <span class="discord-name" style="color:white;font-size:.85rem">mentoria-geral</span>
-            <span style="margin-left:auto;font-size:.75rem;color:#72767d">312 online</span>
+            <span class="discord-name" id="mentorship-channel" style="color:white;font-size:.85rem">mentoria-geral</span>
+            <span id="mentorship-online" style="margin-left:auto;font-size:.75rem;color:#72767d">312 online</span>
           </div>
           <div class="discord-body">
             <div class="dc-msg">
@@ -1020,9 +1068,9 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
 <section id="cursos">
   <div class="container">
     <div class="reveal" style="text-align:center;max-width:600px;margin:0 auto 0">
-      <div class="section-label" style="justify-content:center">Aprenda com o Fabio</div>
-      <h2 class="section-h2">Cursos</h2>
-      <p style="color:var(--txt3);font-weight:300;line-height:1.7">Cursos gravados com qualidade de produção premium. Aprenda no seu ritmo, do início ao avançado.</p>
+      <div class="section-label" id="cur-label" style="justify-content:center">Aprenda com o Fabio</div>
+      <h2 class="section-h2" id="cur-title">Cursos</h2>
+      <p id="cur-subtitle" style="color:var(--txt3);font-weight:300;line-height:1.7">Cursos gravados com qualidade de produção premium. Aprenda no seu ritmo, do início ao avançado.</p>
     </div>
     <div class="cursos-grid" id="cursos-grid">
       <!-- rendered by JS -->
@@ -1034,10 +1082,11 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
 <section id="processo">
   <div class="container">
     <div class="reveal" style="text-align:center;max-width:600px;margin:0 auto 0">
-      <div class="section-label" style="justify-content:center">Como eu trabalho</div>
-      <h2 class="section-h2">Processo<br/>Criativo</h2>
+      <div class="section-label" id="proc-label" style="justify-content:center">Como eu trabalho</div>
+      <h2 class="section-h2" id="proc-title">Processo<br/>Criativo</h2>
+      <p id="proc-subtitle" style="color:var(--txt3);font-weight:300;line-height:1.7;display:none;margin-top:1rem"></p>
     </div>
-    <div class="proc-steps">
+    <div class="proc-steps" id="proc-steps">
       <div class="proc-step stagger-child">
         <div class="proc-num">01</div>
         <div class="proc-step-title">Ideia</div>
@@ -1065,13 +1114,13 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
 <!-- CTA -->
 <section id="cta">
   <div class="cta-inner">
-    <div class="section-label reveal" style="justify-content:center">Vamos criar juntos</div>
-    <h2 class="cta-h2 reveal">
+    <div class="section-label reveal" id="cta-label" style="justify-content:center">Vamos criar juntos</div>
+    <h2 class="cta-h2 reveal" id="cta-title">
       Sua marca parece<br/>
       <em>comum</em> ou<br/>
       inesquecível?
     </h2>
-    <p class="cta-sub reveal">A diferença entre ser ignorado e ser lembrado está na identidade visual. Vamos construir a sua.</p>
+    <p class="cta-sub reveal" id="cta-subtitle">A diferença entre ser ignorado e ser lembrado está na identidade visual. Vamos construir a sua.</p>
     <div class="reveal" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
       <a
         id="cta-whatsapp"
@@ -1083,7 +1132,7 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
       >
         Solicitar orçamento
       </a>
-      <a href="#portfolio" class="btn-outline" style="font-size:1rem;padding:1rem 2.8rem">Ver portfólio</a>
+      <a id="cta-secondary" href="#portfolio" class="btn-outline" style="font-size:1rem;padding:1rem 2.8rem">Ver portfólio</a>
     </div>
   </div>
 </section>
@@ -1104,7 +1153,7 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
           </a>
         </div>
       </div>
-      <div class="footer-col">
+      <div class="footer-col footer-col-fallback">
         <h4>Navegação</h4>
         <ul>
           <li><a href="#sobre">Sobre</a></li>
@@ -1114,7 +1163,7 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
           <li><a href="#cursos">Cursos</a></li>
         </ul>
       </div>
-      <div class="footer-col">
+      <div class="footer-col footer-col-fallback">
         <h4>Serviços</h4>
         <ul>
           <li><a href="#servicos">Design Automotivo</a></li>
@@ -1134,7 +1183,7 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
       </div>
     </div>
     <div class="footer-bottom">
-      <p>© 2025 <span>Fabioarts.co</span>. Todos os direitos reservados.</p>
+      <p id="footer-copyright">© 2025 <span>Fabioarts.co</span>. Todos os direitos reservados.</p>
       <p>Desenvolvido por G-Rec Company</p>
     </div>
   </div>
@@ -1441,10 +1490,450 @@ function buildInstagramLink(handle){
   return 'https://instagram.com/' + h;
 }
 
+function setText(id, val){
+  if (val == null || val === '') return;
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+function setLinkText(id, text, url){
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (text) el.textContent = text;
+  if (url)  el.href = url;
+}
+
+function applyHero(s){
+  setText('hero-badge-text', s.heroLabel);
+  setText('hero-title',      s.heroTitle);
+  setText('hero-sub',        s.heroSubtitle);
+  setLinkText('hero-btn-primary',   s.heroPrimaryText,   s.heroPrimaryUrl);
+  setLinkText('hero-btn-secondary', s.heroSecondaryText, s.heroSecondaryUrl);
+
+  if (s.heroImage) {
+    const hero = document.getElementById('hero');
+    if (hero) {
+      hero.style.backgroundImage =
+        'linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.75)), url("' + s.heroImage + '")';
+      hero.style.backgroundSize = 'cover';
+      hero.style.backgroundPosition = 'center';
+    }
+  }
+}
+
+function applyAbout(s){
+  setText('about-label',  s.aboutLabel);
+  setText('about-title',  s.aboutTitle);
+  setText('about-text-1', s.aboutText1);
+  setText('about-text-2', s.aboutText2);
+
+  const img = s.aboutImage1 || s.aboutImage;
+  if (img) {
+    const wrap = document.getElementById('about-image-wrap');
+    if (wrap) {
+      wrap.innerHTML = '<img src="' + escAttr(img) + '" alt="Fabio Arts" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit"/>';
+    }
+  }
+}
+
+function renderGoogleReviewCards(reviews){
+  const grid = document.getElementById('rv-grid');
+  const attrib = document.getElementById('rv-attrib');
+  if (!grid || !attrib) return;
+  grid.innerHTML = '';
+  if (!Array.isArray(reviews) || !reviews.length) {
+    grid.classList.remove('is-on');
+    attrib.style.display = 'none';
+    return;
+  }
+  reviews.slice(0, 5).forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'rv-card';
+    card.setAttribute('role', 'listitem');
+
+    const head = document.createElement('div');
+    head.className = 'rv-card-head';
+    const avatar = document.createElement('div');
+    avatar.className = 'rv-avatar';
+    if (r.profilePhotoUrl) {
+      const img = document.createElement('img');
+      img.src = r.profilePhotoUrl;
+      img.alt = '';
+      img.referrerPolicy = 'no-referrer';
+      img.loading = 'lazy';
+      avatar.appendChild(img);
+    } else {
+      avatar.textContent = (r.author || '?').trim().charAt(0).toUpperCase();
+    }
+    head.appendChild(avatar);
+
+    const meta = document.createElement('div');
+    const author = document.createElement('div');
+    author.className = 'rv-author'; author.textContent = r.author || 'Cliente Google';
+    const when = document.createElement('div');
+    when.className = 'rv-when'; when.textContent = r.relativeTime || '';
+    meta.appendChild(author); meta.appendChild(when);
+    head.appendChild(meta);
+    card.appendChild(head);
+
+    const stars = document.createElement('div');
+    stars.className = 'rv-card-stars';
+    const full = Math.round(Math.max(0, Math.min(5, Number(r.rating) || 0)));
+    stars.textContent = '★'.repeat(full) + '☆'.repeat(5 - full);
+    card.appendChild(stars);
+
+    const txt = document.createElement('div');
+    txt.className = 'rv-text'; txt.textContent = r.text || '';
+    card.appendChild(txt);
+
+    grid.appendChild(card);
+  });
+  grid.classList.add('is-on');
+  attrib.style.display = '';
+}
+
+function applyReviewsPayload(p){
+  const section = document.getElementById('reviews');
+  if (!section) return;
+  if (!p || p.source === 'off' || !p.enabled || !p.mapsUrl) {
+    section.classList.remove('is-on');
+    return;
+  }
+
+  const ratingEl = document.getElementById('rv-rating');
+  const starsEl  = document.getElementById('rv-stars');
+  const ratingNum = Number(p.rating);
+  if (Number.isFinite(ratingNum) && ratingNum > 0) {
+    ratingEl.textContent = ratingNum.toFixed(1).replace('.', ',');
+    const full = Math.round(Math.max(0, Math.min(5, ratingNum)));
+    starsEl.textContent = '★'.repeat(full) + '☆'.repeat(5 - full);
+  } else {
+    ratingEl.textContent = '';
+    starsEl.textContent = '★★★★★';
+  }
+
+  const countEl = document.getElementById('rv-count');
+  const count = Number(p.reviewsCount);
+  if (Number.isFinite(count) && count > 0) {
+    countEl.textContent = '· ' + count + ' avaliações';
+  } else {
+    countEl.textContent = 'avaliações';
+  }
+
+  document.getElementById('rv-btn-maps').href = p.mapsUrl;
+  const btnWrite = document.getElementById('rv-btn-write');
+  if (p.reviewUrl) {
+    btnWrite.href = p.reviewUrl;
+    btnWrite.style.display = '';
+  } else {
+    btnWrite.style.display = 'none';
+  }
+
+  if (p.source === 'google') {
+    renderGoogleReviewCards(p.reviews || []);
+  } else {
+    renderGoogleReviewCards([]);
+  }
+
+  section.classList.add('is-on');
+}
+
+async function loadGoogleReviews(){
+  try {
+    const data = await apiGet('/reviews/google');
+    applyReviewsPayload(data);
+  } catch (e) {
+    console.warn('reviews/google:', e.message);
+    // Mantém o que applyGoogleReviewsManual já desenhou via loadSettings
+  }
+}
+
+function applyGoogleReviewsManual(s){
+  const section = document.getElementById('reviews');
+  if (!section) return;
+
+  const enabled = s.googleEnabled === true;
+  const mapsUrl = (s.googleMapsUrl && String(s.googleMapsUrl).trim()) || '';
+  if (!enabled || !mapsUrl) {
+    section.classList.remove('is-on'); // mantém oculto
+    return;
+  }
+
+  // Nota: aceita 1-5 (incl. decimais). Renderiza estrelas cheias arredondadas.
+  const ratingNum = Number(s.googleRatingManual);
+  const ratingEl  = document.getElementById('rv-rating');
+  const starsEl   = document.getElementById('rv-stars');
+  if (Number.isFinite(ratingNum) && ratingNum > 0) {
+    ratingEl.textContent = ratingNum.toFixed(1).replace('.', ',');
+    const full = Math.round(Math.max(0, Math.min(5, ratingNum)));
+    starsEl.textContent = '★'.repeat(full) + '☆'.repeat(5 - full);
+  } else {
+    ratingEl.textContent = '';
+    starsEl.textContent = '★★★★★';
+  }
+
+  const countEl = document.getElementById('rv-count');
+  const count = Number(s.googleReviewsCount);
+  if (Number.isFinite(count) && count > 0) {
+    countEl.textContent = '· ' + count + ' avaliações';
+  } else {
+    countEl.textContent = 'avaliações';
+  }
+
+  const btnMaps = document.getElementById('rv-btn-maps');
+  btnMaps.href = mapsUrl;
+
+  const btnWrite = document.getElementById('rv-btn-write');
+  const reviewUrl = (s.googleReviewUrl && String(s.googleReviewUrl).trim()) || '';
+  if (reviewUrl) {
+    btnWrite.href = reviewUrl;
+    btnWrite.style.display = '';
+  } else {
+    btnWrite.style.display = 'none';
+  }
+
+  section.classList.add('is-on'); // revela a seção
+}
+
+function applyProcessHeader(s){
+  setText('proc-label',    s.processLabel);
+  setText('proc-title',    s.processTitle);
+  if (s.processSubtitle) {
+    const el = document.getElementById('proc-subtitle');
+    if (el) { el.textContent = s.processSubtitle; el.style.display = ''; }
+  }
+}
+
+function applySectionHeaders(s){
+  // Portfólio
+  setText('port-label', s.portfolioLabel);
+  setText('port-title', s.portfolioTitle);
+  // Serviços
+  setText('srv-label',    s.servicesLabel);
+  setText('srv-title',    s.servicesTitle);
+  setText('srv-subtitle', s.servicesSubtitle);
+  // Cursos
+  setText('cur-label',    s.coursesLabel);
+  setText('cur-title',    s.coursesTitle);
+  setText('cur-subtitle', s.coursesSubtitle);
+  // Avaliações (mantém h2 fixo "Avaliações no Google" por compliance)
+  setText('rv-label',    s.reviewsLabel);
+  setText('rv-subtitle', s.reviewsSubtitle);
+}
+
+function applyCta(s){
+  setText('cta-label',    s.ctaLabel);
+  setText('cta-title',    s.ctaTitle);
+  setText('cta-subtitle', s.ctaSubtitle);
+}
+
+function applyMentorship(s){
+  setText('mentorship-label',    s.mentorshipLabel);
+  setText('mentorship-title',    s.mentorshipTitle);
+  setText('mentorship-subtitle', s.mentorshipSubtitle);
+
+  if (s.mentorshipChannelName) {
+    setText('mentorship-channel', String(s.mentorshipChannelName).replace(/^#/, ''));
+  }
+  if (s.mentorshipOnlineCount != null && s.mentorshipOnlineCount !== '') {
+    setText('mentorship-online', s.mentorshipOnlineCount + ' online');
+  }
+
+  // CTAs: explícitos no admin > WhatsApp do Settings > #cta fallback
+  const mCta1 = document.getElementById('mentoria-cta-primary');
+  const mCta2 = document.getElementById('mentoria-cta-secondary');
+  const waMsg = encodeURIComponent('Olá Fabio! Quero entrar na mentoria — pode me passar os detalhes?');
+  const waUrl = s.whatsapp ? (buildWhatsappLink(s.whatsapp) + '?text=' + waMsg) : null;
+
+  const setCta = (el, text, url) => {
+    if (!el) return;
+    if (text) el.textContent = text;
+    if (url)  { el.href = url; el.target = '_blank'; el.rel = 'noopener'; }
+  };
+  setCta(mCta1, s.mentorshipPrimaryText,   s.mentorshipPrimaryUrl   || waUrl);
+  setCta(mCta2, s.mentorshipSecondaryText, s.mentorshipSecondaryUrl || waUrl);
+}
+
+function applyFooterCopyright(s){
+  const el = document.getElementById('footer-copyright');
+  if (!el) return;
+  if (s.footerCopyright) {
+    el.textContent = s.footerCopyright;
+    return;
+  }
+  // Sem override no admin: apenas atualiza o ano hardcoded para o atual
+  const year = new Date().getFullYear();
+  el.textContent = el.textContent.replace(/©\s*\d{4}/, '© ' + year);
+}
+
+async function loadFooterColumns(){
+  const contactCol = document.getElementById('footer-contact-col');
+  if (!contactCol || !contactCol.parentElement) return;
+  const container = contactCol.parentElement; // .footer-top
+
+  try {
+    const items = await apiGet('/footer-columns?isActive=true');
+    if (!Array.isArray(items) || !items.length) return; // mantém fallback
+
+    const sortedCols = items
+      .filter(c => c.isActive !== false)
+      .slice()
+      .sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
+
+    if (!sortedCols.length) return;
+
+    const built = sortedCols.map(col => {
+      const colEl = document.createElement('div');
+      colEl.className = 'footer-col';
+      const h4 = document.createElement('h4');
+      h4.textContent = col.title ?? '';
+      colEl.appendChild(h4);
+      const ul = document.createElement('ul');
+      const links = Array.isArray(col.links) ? col.links : [];
+      links
+        .filter(l => l && l.isActive !== false)
+        .slice()
+        .sort((a,b) => (a.order ?? 0) - (b.order ?? 0))
+        .forEach(l => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.textContent = l.label ?? '';
+          const url = l.url ?? '#';
+          a.href = url;
+          const external = l.isExternal || /^https?:\/\//i.test(url);
+          if (external) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+          li.appendChild(a);
+          ul.appendChild(li);
+        });
+      colEl.appendChild(ul);
+      return colEl;
+    });
+
+    // Substitui as colunas hardcoded sem tocar em Brand e Contato
+    container.querySelectorAll('.footer-col-fallback').forEach(n => n.remove());
+    built.forEach(node => container.insertBefore(node, contactCol));
+  } catch (e) {
+    console.warn('footer-columns:', e.message);
+    // mantém fallback
+  }
+}
+
+async function loadCTAButtons(){
+  try {
+    const items = await apiGet('/cta-buttons?isActive=true');
+    if (!Array.isArray(items) || !items.length) return; // mantém fallback
+
+    // index por key (aceita variantes kebab/snake)
+    const byKey = {};
+    items.forEach(it => { if (it && it.key) byKey[String(it.key).toLowerCase()] = it; });
+    const find = (...keys) => {
+      for (const k of keys) {
+        const hit = byKey[k.toLowerCase()];
+        if (hit) return hit;
+      }
+      return null;
+    };
+
+    const applyBtn = (el, cta) => {
+      if (!el || !cta) return;
+      if (cta.label) el.textContent = cta.label;
+      if (cta.url)   el.href = cta.url;
+      if (cta.isExternal) { el.target = '_blank'; el.rel = 'noopener noreferrer'; }
+    };
+
+    applyBtn(document.getElementById('cta-whatsapp'),
+             find('cta-primary', 'cta_primary', 'cta-quote'));
+    applyBtn(document.getElementById('cta-secondary'),
+             find('cta-secondary', 'cta_secondary'));
+
+    // WhatsApp float — só sobrescreve se houver CTA explícito (senão fica com o URL vindo de Settings.whatsapp aplicado em loadSettings)
+    const wa = find('whatsapp-float', 'whatsapp_float', 'wa-float');
+    if (wa && wa.url) {
+      const waEl = document.getElementById('wa-float');
+      if (waEl) waEl.href = wa.url;
+    }
+  } catch (e) {
+    console.warn('cta-buttons:', e.message);
+    // mantém fallback
+  }
+}
+
+async function loadMentorshipFeatures(){
+  const grid = document.getElementById('ment-features');
+  if (!grid) return;
+  try {
+    const items = await apiGet('/mentorship-features?isActive=true');
+    if (!Array.isArray(items) || !items.length) return; // mantém fallback hardcoded
+    const sorted = items.slice().sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
+    grid.innerHTML = sorted.map(f => `
+      <div class="ment-feat">
+        <div class="ment-feat-icon">${escHtml(f.icon ?? '•')}</div>
+        <span class="ment-feat-text">${escHtml(f.text ?? '')}</span>
+      </div>
+    `).join('');
+    initStagger();
+  } catch (e) {
+    console.warn('mentorship-features:', e.message);
+    // mantém fallback hardcoded
+  }
+}
+
+async function loadProcessSteps(){
+  const grid = document.getElementById('proc-steps');
+  if (!grid) return;
+  try {
+    const items = await apiGet('/process-steps?isActive=true');
+    if (!Array.isArray(items) || !items.length) return; // mantém fallback hardcoded
+    const sorted = items.slice().sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
+    grid.innerHTML = sorted.map((s,i) => {
+      const num = (s.stepNumber && String(s.stepNumber).trim()) || String(i+1).padStart(2,'0');
+      return `
+        <div class="proc-step stagger-child">
+          <div class="proc-num">${escHtml(num)}</div>
+          <div class="proc-step-title">${escHtml(s.title ?? '')}</div>
+          <div class="proc-step-desc">${escHtml(s.description ?? '')}</div>
+        </div>
+      `;
+    }).join('');
+    initStagger();
+  } catch (e) {
+    console.warn('process-steps:', e.message);
+    // mantém fallback hardcoded
+  }
+}
+
+async function loadAboutStats(){
+  const grid = document.getElementById('about-stats');
+  if (!grid) return;
+  try {
+    const items = await apiGet('/about-stats?isActive=true');
+    if (!Array.isArray(items) || !items.length) return; // mantém fallback hardcoded
+    grid.innerHTML = items.map(s => `
+      <div class="stat-card stagger-child">
+        <div class="stat-num">${escHtml((s.number ?? '') + (s.suffix ?? ''))}</div>
+        <div class="stat-label">${escHtml(s.label ?? '')}</div>
+      </div>
+    `).join('');
+    initStatsCounters();
+    initStagger();
+  } catch (e) {
+    console.warn('about-stats:', e.message);
+    // mantém fallback hardcoded
+  }
+}
+
 async function loadSettings(){
   try{
     const s = await apiGet('/settings');
     if(!s) return;
+
+    applyHero(s);
+    applyAbout(s);
+    applyMentorship(s);
+    applyProcessHeader(s);
+    applySectionHeaders(s);
+    applyCta(s);
+    applyFooterCopyright(s);
+    applyGoogleReviewsManual(s);
 
     // ── Footer brand bio
     const brand = document.querySelector('.footer-brand p');
@@ -1491,17 +1980,6 @@ async function loadSettings(){
     const discord = byLink('discord');
     if (discord && !discord.href.startsWith('http')) discord.closest('li')?.remove();
 
-    // ── Mentoria CTAs → WhatsApp se houver, senão abre modal de orçamento
-    const mCta1 = document.getElementById('mentoria-cta-primary');
-    const mCta2 = document.getElementById('mentoria-cta-secondary');
-    if (s.whatsapp) {
-      const msg = encodeURIComponent('Olá Fabio! Quero entrar na mentoria — pode me passar os detalhes?');
-      const url = buildWhatsappLink(s.whatsapp) + '?text=' + msg;
-      if (mCta1) { mCta1.href = url; mCta1.target = '_blank'; mCta1.rel = 'noopener'; }
-      if (mCta2) { mCta2.href = url; mCta2.target = '_blank'; mCta2.rel = 'noopener'; }
-    }
-    // se não houver whatsapp, mantém href="#cta" (que abre seção de orçamento)
-
   }catch(e){
     console.warn('settings:', e.message);
   }
@@ -1542,86 +2020,151 @@ document.getElementById('modal').addEventListener('click',function(e){if(e.targe
 const FA_WHATSAPP_FALLBACK = '5554996840497';
 let fabioWhatsapp = FA_WHATSAPP_FALLBACK;
 
-const whatsappBranding = `https://wa.me/${fabioWhatsapp}?text=${encodeURIComponent(
-  'Olá, Fabio! Vim pelo site e tenho interesse na Mentoria Completa para Designers e Criadores do Segmento Automotivo.'
-)}`;
+const COURSE_LEVEL_MAP = {
+  BEGINNER:     { className:'level-init',  label:'Iniciante',     bg:'linear-gradient(135deg,#1a0f00,#0d0800)' },
+  INTERMEDIATE: { className:'level-inter', label:'Avançado',      bg:'linear-gradient(135deg,#0a0f1a,#060a10)' },
+  ADVANCED:     { className:'level-adv',   label:'Expert',        bg:'linear-gradient(135deg,#0f0a1a,#08051a)' },
+};
+function resolveCourseLevel(c){
+  const lv = (c.level ?? '').toString().toUpperCase();
+  if (lv === 'BEGINNER'    || lv === 'INIT')  return COURSE_LEVEL_MAP.BEGINNER;
+  if (lv === 'INTERMEDIATE'|| lv === 'INTER') return COURSE_LEVEL_MAP.INTERMEDIATE;
+  if (lv === 'ADVANCED'    || lv === 'ADV')   return COURSE_LEVEL_MAP.ADVANCED;
+  return COURSE_LEVEL_MAP.BEGINNER;
+}
 
-const cursos = [
-  {
-    cat: 'Criação de Artes Básico',
-    title: 'CURSO CRIAÇÃO DE ARTES 2.0 - BÁSICO',
-    desc: 'Aprenda os fundamentos para desenhar carros com técnica, proporção e estilo profissional.',
-    level: 'init',
-    levelLabel: 'Iniciante',
-    oldPrice: 'R$ 119,99',
-    price: 'R$ 37,90',
-    bg: 'linear-gradient(135deg,#1a0f00,#0d0800)',
-    label: 'Básico',
-    url: 'https://payfast.greenn.com.br/hx5rhbn',
-    showPrice: true
-  },
-  {
-    cat: 'Criação de Artes Avançado',
-    title: 'CURSO CRIAÇÃO DE ARTES 2.0 - COMPLETO',
-    desc: 'Evolua seus desenhos automotivos com mais técnica, acabamento, estilo e apresentação profissional.',
-    level: 'inter',
-    levelLabel: 'Avançado',
-    oldPrice: 'R$ 249,90',
-    price: 'R$ 117,90',
-    bg: 'linear-gradient(135deg,#0a0f1a,#060a10)',
-    label: 'Completo',
-    url: 'https://payfast.greenn.com.br/152420/offer/FZAP4p',
-    showPrice: true
-  },
-  {
-    cat: 'Mentoria completa para designers',
-    title: 'Mentoria Completa para Designers e Criadores do Segmento Automotivo',
-    desc: 'Quer aprender não apenas a criar artes profissionais, mas também a transformar seu conhecimento em vendas e construir uma presença forte nas redes sociais? Na minha mentoria, você terá acesso a um método prático e direto ao ponto, onde ensino tudo o que utilizo no dia a dia para desenvolver e vender projetos com consistência.',
-    level: 'adv',
-    levelLabel: 'Expert',
-    bg: 'linear-gradient(135deg,#0f0a1a,#08051a)',
-    label: 'Mentoria',
-    url: whatsappBranding,
-    showPrice: false
-  },
+function buildCourseUrl(c){
+  const direct = c.externalUrl || c.url;
+  if (direct && String(direct).trim()) return { url: direct, external: /^https?:\/\//i.test(direct), wa: false };
+  const msg = encodeURIComponent('Olá, Fabio! Vim pelo site e tenho interesse em: ' + (c.title ?? ''));
+  return { url: 'https://wa.me/' + (fabioWhatsapp || FA_WHATSAPP_FALLBACK) + '?text=' + msg, external: true, wa: true };
+}
+
+// Parse opcional de "DE R$X POR R$Y" em um único campo price (compatível com schema atual)
+function parseCoursePrice(c){
+  const oldP = c.oldPrice ?? c.originalPrice ?? null;
+  let newP   = c.price ?? c.promotionalPrice ?? null;
+  if (!oldP && typeof newP === 'string') {
+    const m = newP.match(/^\s*DE\s*[:\-]?\s*(.+?)\s*POR\s*[:\-]?\s*(.+?)\s*$/i);
+    if (m) return { oldPrice: m[1].trim(), price: m[2].trim() };
+  }
+  return { oldPrice: oldP, price: newP };
+}
+
+function renderCourses(items){
+  const grid = document.getElementById('cursos-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  items.forEach(c => {
+    const level = resolveCourseLevel(c);
+    const card = document.createElement('div');
+    card.className = 'curso-card stagger-child';
+
+    const thumb = document.createElement('div');
+    thumb.className = 'curso-thumb';
+    thumb.style.background = c.bg || level.bg;
+    const thumbLabel = document.createElement('div');
+    thumbLabel.style.cssText = "font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:rgba(255,192,0,.2);letter-spacing:.06em";
+    thumbLabel.textContent = c.label || (c.title ? c.title.split(' ')[0] : '');
+    thumb.appendChild(thumbLabel);
+    const levelTag = document.createElement('span');
+    levelTag.className = 'curso-level ' + level.className;
+    levelTag.textContent = c.levelLabel || level.label;
+    thumb.appendChild(levelTag);
+    card.appendChild(thumb);
+
+    const body = document.createElement('div');
+    body.className = 'curso-body';
+
+    const cat = document.createElement('div');
+    cat.className = 'curso-cat';
+    cat.textContent = c.category ?? c.cat ?? '';
+    body.appendChild(cat);
+
+    const t = document.createElement('div');
+    t.className = 'curso-title';
+    t.textContent = c.title ?? '';
+    body.appendChild(t);
+
+    const d = document.createElement('div');
+    d.className = 'curso-desc';
+    d.textContent = c.description ?? c.desc ?? '';
+    body.appendChild(d);
+
+    const footer = document.createElement('div');
+    footer.className = 'curso-footer';
+
+    const { oldPrice, price } = parseCoursePrice(c);
+    const hasOld   = oldPrice && String(oldPrice).trim();
+    const hasPrice = price    && String(price).trim();
+
+    if (hasOld || hasPrice) {
+      const box = document.createElement('div');
+      box.className = 'curso-price-box';
+      if (hasOld) {
+        const oldWrap = document.createElement('div');
+        oldWrap.className = 'curso-price-old';
+        const ol = document.createElement('span'); ol.className = 'old-price-label'; ol.textContent = 'DE:';
+        const ov = document.createElement('span'); ov.className = 'old-price-value'; ov.textContent = oldPrice;
+        oldWrap.appendChild(ol); oldWrap.appendChild(ov);
+        box.appendChild(oldWrap);
+      }
+      if (hasPrice) {
+        const newWrap = document.createElement('div');
+        newWrap.className = 'curso-price-new';
+        const nl = document.createElement('span'); nl.className = 'new-price-label';
+        nl.textContent = hasOld ? 'POR:' : '';
+        const nv = document.createElement('span'); nv.className = 'new-price-value'; nv.textContent = price;
+        newWrap.appendChild(nl); newWrap.appendChild(nv);
+        box.appendChild(newWrap);
+      }
+      footer.appendChild(box);
+    } else {
+      footer.appendChild(document.createElement('div'));
+    }
+
+    const { url, external, wa } = buildCourseUrl(c);
+    const btn = document.createElement('a');
+    btn.className = 'curso-btn';
+    btn.textContent = c.buttonText || 'Comprar';
+    btn.href = url;
+    if (external) { btn.target = '_blank'; btn.rel = 'noopener noreferrer'; }
+    if (wa) btn.dataset.cta = 'curso-wa';
+    footer.appendChild(btn);
+
+    body.appendChild(footer);
+    card.appendChild(body);
+    grid.appendChild(card);
+  });
+  initStagger();
+}
+
+const coursesFallback = [
+  { category:'Criação de Artes Básico',  title:'CURSO CRIAÇÃO DE ARTES 2.0 - BÁSICO',
+    description:'Aprenda os fundamentos para desenhar carros com técnica, proporção e estilo profissional.',
+    level:'BEGINNER', label:'Básico', oldPrice:'R$ 119,99', price:'R$ 37,90',
+    externalUrl:'https://payfast.greenn.com.br/hx5rhbn' },
+  { category:'Criação de Artes Avançado', title:'CURSO CRIAÇÃO DE ARTES 2.0 - COMPLETO',
+    description:'Evolua seus desenhos automotivos com mais técnica, acabamento, estilo e apresentação profissional.',
+    level:'INTERMEDIATE', label:'Completo', oldPrice:'R$ 249,90', price:'R$ 117,90',
+    externalUrl:'https://payfast.greenn.com.br/152420/offer/FZAP4p' },
+  { category:'Mentoria completa para designers',
+    title:'Mentoria Completa para Designers e Criadores do Segmento Automotivo',
+    description:'Quer aprender não apenas a criar artes profissionais, mas também a transformar seu conhecimento em vendas e construir uma presença forte nas redes sociais? Na minha mentoria, você terá acesso a um método prático e direto ao ponto, onde ensino tudo o que utilizo no dia a dia para desenvolver e vender projetos com consistência.',
+    level:'ADVANCED', label:'Mentoria', externalUrl:null /* dispara fallback WA */ },
 ];
 
-document.getElementById('cursos-grid').innerHTML = cursos.map(c => `
-  <div class="curso-card stagger-child">
-    <div class="curso-thumb" style="background:${c.bg}">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:rgba(255,192,0,.2);letter-spacing:.06em">${c.label}</div>
-      <span class="curso-level level-${c.level}">${c.levelLabel}</span>
-    </div>
-
-    <div class="curso-body">
-      <div class="curso-cat">${c.cat}</div>
-      <div class="curso-title">${c.title}</div>
-      <div class="curso-desc">${c.desc}</div>
-
-      <div class="curso-footer">
-        ${
-          c.showPrice
-            ? `
-              <div class="curso-price-box">
-                <div class="curso-price-old">
-                  <span class="old-price-label">DE:</span>
-                  <span class="old-price-value">${c.oldPrice}</span>
-                </div>
-
-                <div class="curso-price-new">
-                  <span class="new-price-label">POR:</span>
-                  <span class="new-price-value">${c.price}</span>
-                </div>
-              </div>
-            `
-            : `<div></div>`
-        }
-
-        <a href="${c.url}" target="_blank" rel="noopener noreferrer" class="curso-btn"${c.showPrice ? '' : ' data-cta="mentoria-wa"'}>Comprar</a>
-      </div>
-    </div>
-  </div>
-`).join('');
+async function loadCourses(){
+  try {
+    const items = await apiGet('/courses?isActive=true');
+    if (!Array.isArray(items) || !items.length) { renderCourses(coursesFallback); return; }
+    const sorted = items.slice().sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
+    renderCourses(sorted);
+  } catch (e) {
+    console.warn('courses:', e.message);
+    renderCourses(coursesFallback);
+  }
+}
 
 // COUNTER ANIMATION — preserva prefixo (+, ~) e sufixo (Milhões, %, K, etc.)
 function animateCounter(el, target, prefix, suffix){
@@ -1633,7 +2176,6 @@ function animateCounter(el, target, prefix, suffix){
     if (current >= target) clearInterval(timer);
   }, 20);
 }
-const statNums = document.querySelectorAll('.stat-num');
 const statsObserver = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (!e.isIntersecting) return;
@@ -1647,7 +2189,14 @@ const statsObserver = new IntersectionObserver(entries => {
     statsObserver.unobserve(el);
   });
 }, { threshold: .5 });
-statNums.forEach(n => statsObserver.observe(n));
+function initStatsCounters(){
+  document.querySelectorAll('.stat-num').forEach(n => {
+    if (n.dataset.observed === '1') return;
+    n.dataset.observed = '1';
+    statsObserver.observe(n);
+  });
+}
+initStatsCounters();
 
 // ── QUOTE MODAL + FORM ───────────────────────────────────────────────
 const qOverlay = document.getElementById('quote-overlay');
@@ -1723,9 +2272,15 @@ initReveal();
 initStagger();
 
 // Carrega dados reais
-loadSettings();
+loadSettings().then(loadCourses); // courses precisa do fabioWhatsapp atualizado
 loadServices();
 loadPortfolio();
+loadAboutStats();
+loadProcessSteps();
+loadMentorshipFeatures();
+loadCTAButtons();
+loadFooterColumns();
+loadGoogleReviews();
 
 // PARALLAX HERO
 window.addEventListener('scroll',()=>{

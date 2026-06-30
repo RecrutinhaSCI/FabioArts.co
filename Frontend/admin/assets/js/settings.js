@@ -29,10 +29,24 @@
     'processLabel', 'processTitle', 'processSubtitle',
     // Footer
     'footerCopyright',
+    // Headers de seção (R10B)
+    'ctaLabel', 'ctaTitle', 'ctaSubtitle',
+    'portfolioLabel', 'portfolioTitle',
+    'servicesLabel', 'servicesTitle', 'servicesSubtitle',
+    'coursesLabel', 'coursesTitle', 'coursesSubtitle',
+    'reviewsLabel', 'reviewsSubtitle',
+    // Google Reviews
+    'googleEnabled', 'googlePlaceId', 'googleMapsUrl', 'googleReviewUrl',
+    'googleRatingManual', 'googleReviewsCount',
   ];
 
   // Campos numéricos (precisam conversão antes do PUT)
-  const NUMERIC_FIELDS = new Set(['mentorshipOnlineCount']);
+  const NUMERIC_FIELDS = new Set([
+    'mentorshipOnlineCount',
+    'googleRatingManual',
+    'googleReviewsCount',
+  ]);
+  const BOOLEAN_FIELDS = new Set(['googleEnabled']);
 
   const btnSave   = document.getElementById('btn-save');
   const btnReload = document.getElementById('btn-reload');
@@ -46,7 +60,11 @@
       FIELDS.forEach(f => {
         const el = fieldEl(f);
         if (!el) return;
-        el.value = s[f] == null ? '' : s[f];
+        if (BOOLEAN_FIELDS.has(f)) {
+          el.checked = !!s[f];
+        } else {
+          el.value = s[f] == null ? '' : s[f];
+        }
       });
     } catch (err) {
       Toast.error(err.message || 'Erro ao carregar configurações');
@@ -58,6 +76,10 @@
     FIELDS.forEach(f => {
       const el = fieldEl(f);
       if (!el) return;
+      if (BOOLEAN_FIELDS.has(f)) {
+        payload[f] = !!el.checked;
+        return;
+      }
       const raw = el.value.trim();
       if (NUMERIC_FIELDS.has(f)) {
         payload[f] = raw === '' ? null : Number(raw);
