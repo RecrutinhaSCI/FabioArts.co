@@ -13,3 +13,11 @@ window.__FA_API_BASE__ =
   (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
     ? 'http://localhost:3333/api'
     : 'https://fabioarts-co.onrender.com/api';
+
+// Origem do site público — usada para exibir imagens salvas como caminho
+// (ex.: /assets/img/portfolio/...). Vazio = mesmo domínio do admin.
+// Se o admin estiver em outro domínio, coloque aqui a URL do site (sem barra final).
+window.__FA_PUBLIC_BASE__ =
+  (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:5501'
+    : 'https://fabioarts.vercel.app';

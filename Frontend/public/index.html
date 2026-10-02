@@ -8,15 +8,15 @@
 <meta name="keywords" content="design automotivo, wrap, streetwear, identidade visual, branding, adesivos automotivos, FabioArts, designer freelancer"/>
 <meta name="author" content="FabioArts"/>
 <meta name="theme-color" content="#ffc000"/>
-<link rel="canonical" href="https://fabioarts.co/"/>
+<link rel="canonical" href="https://fabioarts.vercel.app/"/>
 
 <!-- Open Graph -->
 <meta property="og:type"        content="website"/>
 <meta property="og:site_name"   content="FabioArts.co"/>
 <meta property="og:title"       content="Fabioarts.co — Arte que transforma ideias em identidade"/>
 <meta property="og:description" content="Design automotivo, streetwear e criação visual fora do padrão. Para marcas que querem ser inesquecíveis."/>
-<meta property="og:url"         content="https://fabioarts.co/"/>
-<meta property="og:image"       content="https://fabioarts.co/assets/og-cover.jpg"/>
+<meta property="og:url"         content="https://fabioarts.vercel.app/"/>
+<meta property="og:image"       content="https://fabioarts.vercel.app/assets/og-cover.jpg"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
 <meta property="og:locale"      content="pt_BR"/>
@@ -25,7 +25,7 @@
 <meta name="twitter:card"        content="summary_large_image"/>
 <meta name="twitter:title"       content="Fabioarts.co — Arte que transforma ideias em identidade"/>
 <meta name="twitter:description" content="Design automotivo, streetwear e criação visual fora do padrão."/>
-<meta name="twitter:image"       content="https://fabioarts.co/assets/og-cover.jpg"/>
+<meta name="twitter:image"       content="https://fabioarts.vercel.app/assets/og-cover.jpg"/>
 
 <!-- Favicon (SVG inline para evitar 404; substitua por /favicon.ico em produção) -->
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23ffc000'/%3E%3Ctext x='32' y='44' font-family='Inter,sans-serif' font-size='30' font-weight='800' text-anchor='middle' fill='%23000'%3EFA%3C/text%3E%3C/svg%3E"/>
@@ -300,6 +300,17 @@ section{padding:7rem 2rem}
   content:'';position:absolute;inset:0;
   background:radial-gradient(ellipse at 50% 120%,rgba(255,192,0,.12),transparent 60%);
 }
+/* Foto do Fabio (R14): bloco 3:4, enquadrado no rosto, sem filtros */
+.sobre-photo{
+  position:relative;z-index:1;width:100%;aspect-ratio:3/4;overflow:hidden;
+  border-radius:4px;border:1px solid var(--border);
+  background:linear-gradient(160deg,var(--bg2),var(--bg3));
+}
+.sobre-photo img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 30%}
+.sobre-photo::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(11,11,11,.35),transparent 35%);
+}
 .sobre-glow{
   position:absolute;bottom:-60px;left:50%;transform:translateX(-50%);
   width:200px;height:200px;
@@ -344,7 +355,6 @@ section{padding:7rem 2rem}
   border:1px solid var(--border);
   transition:transform .4s var(--ease),border-color .3s;
 }
-.port-card:nth-child(4n+1){grid-row:span 2}
 .port-card:hover{transform:translateY(-4px);border-color:var(--border2)}
 .port-thumb{
   width:100%;background:linear-gradient(140deg,var(--bg2),var(--bg3));
@@ -352,7 +362,9 @@ section{padding:7rem 2rem}
   position:relative;overflow:hidden;
   aspect-ratio:1/1;
 }
-.port-card:nth-child(4n+1) .port-thumb{aspect-ratio:1/2.1}
+/* Artes 1:1, 3:4 e pranchas horizontais: card quadrado com a arte inteira (contain)
+   sobre o fundo escuro do card (.port-color-*) — sem cortes */
+.port-thumb-img{position:relative;width:100%;height:100%;object-fit:contain}
 .port-thumb-label{
   font-family:var(--ff-head);font-size:3rem;color:var(--gold);opacity:.12;
   position:absolute;
@@ -400,6 +412,11 @@ section{padding:7rem 2rem}
   display:flex;align-items:center;justify-content:center;
   font-family:var(--ff-head);font-size:5rem;color:var(--gold);opacity:.2;
 }
+/* Com imagem: arte inteira (contain), proporção original, sem corte */
+.modal-img.has-img{aspect-ratio:auto;opacity:1;background:var(--bg0);flex-direction:column}
+.modal-img.has-img img{display:block;width:100%;height:auto;max-height:72vh;object-fit:contain}
+.modal-zoom{align-self:flex-end;margin:.6rem 1rem;font-family:var(--ff-body,inherit);font-size:.78rem;letter-spacing:.04em;color:var(--txt3);text-decoration:none;transition:color .2s}
+.modal-zoom:hover{color:var(--gold)}
 .modal-body{padding:2rem}
 .modal-cat{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem}
 .modal-title{font-family:var(--ff-head);font-size:2.5rem;letter-spacing:.03em;text-transform:uppercase;margin-bottom:1rem}
@@ -447,7 +464,12 @@ section{padding:7rem 2rem}
 
 /* MENTORIA */
 #mentoria{background:var(--bg0);overflow:hidden}
-.ment-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+/* Sem feedbacks: coluna única. Com feedbacks (.has-fb): texto | feedbacks, CTAs abaixo do texto */
+.ment-grid{display:grid;grid-template-columns:minmax(0,640px);grid-template-areas:"text" "cta";align-items:center}
+.ment-grid.has-fb{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"text fb" "cta fb";column-gap:5rem}
+.ment-text{grid-area:text;align-self:end;min-width:0}
+.ment-ctas{grid-area:cta;align-self:start;margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap}
+.ment-fb-col{grid-area:fb;min-width:0}
 .ment-features{margin-top:2.5rem;display:flex;flex-direction:column;gap:1rem}
 .ment-feat{
   display:flex;align-items:center;gap:1rem;
@@ -488,6 +510,32 @@ section{padding:7rem 2rem}
   display:inline-block;padding:.1rem .4rem;border-radius:3px;
   font-size:.65rem;font-weight:700;letter-spacing:.06em;margin-left:.4rem;vertical-align:middle;
 }
+/* Feedbacks reais da mentoria (fonte: /reviews/google) */
+.ment-fb-title{flex:1;min-width:0;color:#fff;line-height:1.3;overflow-wrap:anywhere}
+.ment-fb-rating{color:#ffc000;font-size:.78rem;font-weight:600;white-space:nowrap}
+.ment-fb-body{display:grid}
+.ment-fb-page{grid-area:1/1;min-width:0;opacity:0;visibility:hidden;transition:opacity .5s var(--ease),visibility 0s linear .5s}
+.ment-fb-page.is-active{opacity:1;visibility:visible;transition:opacity .5s var(--ease)}
+.ment-fb-page .dc-msg:last-child{margin-bottom:0}
+.dc-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.dc-avatar{overflow:hidden}
+.dc-author{display:flex;align-items:baseline;flex-wrap:wrap;gap:.1rem .5rem}
+.dc-stars{color:#ffc000;font-size:.72rem;letter-spacing:.06em}
+.dc-when{color:#72767d;font-size:.7rem;font-weight:400}
+.ment-fb-page .dc-text{display:-webkit-box;line-clamp:5;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.ment-fb-summary{text-align:center;padding:1.2rem 0}
+.ment-fb-score{font-family:var(--ff-head);font-size:3.2rem;line-height:1;color:#fff}
+.ment-fb-summary .dc-stars{font-size:1.1rem;margin:.5rem 0}
+.ment-fb-summary p{font-size:.82rem;color:#b5bac1;font-weight:300}
+.ment-fb-foot{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.6rem 1.4rem;border-top:1px solid rgba(255,255,255,.05);min-height:3rem}
+.ment-fb-dots{display:flex;align-items:center}
+.ment-fb-dots button{width:24px;height:24px;padding:0;border:0;background:none;display:flex;align-items:center;justify-content:center}
+.ment-fb-dots button::before{content:"";width:8px;height:8px;border-radius:4px;background:rgba(255,255,255,.2);transition:width .3s var(--ease),background .3s}
+.ment-fb-dots button.is-active::before{width:20px;background:#ffc000}
+.ment-fb-dots button:focus-visible{outline:2px solid #ffc000;outline-offset:1px;border-radius:4px}
+.ment-fb-link{margin-left:auto;font-size:.78rem;color:#b5bac1;text-decoration:none;white-space:nowrap;transition:color .2s}
+.ment-fb-link:hover{color:#ffc000}
+@media(prefers-reduced-motion:reduce){.ment-fb-page,.ment-fb-page.is-active,.ment-fb-dots button::before{transition:none}}
 
 /* CURSOS */
 #cursos{background:var(--bg1)}
@@ -746,13 +794,17 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
 
 /* RESPONSIVE */
 @media(max-width:900px){
-  .sobre-grid,.ment-grid{grid-template-columns:1fr;gap:3rem}
+  .nav-links,.nav-cta{display:none}
+  .hamburger{display:flex}
+  .sobre-grid{grid-template-columns:1fr;gap:3rem}
+  .sobre-photo{max-width:440px;margin:0 auto}
+  .ment-grid{grid-template-columns:minmax(0,1fr);row-gap:2.5rem}
+  .ment-grid.has-fb{grid-template-columns:minmax(0,1fr);grid-template-areas:"text" "fb" "cta"}
+  .ment-ctas{margin-top:0}
   .srv-grid,.cursos-grid{grid-template-columns:1fr 1fr}
   .proc-steps{grid-template-columns:1fr 1fr;gap:2.5rem}
   .proc-steps::before{display:none}
   .port-grid{grid-template-columns:1fr 1fr}
-  .port-card:nth-child(4n+1){grid-row:auto}
-  .port-card:nth-child(4n+1) .port-thumb{aspect-ratio:1/1}
   .footer-top{grid-template-columns:1fr 1fr}
 }
 @media(max-width:600px){
@@ -766,6 +818,7 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
   .port-grid{grid-template-columns:1fr}
   .footer-top{grid-template-columns:1fr}
   .sobre-stats{grid-template-columns:1fr 1fr}
+  .sobre-photo{max-width:none;aspect-ratio:4/5}
   .hero-btns{flex-direction:column;align-items:center}
   .btn-primary,.btn-outline,.btn-ghost{width:100%;max-width:280px;text-align:center}
   .footer-bottom{flex-direction:column;text-align:center}
@@ -782,7 +835,7 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
 <div id="cursor-ring"></div>
 
 <!-- WHATSAPP FLOAT -->
-<a id="wa-float" href="https://wa.me/5554996840497" class="wa-float" title="WhatsApp" target="_blank" rel="noopener">
+<a id="wa-float" href="https://wa.me/555496840497" class="wa-float" title="WhatsApp" target="_blank" rel="noopener">
   <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
   </svg>
@@ -846,11 +899,12 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
   <div class="container">
     <div class="sobre-grid">
       <div class="reveal-left">
-        <div class="sobre-img-placeholder" id="about-image-wrap">
-          <div style="position:relative;z-index:1;text-align:center">
-            <div style="font-family:var(--ff-head);font-size:5rem;color:var(--gold);opacity:.5;letter-spacing:.05em">FA</div>
-            <div style="font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--txt3);margin-top:.5rem">Foto do artista</div>
-          </div>
+        <div class="sobre-photo" id="about-image-wrap">
+          <img id="about-photo"
+               src="/assets/img/sobre/fabio-arts-900.webp"
+               srcset="/assets/img/sobre/fabio-arts-600.webp 600w, /assets/img/sobre/fabio-arts-900.webp 900w, /assets/img/sobre/fabio-arts-1200.webp 1200w"
+               sizes="(max-width:600px) calc(100vw - 2.5rem), (max-width:900px) 440px, 560px"
+               width="1200" height="1600" alt="Fabio Arts" loading="lazy" decoding="async"/>
         </div>
         <div class="sobre-glow"></div>
       </div>
@@ -983,15 +1037,15 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
 <!-- MENTORIA -->
 <section id="mentoria">
   <div class="container">
-    <div class="ment-grid">
-      <div class="reveal-left">
+    <div class="ment-grid" id="ment-grid">
+      <div class="reveal-left ment-text">
         <div class="section-label" id="mentorship-label">Comunidade exclusiva</div>
         <h2 class="section-h2" id="mentorship-title">Mentoria<br/>Discord</h2>
         <p id="mentorship-subtitle" style="color:var(--txt3);font-weight:300;line-height:1.75;margin-bottom:1rem">Não é só um servidor. É uma comunidade de designers que levam o trabalho a sério. Acompanhamento real, feedback honesto e networking com quem está no mesmo nível.</p>
         <div class="ment-features" id="ment-features">
           <div class="ment-feat">
             <div class="ment-feat-icon">🎯</div>
-            <span class="ment-feat-text">Aulas ao vivo semanais com feedback direto</span>
+            <span class="ment-feat-text">Aulas programadas e exclusivas para cada aluno</span>
           </div>
           <div class="ment-feat">
             <div class="ment-feat-icon">💬</div>
@@ -1010,55 +1064,25 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
             <span class="ment-feat-text">Desafios e projetos práticos mensais</span>
           </div>
         </div>
-        <div style="margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap">
-          <a href="#cta" class="btn-primary" id="mentoria-cta-primary">Entrar na Mentoria</a>
-          <a href="#cta" class="btn-outline" id="mentoria-cta-secondary">Ver mais detalhes</a>
-        </div>
       </div>
-      <div class="reveal-right">
+      <!-- Feedbacks reais: reaproveita /reviews/google (oculto até haver dados) -->
+      <div class="reveal-right ment-fb-col" id="ment-fb-col" hidden>
         <div class="discord-mock">
           <div class="discord-topbar">
             <svg width="20" height="20" viewBox="0 0 71 55" fill="none"><path d="M60.105 4.898A58.55 58.55 0 0045.653.667a40.52 40.52 0 00-1.836 3.767 54.122 54.122 0 00-16.258 0A40.566 40.566 0 0025.705.667 58.418 58.418 0 0011.242 4.91C1.62 19.062-.992 32.83.314 46.41c6.056 4.43 11.913 7.12 17.678 8.889a44.282 44.282 0 003.826-6.207 38.383 38.383 0 01-6.025-2.895c.506-.369 1.002-.751 1.482-1.133 11.617 5.335 24.208 5.335 35.685 0l1.494 1.133a38.365 38.365 0 01-6.037 2.904 44.04 44.04 0 003.826 6.207c5.777-1.768 11.646-4.456 17.702-8.9 1.519-15.826-2.596-29.48-10.84-41.51z" fill="#5865F2"/></svg>
-            <span class="discord-hash">#</span>
-            <span class="discord-name" id="mentorship-channel" style="color:white;font-size:.85rem">mentoria-geral</span>
-            <span id="mentorship-online" style="margin-left:auto;font-size:.75rem;color:#72767d">312 online</span>
+            <span class="discord-name ment-fb-title" id="mentorship-channel">Feedbacks de quem já participou</span>
+            <span class="ment-fb-rating" id="ment-fb-rating" hidden></span>
           </div>
-          <div class="discord-body">
-            <div class="dc-msg">
-              <div class="dc-avatar" style="background:#5865f2;color:white">FA</div>
-              <div class="dc-content">
-                <div class="dc-author" style="color:#ffc000">Fabio <span class="dc-badge" style="background:#ffc000;color:#000">MENTOR</span></div>
-                <div class="dc-text">Pessoal, aula de hoje às 20h: como precificar seu trabalho sem medo. Coloquem dúvidas no canal abaixo 🎯</div>
-              </div>
-            </div>
-            <div class="dc-msg">
-              <div class="dc-avatar" style="background:#1db954;color:white">RV</div>
-              <div class="dc-content">
-                <div class="dc-author" style="color:#1db954">Rafael V.</div>
-                <div class="dc-text">Fechei meu primeiro cliente de wrapping graças ao feedback da semana passada! 🔥 obg Fabio</div>
-              </div>
-            </div>
-            <div class="dc-msg">
-              <div class="dc-avatar" style="background:#eb459e;color:white">KS</div>
-              <div class="dc-content">
-                <div class="dc-author" style="color:#eb459e">Karla S.</div>
-                <div class="dc-text">@Rafael V. arrasou! Vou postar meu portfólio no canal pra revisão também 👊</div>
-              </div>
-            </div>
-            <div class="dc-msg">
-              <div class="dc-avatar" style="background:#ed4245;color:white">MM</div>
-              <div class="dc-content">
-                <div class="dc-author" style="color:#ed4245">Marcos M.</div>
-                <div class="dc-text">Melhor investimento que fiz em 2024. A comunidade aqui é diferente 💯</div>
-              </div>
-            </div>
-          </div>
-          <div style="padding:1rem 1.4rem;border-top:1px solid rgba(255,255,255,.05)">
-            <div style="background:#383a40;border-radius:8px;padding:.65rem 1rem;font-size:.8rem;color:#72767d">
-              Mensagem para #mentoria-geral
-            </div>
+          <div class="discord-body ment-fb-body" id="ment-fb-body" aria-roledescription="carrossel" aria-label="Feedbacks"></div>
+          <div class="ment-fb-foot">
+            <div class="ment-fb-dots" id="ment-fb-dots" role="group" aria-label="Navegar entre feedbacks"></div>
+            <a class="ment-fb-link" id="ment-fb-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Ver no Google →</a>
           </div>
         </div>
+      </div>
+      <div class="reveal-left ment-ctas">
+        <a href="#cta" class="btn-primary" id="mentoria-cta-primary">Entrar na Mentoria</a>
+        <a href="#cta" class="btn-outline" id="mentoria-cta-secondary">Ver mais detalhes</a>
       </div>
     </div>
   </div>
@@ -1124,7 +1148,7 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
     <div class="reveal" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
       <a
         id="cta-whatsapp"
-        href="https://wa.me/5554996840497?text=Ol%C3%A1%2C%20Fabio!%20Vim%20pelo%20site%20e%20gostaria%20de%20solicitar%20um%20or%C3%A7amento."
+        href="https://wa.me/555496840497?text=Ol%C3%A1%2C%20Fabio!%20Vim%20pelo%20site%20e%20gostaria%20de%20solicitar%20um%20or%C3%A7amento."
         target="_blank"
         rel="noopener noreferrer"
         class="btn-primary"
@@ -1397,6 +1421,25 @@ const colors=['port-color-1','port-color-2','port-color-3','port-color-4','port-
 
 let portItems = [];
 
+// Assets do portfólio seguem <slug>-<largura>.webp (ver Backend/scripts/seed-portfolio.mjs):
+// thumbnail = versão ampliada; o card usa a versão menor. URLs fora do padrão são usadas como estão.
+const PORT_CARD_WIDTH = { 1080: 600, 2400: 800 };
+const PORT_SIZES = '(max-width:600px) calc(100vw - 2.5rem), (max-width:900px) 50vw, 400px';
+function portImage(url){
+  if (!url) return null;
+  const m = String(url).match(/^(.*)-(\d+)\.webp$/);
+  const cardW = m && PORT_CARD_WIDTH[m[2]];
+  if (!cardW) return { card: url, full: url, srcset: '', isLarge: false };
+  const fullW = Number(m[2]);
+  const card = `${m[1]}-${cardW}.webp`;
+  return {
+    card, full: url,
+    // pranchas de 2400px ficam fora do srcset do card (só carregam no modal)
+    srcset: fullW <= 1080 ? `${card} ${cardW}w, ${url} ${fullW}w` : '',
+    isLarge: fullW > 1080,
+  };
+}
+
 function renderPortfolio(filter='all'){
   const grid=document.getElementById('port-grid');
   const items = filter==='all'
@@ -1412,8 +1455,9 @@ function renderPortfolio(filter='all'){
 
   grid.innerHTML = items.map((p,i)=>{
     const idx = i % colors.length;
-    const thumbInner = p.thumbnail
-      ? `<img src="${escAttr(p.thumbnail)}" alt="${escAttr(p.title)}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'"/>`
+    const img = portImage(p.thumbnail);
+    const thumbInner = img
+      ? `<img class="port-thumb-img" src="${escAttr(img.card)}"${img.srcset ? ` srcset="${escAttr(img.srcset)}" sizes="${PORT_SIZES}"` : ''} alt="${escAttr(p.title)}" loading="lazy" decoding="async" onerror="this.style.display='none'"/>`
       : `<div class="port-thumb-label">${escHtml(p.title.substring(0,4).toUpperCase())}</div>`;
     return `
       <div class="port-card stagger-child" data-id="${p.id}" onclick="openModal('${p.id}')">
@@ -1441,7 +1485,7 @@ async function loadPortfolio(){
   const grid=document.getElementById('port-grid');
   grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem 0;color:var(--txt3);font-size:.85rem">Carregando portfólio...</div>`;
   try{
-    const res = await apiGet('/projects?isPublished=true&limit=50');
+    const res = await apiGet('/projects?isPublished=true&limit=100');
     portItems = res || [];
     renderPortfolio('all');
   }catch(e){
@@ -1526,12 +1570,13 @@ function applyAbout(s){
   setText('about-text-1', s.aboutText1);
   setText('about-text-2', s.aboutText2);
 
+  // Foto padrão está no HTML (assets/img/sobre); o Admin pode substituir via aboutImage1
   const img = s.aboutImage1 || s.aboutImage;
-  if (img) {
-    const wrap = document.getElementById('about-image-wrap');
-    if (wrap) {
-      wrap.innerHTML = '<img src="' + escAttr(img) + '" alt="Fabio Arts" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit"/>';
-    }
+  const photo = document.getElementById('about-photo');
+  if (img && photo) {
+    photo.removeAttribute('srcset');
+    photo.removeAttribute('sizes');
+    photo.src = img;
   }
 }
 
@@ -1545,7 +1590,7 @@ function renderGoogleReviewCards(reviews){
     attrib.style.display = 'none';
     return;
   }
-  reviews.slice(0, 5).forEach(r => {
+  reviews.slice(0, 10).forEach(r => {
     const card = document.createElement('div');
     card.className = 'rv-card';
     card.setAttribute('role', 'listitem');
@@ -1570,7 +1615,7 @@ function renderGoogleReviewCards(reviews){
     const author = document.createElement('div');
     author.className = 'rv-author'; author.textContent = r.author || 'Cliente Google';
     const when = document.createElement('div');
-    when.className = 'rv-when'; when.textContent = r.relativeTime || '';
+    when.className = 'rv-when'; when.textContent = r.relativeTime || 'Avaliação no Google';
     meta.appendChild(author); meta.appendChild(when);
     head.appendChild(meta);
     card.appendChild(head);
@@ -1594,7 +1639,8 @@ function renderGoogleReviewCards(reviews){
 function applyReviewsPayload(p){
   const section = document.getElementById('reviews');
   if (!section) return;
-  if (!p || p.source === 'off' || !p.enabled || !p.mapsUrl) {
+  const hasCards = !!(p && Array.isArray(p.reviews) && p.reviews.length);
+  if (!p || p.source === 'off' || !p.enabled || (!p.mapsUrl && !hasCards)) {
     section.classList.remove('is-on');
     return;
   }
@@ -1619,7 +1665,9 @@ function applyReviewsPayload(p){
     countEl.textContent = 'avaliações';
   }
 
-  document.getElementById('rv-btn-maps').href = p.mapsUrl;
+  const btnMaps = document.getElementById('rv-btn-maps');
+  if (p.mapsUrl) { btnMaps.href = p.mapsUrl; btnMaps.style.display = ''; }
+  else btnMaps.style.display = 'none';
   const btnWrite = document.getElementById('rv-btn-write');
   if (p.reviewUrl) {
     btnWrite.href = p.reviewUrl;
@@ -1628,7 +1676,7 @@ function applyReviewsPayload(p){
     btnWrite.style.display = 'none';
   }
 
-  if (p.source === 'google') {
+  if (p.source === 'google' || p.source === 'manual') {
     renderGoogleReviewCards(p.reviews || []);
   } else {
     renderGoogleReviewCards([]);
@@ -1637,15 +1685,232 @@ function applyReviewsPayload(p){
   section.classList.add('is-on');
 }
 
-async function loadGoogleReviews(){
+// Avaliações manuais (R15): depoimentos de Clientes ativos cadastrados no Admin
+// (avaliações reais copiadas da ficha do Google). Exibidas com 5 estrelas.
+async function loadManualReviews(){
   try {
-    const data = await apiGet('/reviews/google');
-    applyReviewsPayload(data);
+    const items = await apiGet('/clients?isActive=true&limit=50');
+    return (Array.isArray(items) ? items : [])
+      .filter(c => c && String(c.testimonial || '').trim())
+      .map(c => ({ author: c.name, rating: 5, text: String(c.testimonial).trim(), relativeTime: '', profilePhotoUrl: '' }));
   } catch (e) {
-    console.warn('reviews/google:', e.message);
-    // Mantém o que applyGoogleReviewsManual já desenhou via loadSettings
+    console.warn('clients (avaliações manuais):', e.message);
+    return [];
   }
 }
+
+async function loadGoogleReviews(){
+  let data = null;
+  try {
+    data = await apiGet('/reviews/google');
+  } catch (e) {
+    console.warn('reviews/google:', e.message);
+  }
+  // Google Places com avaliações válidas → usa direto; senão (off/manual/erro) → avaliações manuais
+  const hasAuto = !!(data && data.source === 'google' && Array.isArray(data.reviews) &&
+    data.reviews.some(r => r && String(r.text || '').trim()));
+  if (!hasAuto) {
+    const manual = await loadManualReviews();
+    if (manual.length) {
+      data = {
+        ...(data || {}),
+        enabled: true,
+        source: 'manual',
+        reviews: manual,
+        rating: data && data.source !== 'off' ? data.rating : null,
+        reviewsCount: data && data.source !== 'off' ? data.reviewsCount : null,
+        mapsUrl: (data && data.mapsUrl) || null,
+      };
+    }
+  }
+  if (!data) return; // mantém o que applyGoogleReviewsManual já desenhou via loadSettings
+  applyReviewsPayload(data);
+  applyMentorshipFeedback(data);
+}
+
+// ── MENTORIA: feedbacks reais (mesmo payload de /reviews/google) ─────
+// Sem avaliações disponíveis a coluna fica oculta e a seção vira 1 coluna.
+const FB_PER_PAGE = 2;
+const FB_INTERVAL_MS = 7000;
+const FB_COLORS = ['#5865f2','#1db954','#eb459e','#ed4245','#f0b232','#00a8fc'];
+let fbTimer = null, fbPage = 0, fbPages = [], fbPaused = false, fbInView = false;
+
+function fbStars(n){
+  const full = Math.round(Math.max(0, Math.min(5, Number(n) || 0)));
+  return '★'.repeat(full) + '☆'.repeat(5 - full);
+}
+function fbColor(name){
+  let h = 0;
+  for (const ch of String(name)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  return FB_COLORS[h % FB_COLORS.length];
+}
+function fbMessage(r){
+  const name = String(r.author || '').trim() || 'Cliente Google';
+  const color = fbColor(name);
+  const msg = document.createElement('div');
+  msg.className = 'dc-msg';
+
+  const avatar = document.createElement('div');
+  avatar.className = 'dc-avatar';
+  avatar.style.background = color;
+  avatar.style.color = '#fff';
+  avatar.textContent = name.charAt(0).toUpperCase();
+  if (r.profilePhotoUrl) {
+    const img = document.createElement('img');
+    img.src = r.profilePhotoUrl;
+    img.alt = '';
+    img.loading = 'lazy';
+    img.referrerPolicy = 'no-referrer';
+    img.onerror = () => img.remove(); // volta para a inicial
+    avatar.textContent = '';
+    avatar.appendChild(img);
+  }
+
+  const content = document.createElement('div');
+  content.className = 'dc-content';
+  const author = document.createElement('div');
+  author.className = 'dc-author';
+  const nameEl = document.createElement('span');
+  nameEl.style.color = color;
+  nameEl.textContent = name;
+  author.appendChild(nameEl);
+  const rating = Number(r.rating);
+  if (Number.isFinite(rating) && rating > 0) {
+    const stars = document.createElement('span');
+    stars.className = 'dc-stars';
+    stars.textContent = fbStars(rating);
+    stars.setAttribute('aria-label', 'Nota ' + rating + ' de 5');
+    author.appendChild(stars);
+  }
+  if (r.relativeTime) {
+    const when = document.createElement('span');
+    when.className = 'dc-when';
+    when.textContent = r.relativeTime;
+    author.appendChild(when);
+  }
+  const text = document.createElement('div');
+  text.className = 'dc-text';
+  text.textContent = String(r.text).trim();
+  content.appendChild(author);
+  content.appendChild(text);
+
+  msg.appendChild(avatar);
+  msg.appendChild(content);
+  return msg;
+}
+
+function fbGo(i){
+  if (!fbPages.length) return;
+  fbPage = (i + fbPages.length) % fbPages.length;
+  fbPages.forEach((pg, k) => {
+    const on = k === fbPage;
+    pg.classList.toggle('is-active', on);
+    pg.setAttribute('aria-hidden', on ? 'false' : 'true');
+  });
+  document.querySelectorAll('#ment-fb-dots button').forEach((b, k) => {
+    b.classList.toggle('is-active', k === fbPage);
+    b.setAttribute('aria-current', k === fbPage ? 'true' : 'false');
+  });
+}
+function fbSync(restart){
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const shouldRun = fbPages.length > 1 && fbInView && !fbPaused && !reduce;
+  if (fbTimer && (restart || !shouldRun)) { clearInterval(fbTimer); fbTimer = null; }
+  if (shouldRun && !fbTimer) fbTimer = setInterval(() => fbGo(fbPage + 1), FB_INTERVAL_MS);
+}
+
+function applyMentorshipFeedback(p){
+  const col    = document.getElementById('ment-fb-col');
+  const grid   = document.getElementById('ment-grid');
+  const body   = document.getElementById('ment-fb-body');
+  const dots   = document.getElementById('ment-fb-dots');
+  const rateEl = document.getElementById('ment-fb-rating');
+  const link   = document.getElementById('ment-fb-link');
+  if (!col || !grid || !body || !dots || !rateEl || !link) return;
+
+  fbPages = []; fbPage = 0; fbSync();
+  body.innerHTML = ''; dots.innerHTML = '';
+
+  const ok = !!(p && p.enabled && p.source !== 'off');
+  const reviews = (ok && (p.source === 'google' || p.source === 'manual') && Array.isArray(p.reviews))
+    ? p.reviews.filter(r => r && String(r.text || '').trim())
+    : [];
+  const ratingNum = ok ? Number(p.rating) : NaN;
+  const hasRating = Number.isFinite(ratingNum) && ratingNum > 0;
+
+  if (!reviews.length && !hasRating) {
+    col.hidden = true;
+    grid.classList.remove('has-fb');
+    return;
+  }
+
+  rateEl.hidden = !(hasRating && reviews.length);
+  if (!rateEl.hidden) rateEl.textContent = '★ ' + ratingNum.toFixed(1).replace('.', ',');
+
+  if (p.mapsUrl) {
+    link.href = p.mapsUrl;
+    link.textContent = reviews.length ? 'Avaliações do Google →' : 'Ver avaliações no Google →';
+    link.hidden = false;
+  } else {
+    link.hidden = true;
+  }
+
+  if (reviews.length) {
+    for (let i = 0; i < reviews.length; i += FB_PER_PAGE) {
+      const pg = document.createElement('div');
+      pg.className = 'ment-fb-page';
+      pg.setAttribute('role', 'group');
+      pg.setAttribute('aria-roledescription', 'slide');
+      reviews.slice(i, i + FB_PER_PAGE).forEach(r => pg.appendChild(fbMessage(r)));
+      body.appendChild(pg);
+      fbPages.push(pg);
+    }
+    if (fbPages.length > 1) {
+      fbPages.forEach((_, k) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.setAttribute('aria-label', 'Feedbacks ' + (k + 1) + ' de ' + fbPages.length);
+        b.addEventListener('click', () => { fbGo(k); fbSync(true); });
+        dots.appendChild(b);
+      });
+    }
+    fbGo(0);
+  } else {
+    // Modo manual (sem API do Google): só nota/contagem reais cadastradas no Admin
+    const count = Number(p.reviewsCount);
+    const sum = document.createElement('div');
+    sum.className = 'ment-fb-summary';
+    const score = document.createElement('div');
+    score.className = 'ment-fb-score';
+    score.textContent = ratingNum.toFixed(1).replace('.', ',');
+    const stars = document.createElement('div');
+    stars.className = 'dc-stars';
+    stars.textContent = fbStars(ratingNum);
+    const cap = document.createElement('p');
+    cap.textContent = (Number.isFinite(count) && count > 0 ? count + ' avaliações' : 'Avaliações') + ' no Google';
+    sum.appendChild(score); sum.appendChild(stars); sum.appendChild(cap);
+    body.appendChild(sum);
+  }
+
+  col.hidden = false;
+  grid.classList.add('has-fb');
+  fbSync();
+}
+
+(function initMentorshipFeedback(){
+  const col = document.getElementById('ment-fb-col');
+  if (!col) return;
+  const pause = on => { fbPaused = on; fbSync(); };
+  col.addEventListener('mouseenter', () => pause(true));
+  col.addEventListener('mouseleave', () => pause(false));
+  col.addEventListener('focusin',   () => pause(true));
+  col.addEventListener('focusout',  () => pause(false));
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(es => { fbInView = es[0].isIntersecting; fbSync(); }).observe(col);
+  } else {
+    fbInView = true;
+  }
+})();
 
 function applyGoogleReviewsManual(s){
   const section = document.getElementById('reviews');
@@ -1654,7 +1919,8 @@ function applyGoogleReviewsManual(s){
   const enabled = s.googleEnabled === true;
   const mapsUrl = (s.googleMapsUrl && String(s.googleMapsUrl).trim()) || '';
   if (!enabled || !mapsUrl) {
-    section.classList.remove('is-on'); // mantém oculto
+    // Não esconde se loadGoogleReviews já exibiu avaliações manuais
+    if (!document.getElementById('rv-grid')?.classList.contains('is-on')) section.classList.remove('is-on');
     return;
   }
 
@@ -1731,11 +1997,9 @@ function applyMentorship(s){
   setText('mentorship-title',    s.mentorshipTitle);
   setText('mentorship-subtitle', s.mentorshipSubtitle);
 
+  // Campo "mentorshipChannelName" agora é o título da área de feedbacks (R12)
   if (s.mentorshipChannelName) {
     setText('mentorship-channel', String(s.mentorshipChannelName).replace(/^#/, ''));
-  }
-  if (s.mentorshipOnlineCount != null && s.mentorshipOnlineCount !== '') {
-    setText('mentorship-online', s.mentorshipOnlineCount + ' online');
   }
 
   // CTAs: explícitos no admin > WhatsApp do Settings > #cta fallback
@@ -1991,9 +2255,11 @@ function openModal(id){
   if(!p) return;
   const colorIdx = portItems.indexOf(p) % colors.length;
   const modalImg = document.getElementById('modal-img');
-  modalImg.className = 'modal-img ' + colors[colorIdx];
-  modalImg.innerHTML = p.thumbnail
-    ? `<img src="${escAttr(p.thumbnail)}" alt="${escAttr(p.title)}" style="width:100%;height:100%;object-fit:cover"/>`
+  const img = portImage(p.thumbnail);
+  modalImg.className = 'modal-img ' + colors[colorIdx] + (img ? ' has-img' : '');
+  modalImg.innerHTML = img
+    ? `<img src="${escAttr(img.full)}" alt="${escAttr(p.title)}" decoding="async"/>` +
+      (img.isLarge ? `<a class="modal-zoom" href="${escAttr(img.full)}" target="_blank" rel="noopener">Ver em alta resolução ↗</a>` : '')
     : escHtml(p.title.substring(0,2).toUpperCase());
   document.getElementById('modal-cat').textContent = CAT_LABEL[p.category] || p.category;
   document.getElementById('modal-title').textContent = p.title;
@@ -2017,7 +2283,7 @@ document.getElementById('modal-close2').addEventListener('click',closeModal);
 document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
 
 // COURSES DATA
-const FA_WHATSAPP_FALLBACK = '5554996840497';
+const FA_WHATSAPP_FALLBACK = '555496840497';
 let fabioWhatsapp = FA_WHATSAPP_FALLBACK;
 
 const COURSE_LEVEL_MAP = {

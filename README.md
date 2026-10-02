@@ -72,7 +72,7 @@ Ou use `preview_start` se estiver via Claude Code (configurações em `.claude/l
 - Site público: http://localhost:5501/
 - Admin login: http://localhost:5500/login.html
   - Email: `admin@fabioarts.co`
-  - Senha: o valor de `ADMIN_PASSWORD` no `.env` (default `Admin@123`)
+  - Senha: o valor de `ADMIN_PASSWORD` no `.env` (obrigatória para criar o admin; use uma senha única com pelo menos 12 caracteres)
 
 ---
 

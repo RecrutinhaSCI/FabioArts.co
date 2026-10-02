@@ -24,7 +24,8 @@
     'mentorshipLabel', 'mentorshipTitle', 'mentorshipSubtitle',
     'mentorshipPrimaryText', 'mentorshipPrimaryUrl',
     'mentorshipSecondaryText', 'mentorshipSecondaryUrl',
-    'mentorshipChannelName', 'mentorshipOnlineCount',
+    'mentorshipChannelName', // R12: título da área de feedbacks
+    'mentorshipOnlineCount', // R12: sem input no admin (contador fictício removido do site)
     // Processo
     'processLabel', 'processTitle', 'processSubtitle',
     // Footer

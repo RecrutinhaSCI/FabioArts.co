@@ -2,7 +2,13 @@
 // Rodar com: node Backend/scripts/seed-mvp.mjs
 const BASE = process.env.API_BASE || 'https://fabioarts-co.onrender.com/api';
 const EMAIL = process.env.ADMIN_EMAIL || 'admin@fabioarts.co';
-const PASS  = process.env.ADMIN_PASSWORD || 'Admin@123';
+const PASS = process.env.ADMIN_PASSWORD;
+if (process.env.ALLOW_DEMO_SEED !== 'true') {
+  throw new Error('Seed de demonstracao desativado. Para o portfolio real, use seed-portfolio.mjs.');
+}
+if (!PASS || PASS.length < 12) {
+  throw new Error('Defina ADMIN_PASSWORD com pelo menos 12 caracteres.');
+}
 
 function step(msg) { console.log('▶', msg); }
 function ok(msg)   { console.log('  ✓', msg); }

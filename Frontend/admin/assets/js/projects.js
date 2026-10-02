@@ -59,6 +59,12 @@
   // ─── HELPERS ────────────────────────────────────────────────────────────────
   function escHtml(s){ return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function escAttr(s){ return escHtml(s); }
+
+  // Imagens do portfólio podem ser caminhos do site público (/assets/img/portfolio/...)
+  function imgUrl(u) {
+    const url = String(u || '');
+    return url.startsWith('/') && !url.startsWith('//') ? (window.__FA_PUBLIC_BASE__ || '') + url : url;
+  }
   function autoSlug(text) {
     return String(text || '').toLowerCase()
       .normalize('NFD').replace(/[̀-ͯ]/g,'')
@@ -144,7 +150,7 @@
 
     tbody.innerHTML = projects.map(p => {
       const thumb = p.thumbnail
-        ? `<img src="${escAttr(p.thumbnail)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${escAttr(p.title.slice(0,2).toUpperCase())}'}))"/>`
+        ? `<img src="${escAttr(imgUrl(p.thumbnail))}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${escAttr(p.title.slice(0,2).toUpperCase())}'}))"/>`
         : `<span>${escHtml(p.title.slice(0,2).toUpperCase())}</span>`;
       const tags = (p.tags || []).slice(0, 3).map(t => `<span class="tag">${escHtml(t)}</span>`).join('');
       const statusBadge = p.isPublished
@@ -237,7 +243,7 @@
       thumbPrevInfo.textContent = 'Cole uma URL acima para ver a prévia. Tamanho ideal: 1200×800.';
       return;
     }
-    thumbPreview.innerHTML = `<img src="${escAttr(url)}" alt="preview" onerror="this.parentElement.innerHTML='<span style=color:var(--red)>erro</span>';document.getElementById('thumb-preview-info').textContent='Não foi possível carregar essa URL — confira se está pública.'"/>`;
+    thumbPreview.innerHTML = `<img src="${escAttr(imgUrl(url))}" alt="preview" onerror="this.parentElement.innerHTML='<span style=color:var(--red)>erro</span>';document.getElementById('thumb-preview-info').textContent='Não foi possível carregar essa URL — confira se está pública.'"/>`;
     thumbPrevInfo.textContent = 'Prévia carregada. Confira o enquadramento antes de publicar.';
   }
 
@@ -311,7 +317,7 @@
       viewTitle.textContent    = p.title;
       viewSubtitle.textContent = '/' + p.slug;
       const hero = p.thumbnail
-        ? `<img src="${escAttr(p.thumbnail)}" alt="${escAttr(p.title)}" onerror="this.parentElement.innerHTML='${escAttr(p.title.slice(0,2).toUpperCase())}'"/>`
+        ? `<img src="${escAttr(imgUrl(p.thumbnail))}" alt="${escAttr(p.title)}" onerror="this.parentElement.innerHTML='${escAttr(p.title.slice(0,2).toUpperCase())}'"/>`
         : escHtml(p.title.slice(0,2).toUpperCase());
       const statusBadge = p.isPublished
         ? `<span class="badge badge-green"><span class="badge-dot"></span>Publicado</span>`
