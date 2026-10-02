@@ -63,7 +63,7 @@
 
     tbody.innerHTML = items.map(c => {
       const thumb = c.image
-        ? `<img src="${escHtml(c.image)}" alt="" onerror="this.parentElement.innerHTML='${escHtml(c.label||c.title.slice(0,3).toUpperCase())}'"/>`
+        ? `<img src="${escHtml(String(c.image).startsWith('/') && !String(c.image).startsWith('//') ? (window.__FA_PUBLIC_BASE__ || '') + c.image : c.image)}" alt="" onerror="this.parentElement.innerHTML='${escHtml(c.label||c.title.slice(0,3).toUpperCase())}'"/>`
         : `<span>${escHtml(c.label || c.title.slice(0,3).toUpperCase())}</span>`;
       const featBadge = c.isFeatured ? ' <span class="badge badge-gold">★</span>' : '';
       return `
@@ -79,7 +79,6 @@
           </td>
           <td><span class="badge">${escHtml(c.category)}</span></td>
           <td><span class="badge ${LEVEL_BADGE[c.level]||''}">${LEVEL_LABEL[c.level]||c.level}</span></td>
-          <td class="text-muted text-sm">${escHtml(c.duration || '—')}</td>
           <td><span class="text-gold" style="font-weight:600">${escHtml(c.price || '—')}</span></td>
           <td>${c.isActive
               ? '<span class="badge badge-green"><span class="badge-dot"></span>Ativo</span>'

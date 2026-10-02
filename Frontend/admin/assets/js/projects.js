@@ -173,8 +173,6 @@
             </div>
           </td>
           <td><span class="badge">${escHtml(categoryLabel(p.category))}</span></td>
-          <td>${p.clientName ? escHtml(p.clientName) : '<span class="text-muted">—</span>'}</td>
-          <td>${tags || '<span class="text-muted">—</span>'}</td>
           <td>${statusBadge}${featBadge}</td>
           <td class="text-muted text-sm">${fmtDate(p.projectDate || p.createdAt)}</td>
           <td>

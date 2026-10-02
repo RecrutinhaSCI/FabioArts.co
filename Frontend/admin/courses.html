@@ -46,7 +46,7 @@
           <button class="filter-btn" data-filter="INTERMEDIATE" type="button">Intermediário</button>
           <button class="filter-btn" data-filter="ADVANCED" type="button">Avançado</button>
           <span class="filter-sep"></span>
-          <label class="check-pill" style="padding:.32rem .7rem;font-size:.74rem">
+          <label class="check-pill" style="padding:.32rem .7rem;font-size:.74rem" hidden>
             <input type="checkbox" id="filter-featured"> Destaque
           </label>
           <label class="check-pill" style="padding:.32rem .7rem;font-size:.74rem">
@@ -67,7 +67,6 @@
                 <th>Curso</th>
                 <th>Categoria</th>
                 <th>Nível</th>
-                <th>Duração</th>
                 <th>Preço</th>
                 <th>Status</th>
                 <th style="width:90px;text-align:right">Ações</th>
@@ -129,18 +128,19 @@
               <option value="ADVANCED">Avançado</option>
             </select>
           </div>
-          <div class="form-group">
+          <div class="form-group" hidden><!-- sem efeito no site: oculto (valor preservado) -->
             <label class="form-label">Duração</label>
             <input type="text" class="form-control" id="f-duration" placeholder="12h, 2 meses..."/>
           </div>
           <div class="form-group">
             <label class="form-label">Preço</label>
             <input type="text" class="form-control" id="f-price" placeholder="R$ 197"/>
+          <div class="form-hint">Para mostrar preço promocional, escreva: DE R$ 119,99 POR R$ 37,90</div>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Label / Chip (canto da capa)</label>
+            <label class="form-label">Label (texto da capa sem imagem)</label>
             <input type="text" class="form-control" id="f-label" placeholder="WRAP, STW, BRAND..."/>
           </div>
           <div class="form-group">
@@ -150,7 +150,8 @@
         </div>
         <div class="form-group">
           <label class="form-label">Imagem / Capa (URL)</label>
-          <input type="url" class="form-control" id="f-image" placeholder="https://..."/>
+          <input type="text" class="form-control" id="f-image" placeholder="https://... ou /assets/img/cursos/..."/>
+          <div class="form-hint">Capa do card no site, formato 16:9 (ex.: 1146×645). Sem imagem, o card mostra o texto do campo Label.</div>
         </div>
       </div>
 
@@ -160,7 +161,7 @@
           <label class="check-pill">
             <input type="checkbox" id="f-isActive" checked> Ativo (visível no site)
           </label>
-          <label class="check-pill">
+          <label class="check-pill" hidden>
             <input type="checkbox" id="f-isFeatured"> Em destaque
           </label>
         </div>

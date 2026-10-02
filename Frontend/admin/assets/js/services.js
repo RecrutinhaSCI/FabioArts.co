@@ -61,10 +61,9 @@
       tbody.innerHTML = services.map(s => `
         <tr>
           <td>
-            <div class="table-user-name">${escHtml(s.name)}${s.isFeatured ? ' <span class="badge badge-yellow">★</span>' : ''}</div>
+            <div class="table-user-name">${escHtml(s.name)}</div>
           </td>
           <td><span class="text-muted text-sm">${escHtml(Helpers.truncate(s.description, 80))}</span></td>
-          <td>${s.startingPrice != null ? Helpers.formatCurrency(s.startingPrice) : '<span class="text-muted">—</span>'}</td>
           <td><span class="text-muted">${s.order}</span></td>
           <td>${s.isActive
               ? '<span class="badge badge-green"><span class="badge-dot"></span>Ativo</span>'

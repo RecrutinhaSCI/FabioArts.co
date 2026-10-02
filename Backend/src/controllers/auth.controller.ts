@@ -8,12 +8,13 @@ import { deleteFileByUrl }                 from '../config/upload';
 
 const REFRESH_COOKIE = 'fabioarts_refresh';
 
-function setRefreshCookie(res: Response, token: string): void {
+function setRefreshCookie(res: Response, token: string, persistent = true): void {
   res.cookie(REFRESH_COOKIE, token, {
     httpOnly: true,
     secure:   env.isProduction,
     sameSite: env.isProduction ? 'strict' : 'lax',
-    maxAge:   30 * 24 * 60 * 60 * 1000, // 30 dias em ms
+    // "Lembrar acesso" desmarcado → cookie de sessão (some ao fechar o navegador)
+    ...(persistent ? { maxAge: 30 * 24 * 60 * 60 * 1000 } : {}),
     path:     '/api/auth',
   });
 }
@@ -36,12 +37,12 @@ export const AuthController = {
   // POST /api/auth/login
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { email, password } = req.body as { email: string; password: string };
+      const { email, password, remember } = req.body as { email: string; password: string; remember?: boolean };
 
       const result = await AuthService.login({ email, password });
 
-      // Seta refresh token em cookie httpOnly
-      setRefreshCookie(res, result.tokens.refreshToken);
+      // Seta refresh token em cookie httpOnly (persistente só com "Lembrar acesso")
+      setRefreshCookie(res, result.tokens.refreshToken, remember !== false);
 
       ApiResponse.success(
         res,

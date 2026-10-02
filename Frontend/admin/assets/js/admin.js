@@ -17,28 +17,45 @@ const CONFIG = {
 // ─── TOKEN STORAGE ────────────────────────────────────────────────────────────
 
 const Auth = {
+  // "Lembrar acesso": marcado → localStorage (persiste ao fechar o navegador);
+  // desmarcado → sessionStorage (termina com a sessão do navegador).
+  _get(key) {
+    return sessionStorage.getItem(key) || localStorage.getItem(key);
+  },
+  _store() {
+    return sessionStorage.getItem(CONFIG.TOKEN_KEY) ? sessionStorage : localStorage;
+  },
   getToken() {
-    return localStorage.getItem(CONFIG.TOKEN_KEY);
+    return this._get(CONFIG.TOKEN_KEY);
   },
   getRefreshToken() {
-    return localStorage.getItem(CONFIG.REFRESH_KEY);
+    return this._get(CONFIG.REFRESH_KEY);
   },
   getUser() {
     try {
-      return JSON.parse(localStorage.getItem(CONFIG.USER_KEY) || 'null');
+      return JSON.parse(this._get(CONFIG.USER_KEY) || 'null');
     } catch {
       return null;
     }
   },
-  setSession(data) {
-    localStorage.setItem(CONFIG.TOKEN_KEY, data.accessToken);
-    localStorage.setItem(CONFIG.REFRESH_KEY, data.refreshToken);
-    localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(data.user));
+  setSession(data, remember = true) {
+    this.clearSession();
+    const store = remember ? localStorage : sessionStorage;
+    store.setItem(CONFIG.TOKEN_KEY, data.accessToken);
+    store.setItem(CONFIG.REFRESH_KEY, data.refreshToken);
+    store.setItem(CONFIG.USER_KEY, JSON.stringify(data.user));
+  },
+  updateTokens(accessToken, refreshToken) {
+    const store = this._store();
+    store.setItem(CONFIG.TOKEN_KEY, accessToken);
+    store.setItem(CONFIG.REFRESH_KEY, refreshToken);
   },
   clearSession() {
-    localStorage.removeItem(CONFIG.TOKEN_KEY);
-    localStorage.removeItem(CONFIG.REFRESH_KEY);
-    localStorage.removeItem(CONFIG.USER_KEY);
+    [localStorage, sessionStorage].forEach(st => {
+      st.removeItem(CONFIG.TOKEN_KEY);
+      st.removeItem(CONFIG.REFRESH_KEY);
+      st.removeItem(CONFIG.USER_KEY);
+    });
   },
   isAuthenticated() {
     return !!this.getToken();
@@ -96,8 +113,7 @@ const API = {
       });
       if (!res.ok) return false;
       const data = await res.json();
-      localStorage.setItem(CONFIG.TOKEN_KEY, data.data.accessToken);
-      localStorage.setItem(CONFIG.REFRESH_KEY, data.data.refreshToken);
+      Auth.updateTokens(data.data.accessToken, data.data.refreshToken);
       return true;
     } catch {
       return false;

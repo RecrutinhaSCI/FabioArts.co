@@ -83,6 +83,11 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input type="text" id="clients-search" placeholder="Buscar por nome ou empresa..." autocomplete="off"/>
         </div>
+        <select id="clients-status-filter" class="form-control" style="max-width:170px" aria-label="Filtrar por status">
+          <option value="all">Todos</option>
+          <option value="active">Ativos</option>
+          <option value="inactive">Inativos</option>
+        </select>
         <div style="margin-left:auto;font-size:.75rem;color:var(--txt-3)">
           <strong id="clients-total" style="color:var(--gold);font-weight:600">0</strong> clientes
         </div>
@@ -106,10 +111,11 @@
           <table class="table">
             <thead>
               <tr>
-                <th>Cliente</th>
+                <th colspan="2">Cliente</th>
                 <th>Instagram</th>
                 <th>Website</th>
                 <th>Depoimento</th>
+                <th>Status</th>
                 <th style="width:120px;text-align:right">Ações</th>
               </tr>
             </thead>
@@ -169,7 +175,14 @@
         <div class="form-group">
           <label class="form-label">Depoimento</label>
           <textarea id="field-testimonial" class="form-control" rows="3" placeholder="O que o cliente disse sobre o serviço..."></textarea>
+          <div class="form-hint">Com o cliente ativo, este texto aparece no site como avaliação (5 estrelas, bloco "Avaliações no Google"). Use o texto exato da avaliação.</div>
           <div class="field-error"></div>
+        </div>
+        <div class="form-group">
+          <label class="check-pill" style="cursor:pointer">
+            <input type="checkbox" id="field-active" checked/> Ativo
+          </label>
+          <div class="form-hint">Inativo: fica guardado no painel e não aparece no site. Os demais campos (empresa, Instagram, website, logo) são só para controle interno.</div>
         </div>
       </form>
     </div>

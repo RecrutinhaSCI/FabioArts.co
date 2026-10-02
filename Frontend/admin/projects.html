@@ -172,8 +172,6 @@
               <tr>
                 <th>Projeto</th>
                 <th>Categoria</th>
-                <th>Cliente</th>
-                <th>Tags</th>
                 <th>Status</th>
                 <th>Data</th>
                 <th style="width:120px;text-align:right">Ações</th>
@@ -225,7 +223,7 @@
               <input type="text" class="form-control" id="f-slug" placeholder="bmw-m3-wrap-premium"/>
               <div class="form-hint">Gerado automaticamente a partir do título. URL pública: /projeto/<span id="f-slug-preview" class="text-gold">slug</span></div>
             </div>
-            <div class="form-group">
+            <div class="form-group" hidden><!-- sem efeito no site: oculto (valor preservado) -->
               <label class="form-label" for="f-date">Data do projeto</label>
               <input type="date" class="form-control" id="f-date"/>
             </div>
@@ -255,7 +253,7 @@
                 <option value="OTHER">Outro</option>
               </select>
             </div>
-            <div class="form-group">
+            <div class="form-group" hidden><!-- sem efeito no site: oculto (valor preservado) -->
               <label class="form-label" for="f-tags">Tags <span class="form-hint" style="display:inline;font-size:.66rem;color:var(--txt-3)">(separadas por vírgula)</span></label>
               <input type="text" class="form-control" id="f-tags" placeholder="wrap, bmw, preto"/>
             </div>
@@ -263,7 +261,7 @@
         </div>
 
         <!-- Bloco 3: Cliente -->
-        <div class="form-block">
+        <div class="form-block" hidden><!-- sem efeito no site: oculto (valor preservado) -->
           <div class="form-block-title">Cliente</div>
           <div class="form-group">
             <label class="form-label" for="f-client">Vincular cliente</label>

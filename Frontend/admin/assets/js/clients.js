@@ -45,6 +45,8 @@
   const fieldWebsite    = document.getElementById('field-website');
   const fieldTestimonial= document.getElementById('field-testimonial');
   const fieldLogo       = document.getElementById('field-logo');
+  const fieldActive     = document.getElementById('field-active');
+  const statusFilter    = document.getElementById('clients-status-filter');
   const fieldErrors     = document.querySelectorAll('.field-error');
 
   // ─── TOAST ──────────────────────────────────────────────────────────────────
@@ -76,11 +78,13 @@
     }
   }
 
+  statusFilter?.addEventListener('change', () => renderTable(clients));
+
   // ─── LIST ────────────────────────────────────────────────────────────────────
   async function loadClients() {
     setTableLoading(true);
     try {
-      const data = await apiFetch(ENDPOINT);
+      const data = await apiFetch(ENDPOINT + '?limit=100');
       clients = data.data || data;
       renderTable(clients);
     } catch (err) {
@@ -101,12 +105,13 @@
     tableBody.innerHTML = '';
 
     const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
-    const filtered = query
-      ? list.filter(c =>
+    const status = statusFilter ? statusFilter.value : 'all';
+    const filtered = list
+      .filter(c => status === 'all' || (status === 'active' ? c.isActive !== false : c.isActive === false))
+      .filter(c => !query ||
           (c.name    || '').toLowerCase().includes(query) ||
           (c.company || '').toLowerCase().includes(query)
-        )
-      : list;
+      );
 
     if (totalCount) totalCount.textContent = filtered.length;
 
@@ -146,6 +151,9 @@
             ? `<span class="testimonial-preview" title="${escHtml(client.testimonial)}">${escHtml(truncate(client.testimonial, 60))}</span>`
             : '<span class="fa-muted">—</span>'}
         </td>
+        <td class="td-status">${client.isActive !== false
+            ? '<span class="badge badge-green"><span class="badge-dot"></span>Ativo</span>'
+            : '<span class="badge badge-grey"><span class="badge-dot"></span>Inativo</span>'}</td>
         <td class="td-actions">
           <button class="fa-btn fa-btn--icon fa-btn--ghost btn-edit" data-id="${client.id}" title="Editar">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
@@ -171,6 +179,7 @@
     fieldWebsite.value     = client ? (client.website     || '') : '';
     fieldTestimonial.value = client ? (client.testimonial || '') : '';
     fieldLogo.value        = client ? (client.logo        || '') : '';
+    if (fieldActive) fieldActive.checked = client ? client.isActive !== false : true;
 
     modal.classList.add('is-open');
     document.body.classList.add('modal-open');
@@ -222,6 +231,7 @@
       website:     fieldWebsite.value.trim()     || null,
       testimonial: fieldTestimonial.value.trim() || null,
       logo:        fieldLogo.value.trim()        || null,
+      isActive:    fieldActive ? fieldActive.checked : true,
     };
 
     setSaveLoading(true);

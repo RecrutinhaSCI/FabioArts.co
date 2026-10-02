@@ -509,6 +509,10 @@ section{padding:7rem 2rem}
   content:'';position:absolute;inset:0;
   background:linear-gradient(to top,rgba(0,0,0,.6),transparent);
 }
+.curso-thumb-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
+.curso-thumb.has-img::after{background:linear-gradient(to top,rgba(0,0,0,.28),transparent 45%)}
+/* Selo de nível legível sobre artes claras (mantém a cor de cada nível) */
+.curso-thumb.has-img .curso-level{background:rgba(10,10,10,.82);box-shadow:0 2px 10px rgba(0,0,0,.25)}
 .curso-level{
   position:absolute;top:1rem;right:1rem;z-index:1;
   padding:.2rem .7rem;border-radius:100px;font-size:.68rem;font-weight:600;
@@ -2082,10 +2086,36 @@ function renderCourses(items){
     const thumb = document.createElement('div');
     thumb.className = 'curso-thumb';
     thumb.style.background = c.bg || level.bg;
-    const thumbLabel = document.createElement('div');
-    thumbLabel.style.cssText = "font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:rgba(255,192,0,.2);letter-spacing:.06em";
-    thumbLabel.textContent = c.label || (c.title ? c.title.split(' ')[0] : '');
-    thumb.appendChild(thumbLabel);
+    const imgUrl = c.image && String(c.image).trim();
+    if (imgUrl) {
+      // Capa do curso (16:9). Assets oficiais têm versão leve -600 para o card.
+      const img = document.createElement('img');
+      img.className = 'curso-thumb-img';
+      const m = imgUrl.match(/^(.*\/assets\/img\/cursos\/[a-z0-9-]+)-1146\.webp$/);
+      if (m) {
+        img.src = m[1] + '-600.webp';
+        img.srcset = m[1] + '-600.webp 600w, ' + imgUrl + ' 1146w';
+        img.sizes = '(max-width:600px) calc(100vw - 2.5rem), (max-width:900px) 50vw, 400px';
+      } else {
+        img.src = imgUrl;
+      }
+      img.alt = c.title || c.label || 'Curso';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.width = 1146; img.height = 645;
+      // Se a URL falhar, volta para a capa em texto
+      img.onerror = () => { img.remove(); thumb.classList.remove('has-img'); thumb.insertBefore(makeLabel(), thumb.firstChild); };
+      thumb.classList.add('has-img');
+      thumb.appendChild(img);
+    } else {
+      thumb.appendChild(makeLabel());
+    }
+    function makeLabel(){
+      const thumbLabel = document.createElement('div');
+      thumbLabel.style.cssText = "font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:rgba(255,192,0,.2);letter-spacing:.06em";
+      thumbLabel.textContent = c.label || (c.title ? c.title.split(' ')[0] : '');
+      return thumbLabel;
+    }
     const levelTag = document.createElement('span');
     levelTag.className = 'curso-level ' + level.className;
     levelTag.textContent = c.levelLabel || level.label;
@@ -2162,15 +2192,18 @@ const coursesFallback = [
   { category:'Criação de Artes Básico',  title:'CURSO CRIAÇÃO DE ARTES 2.0 - BÁSICO',
     description:'Aprenda os fundamentos para desenhar carros com técnica, proporção e estilo profissional.',
     level:'BEGINNER', label:'Básico', oldPrice:'R$ 119,99', price:'R$ 37,90',
+    image:'/assets/img/cursos/basico-1146.webp',
     externalUrl:'https://payfast.greenn.com.br/hx5rhbn' },
   { category:'Criação de Artes Avançado', title:'CURSO CRIAÇÃO DE ARTES 2.0 - COMPLETO',
     description:'Evolua seus desenhos automotivos com mais técnica, acabamento, estilo e apresentação profissional.',
     level:'INTERMEDIATE', label:'Completo', oldPrice:'R$ 249,90', price:'R$ 117,90',
+    image:'/assets/img/cursos/completo-1146.webp',
     externalUrl:'https://payfast.greenn.com.br/152420/offer/FZAP4p' },
   { category:'Mentoria completa para designers',
     title:'Mentoria Completa para Designers e Criadores do Segmento Automotivo',
     description:'Quer aprender não apenas a criar artes profissionais, mas também a transformar seu conhecimento em vendas e construir uma presença forte nas redes sociais? Na minha mentoria, você terá acesso a um método prático e direto ao ponto, onde ensino tudo o que utilizo no dia a dia para desenvolver e vender projetos com consistência.',
-    level:'ADVANCED', label:'Mentoria', externalUrl:null /* dispara fallback WA */ },
+    level:'ADVANCED', label:'Mentoria', image:'/assets/img/cursos/mentoria-1146.webp',
+    externalUrl:null /* dispara fallback WA */ },
 ];
 
 async function loadCourses(){
