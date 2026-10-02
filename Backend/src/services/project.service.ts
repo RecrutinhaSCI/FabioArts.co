@@ -62,6 +62,22 @@ const VALID_CATEGORIES: ProjectCategory[] = [
   'SOCIAL_MEDIA', 'LOGO', 'PACKAGING', 'ILLUSTRATION', 'OTHER',
 ];
 
+// Vitrine "Todos" do portfólio público: no máximo 9 projetos em destaque (R16)
+export const MAX_FEATURED = 9;
+
+async function assertFeaturedLimit(excludeId?: string) {
+  const { rows } = await pool.query<{ total: string }>(
+    `SELECT COUNT(*)::text AS total FROM projects WHERE "isFeatured" = true AND id <> $1`,
+    [excludeId ?? '']
+  );
+  if (Number(rows[0].total) >= MAX_FEATURED) {
+    throw Object.assign(
+      new Error(`Você pode selecionar no máximo ${MAX_FEATURED} projetos em destaque.`),
+      { status: 400 }
+    );
+  }
+}
+
 // SELECT base — colunas reais do banco são camelCase quoted
 const SELECT_FIELDS = `
   p.id,
@@ -230,6 +246,8 @@ export async function createProject(dto: CreateProjectDTO) {
     throw Object.assign(new Error('Slug já está em uso'), { status: 409 });
   }
 
+  if (dto.isFeatured === true) await assertFeaturedLimit();
+
   if (dto.clientId) {
     const clientCheck = await pool.query(
       `SELECT id FROM clients WHERE id = $1`,
@@ -293,6 +311,8 @@ export async function updateProject(id: string, dto: UpdateProjectDTO) {
       throw Object.assign(new Error('Slug já está em uso'), { status: 409 });
     }
   }
+
+  if (dto.isFeatured === true) await assertFeaturedLimit(id);
 
   if (dto.clientId) {
     const clientCheck = await pool.query(

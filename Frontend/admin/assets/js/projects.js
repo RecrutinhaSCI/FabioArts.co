@@ -20,6 +20,8 @@
   let filterCategory = 'all';
   let searchQuery = '';
   let editingId = null;
+  let editingWasFeatured = false;
+  const MAX_FEATURED = 9; // vitrine "Todos" do site (validado também no backend)
 
   // ─── DOM ────────────────────────────────────────────────────────────────────
   const tbody         = document.getElementById('projects-tbody');
@@ -230,6 +232,7 @@
     fDate.value        = p?.projectDate ? p.projectDate.slice(0,10) : '';
     fPublished.checked = p ? !!p.isPublished : true;
     fFeatured.checked  = p ? !!p.isFeatured  : false;
+    editingWasFeatured = !!p?.isFeatured;
     fClient.value      = p?.clientId    || '';
     updateThumbPreview();
     Modal.open('modal-project');
@@ -369,6 +372,18 @@
 
   // Preview thumbnail
   fThumbnail?.addEventListener('input', Helpers.debounce(updateThumbPreview, 350));
+
+  // Limite de destaques: avisa já ao marcar (sem substituir outro projeto)
+  fFeatured?.addEventListener('change', async () => {
+    if (!fFeatured.checked || editingWasFeatured) return;
+    try {
+      const res = await API.get('/projects/stats');
+      if (Number(res.data?.featured) >= MAX_FEATURED) {
+        fFeatured.checked = false;
+        Toast.error(`Você pode selecionar no máximo ${MAX_FEATURED} projetos em destaque. Desmarque outro antes.`);
+      }
+    } catch (err) { console.warn('stats:', err.message); } // backend valida no salvar
+  });
 
   filterSearch?.addEventListener('input', Helpers.debounce(() => {
     searchQuery = filterSearch.value.trim();

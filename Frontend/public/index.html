@@ -344,6 +344,8 @@ section{padding:7rem 2rem}
   transition:all .25s;cursor:none;
 }
 .filter-btn.active,.filter-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(255,192,0,.06)}
+.port-more{display:flex;justify-content:center;margin-top:2.5rem}
+.port-more[hidden]{display:none}
 .port-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -466,7 +468,7 @@ section{padding:7rem 2rem}
 #mentoria{background:var(--bg0);overflow:hidden}
 /* Sem feedbacks: coluna única. Com feedbacks (.has-fb): texto | feedbacks, CTAs abaixo do texto */
 .ment-grid{display:grid;grid-template-columns:minmax(0,640px);grid-template-areas:"text" "cta";align-items:center}
-.ment-grid.has-fb{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"text fb" "cta fb";column-gap:5rem}
+.ment-grid.has-fb{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"text fb" "cta fb";column-gap:4.5rem}
 .ment-text{grid-area:text;align-self:end;min-width:0}
 .ment-ctas{grid-area:cta;align-self:start;margin-top:2.5rem;display:flex;gap:1rem;flex-wrap:wrap}
 .ment-fb-col{grid-area:fb;min-width:0}
@@ -483,59 +485,42 @@ section{padding:7rem 2rem}
   display:flex;align-items:center;justify-content:center;font-size:1rem;
 }
 .ment-feat-text{font-size:.9rem;color:var(--txt2);font-weight:300}
-.discord-mock{
-  position:relative;
-  background:var(--bg2);border:1px solid var(--border);
-  border-radius:8px;overflow:hidden;
-  box-shadow:0 40px 100px rgba(0,0,0,.5);
+/* Avaliações no Google (R16): coluna direita da Mentoria */
+.ment-rv{
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:2rem;box-shadow:0 40px 100px rgba(0,0,0,.5);
 }
-.discord-topbar{
-  background:#1e1f22;padding:1rem 1.2rem;
-  display:flex;align-items:center;gap:.8rem;border-bottom:1px solid rgba(255,255,255,.05);
+.ment-rv-head{padding-bottom:1.5rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border)}
+.ment-rv-head .section-label{margin-bottom:1rem}
+.ment-rv-score{display:flex;align-items:center;gap:1rem}
+.ment-rv-num{font-family:var(--ff-head);font-size:3.4rem;line-height:1;color:var(--txt)}
+.ment-rv-stars{color:var(--gold);letter-spacing:.12em;font-size:1.05rem;line-height:1.2}
+.ment-rv-count{font-size:.85rem;color:var(--txt3);margin-top:.25rem}
+.ment-rv-body{display:grid;touch-action:pan-y}
+.ment-rv-slide{grid-area:1/1;min-width:0;margin:0;opacity:0;visibility:hidden;transition:opacity .45s var(--ease),visibility 0s linear .45s}
+.ment-rv-slide.is-active{opacity:1;visibility:visible;transition:opacity .45s var(--ease)}
+.ment-rv-slide-stars{color:var(--gold);letter-spacing:.1em;font-size:.9rem;margin-bottom:.9rem}
+.ment-rv-text{margin:0;font-size:1.05rem;line-height:1.65;color:var(--txt2);font-weight:300;overflow-wrap:anywhere}
+.ment-rv-author{display:flex;align-items:center;gap:.6rem;margin-top:1.2rem;flex-wrap:wrap}
+.ment-rv-name{font-size:.9rem;font-weight:600;color:var(--txt)}
+.ment-rv-src{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--txt3);border:1px solid var(--border);border-radius:999px;padding:.15rem .55rem}
+.ment-rv-nav{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:1.5rem}
+.ment-rv-nav[hidden]{display:none}
+.ment-rv-arrow{
+  width:40px;height:40px;min-width:40px;border-radius:50%;border:1px solid var(--border2);
+  background:transparent;color:var(--gold);display:flex;align-items:center;justify-content:center;
+  transition:background .25s,color .25s;
 }
-.discord-dot{width:10px;height:10px;border-radius:50%}
-.discord-name{font-size:.85rem;font-weight:600;margin-left:.4rem}
-.discord-hash{color:var(--txt3);font-size:.9rem}
-.discord-body{padding:1.4rem}
-.dc-msg{display:flex;gap:.8rem;margin-bottom:1.4rem}
-.dc-avatar{
-  width:36px;height:36px;min-width:36px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:.75rem;font-weight:700;flex-shrink:0;
-}
-.dc-content{flex:1}
-.dc-author{font-size:.8rem;font-weight:600;margin-bottom:.25rem}
-.dc-text{font-size:.82rem;color:#dbdee1;line-height:1.5;font-weight:300}
-.dc-badge{
-  display:inline-block;padding:.1rem .4rem;border-radius:3px;
-  font-size:.65rem;font-weight:700;letter-spacing:.06em;margin-left:.4rem;vertical-align:middle;
-}
-/* Feedbacks reais da mentoria (fonte: /reviews/google) */
-.ment-fb-title{flex:1;min-width:0;color:#fff;line-height:1.3;overflow-wrap:anywhere}
-.ment-fb-rating{color:#ffc000;font-size:.78rem;font-weight:600;white-space:nowrap}
-.ment-fb-body{display:grid}
-.ment-fb-page{grid-area:1/1;min-width:0;opacity:0;visibility:hidden;transition:opacity .5s var(--ease),visibility 0s linear .5s}
-.ment-fb-page.is-active{opacity:1;visibility:visible;transition:opacity .5s var(--ease)}
-.ment-fb-page .dc-msg:last-child{margin-bottom:0}
-.dc-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover}
-.dc-avatar{overflow:hidden}
-.dc-author{display:flex;align-items:baseline;flex-wrap:wrap;gap:.1rem .5rem}
-.dc-stars{color:#ffc000;font-size:.72rem;letter-spacing:.06em}
-.dc-when{color:#72767d;font-size:.7rem;font-weight:400}
-.ment-fb-page .dc-text{display:-webkit-box;line-clamp:5;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
-.ment-fb-summary{text-align:center;padding:1.2rem 0}
-.ment-fb-score{font-family:var(--ff-head);font-size:3.2rem;line-height:1;color:#fff}
-.ment-fb-summary .dc-stars{font-size:1.1rem;margin:.5rem 0}
-.ment-fb-summary p{font-size:.82rem;color:#b5bac1;font-weight:300}
-.ment-fb-foot{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.6rem 1.4rem;border-top:1px solid rgba(255,255,255,.05);min-height:3rem}
-.ment-fb-dots{display:flex;align-items:center}
-.ment-fb-dots button{width:24px;height:24px;padding:0;border:0;background:none;display:flex;align-items:center;justify-content:center}
+.ment-rv-arrow:hover{background:var(--gold);color:#000}
+.ment-rv-arrow:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.ment-fb-dots{display:flex;align-items:center;flex-wrap:wrap;justify-content:center}
+.ment-fb-dots button{width:22px;height:24px;padding:0;border:0;background:none;display:flex;align-items:center;justify-content:center}
 .ment-fb-dots button::before{content:"";width:8px;height:8px;border-radius:4px;background:rgba(255,255,255,.2);transition:width .3s var(--ease),background .3s}
-.ment-fb-dots button.is-active::before{width:20px;background:#ffc000}
-.ment-fb-dots button:focus-visible{outline:2px solid #ffc000;outline-offset:1px;border-radius:4px}
-.ment-fb-link{margin-left:auto;font-size:.78rem;color:#b5bac1;text-decoration:none;white-space:nowrap;transition:color .2s}
-.ment-fb-link:hover{color:#ffc000}
-@media(prefers-reduced-motion:reduce){.ment-fb-page,.ment-fb-page.is-active,.ment-fb-dots button::before{transition:none}}
+.ment-fb-dots button.is-active::before{width:18px;background:var(--gold)}
+.ment-fb-dots button:focus-visible{outline:2px solid var(--gold);outline-offset:1px;border-radius:4px}
+.ment-rv-cta{display:block;text-align:center;margin-top:1.8rem}
+@media(max-width:600px){ .ment-rv{padding:1.5rem} .ment-rv-num{font-size:2.8rem} .ment-rv-cta{max-width:none} }
+@media(prefers-reduced-motion:reduce){.ment-rv-slide,.ment-rv-slide.is-active,.ment-fb-dots button::before{transition:none}}
 
 /* CURSOS */
 #cursos{background:var(--bg1)}
@@ -799,7 +784,7 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
   .sobre-grid{grid-template-columns:1fr;gap:3rem}
   .sobre-photo{max-width:440px;margin:0 auto}
   .ment-grid{grid-template-columns:minmax(0,1fr);row-gap:2.5rem}
-  .ment-grid.has-fb{grid-template-columns:minmax(0,1fr);grid-template-areas:"text" "fb" "cta"}
+  .ment-grid.has-fb{grid-template-columns:minmax(0,1fr);grid-template-areas:"text" "cta" "fb"}
   .ment-ctas{margin-top:0}
   .srv-grid,.cursos-grid{grid-template-columns:1fr 1fr}
   .proc-steps{grid-template-columns:1fr 1fr;gap:2.5rem}
@@ -955,6 +940,9 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
     <div class="port-grid" id="port-grid">
       <!-- Cards rendered by JS -->
     </div>
+    <div class="port-more" id="port-more" hidden>
+      <button type="button" class="btn-outline" id="port-more-btn" aria-controls="port-grid" aria-expanded="false">Ver todos os projetos</button>
+    </div>
   </div>
 </section>
 
@@ -971,54 +959,6 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
     </div>
   </div>
 </div>
-
-<!-- AVALIAÇÕES NO GOOGLE -->
-<style>
-  #reviews{padding:6rem 0;display:none}
-  #reviews.is-on{display:block}
-  .rv-head{text-align:center;max-width:640px;margin:0 auto 2.5rem}
-  .rv-summary{display:inline-flex;align-items:center;gap:.85rem;background:rgba(255,192,0,.06);border:1px solid rgba(255,192,0,.22);padding:.85rem 1.4rem;border-radius:999px;margin-top:1rem;flex-wrap:wrap;justify-content:center}
-  .rv-stars{color:#ffc000;letter-spacing:.08em;font-size:1.05rem;line-height:1}
-  .rv-rating{color:#f4f4f5;font-weight:700;font-size:1.1rem;letter-spacing:-.01em}
-  .rv-count{color:#a1a1aa;font-size:.85rem}
-  .rv-sub{color:var(--txt3);font-weight:300;line-height:1.7;margin-top:1.2rem;font-size:.95rem}
-  .rv-ctas{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:2rem}
-  .rv-ctas .btn-primary,.rv-ctas .btn-outline{font-size:.95rem;padding:.95rem 2rem}
-  .rv-grid{display:none;gap:1.2rem;overflow-x:auto;scroll-snap-type:x mandatory;padding:.5rem .25rem 1.5rem;margin-top:2.5rem;scrollbar-width:thin;scrollbar-color:rgba(255,192,0,.3) transparent}
-  .rv-grid.is-on{display:flex}
-  .rv-grid::-webkit-scrollbar{height:6px}
-  .rv-grid::-webkit-scrollbar-thumb{background:rgba(255,192,0,.3);border-radius:6px}
-  .rv-card{flex:0 0 320px;scroll-snap-align:start;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.4rem;display:flex;flex-direction:column;gap:.75rem}
-  .rv-card-head{display:flex;align-items:center;gap:.75rem}
-  .rv-avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,192,0,.15);color:#ffc000;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;overflow:hidden;flex-shrink:0}
-  .rv-avatar img{width:100%;height:100%;object-fit:cover}
-  .rv-author{font-size:.88rem;color:#f4f4f5;font-weight:600;line-height:1.2}
-  .rv-when{font-size:.7rem;color:#71717a;margin-top:.15rem}
-  .rv-card-stars{color:#ffc000;font-size:.85rem;letter-spacing:.06em}
-  .rv-text{font-size:.85rem;color:#d4d4d8;line-height:1.55;display:-webkit-box;line-clamp:6;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
-  .rv-attrib{margin-top:1.5rem;text-align:center;font-size:.7rem;color:#52525b;letter-spacing:.05em}
-  @media(max-width:520px){ .rv-summary{padding:.7rem 1rem} .rv-rating{font-size:1rem} .rv-card{flex-basis:78%} }
-</style>
-<section id="reviews">
-  <div class="container">
-    <div class="rv-head reveal">
-      <div class="section-label" id="rv-label" style="justify-content:center">Prova social</div>
-      <h2 class="section-h2">Avaliações<br/>no Google</h2>
-      <div class="rv-summary" id="rv-summary" aria-label="Resumo das avaliações">
-        <span class="rv-stars" id="rv-stars">★★★★★</span>
-        <span class="rv-rating" id="rv-rating">5,0</span>
-        <span class="rv-count" id="rv-count">avaliações</span>
-      </div>
-      <p class="rv-sub" id="rv-subtitle">Centenas de clientes já confiaram nos meus projetos. Veja o que estão dizendo no Google.</p>
-      <div class="rv-ctas">
-        <a id="rv-btn-maps" class="btn-primary" href="#" target="_blank" rel="noopener noreferrer">Ver avaliações no Google</a>
-        <a id="rv-btn-write" class="btn-outline" href="#" target="_blank" rel="noopener noreferrer" style="display:none">Avaliar no Google</a>
-      </div>
-    </div>
-    <div class="rv-grid" id="rv-grid" role="list" aria-label="Avaliações"></div>
-    <div class="rv-attrib" id="rv-attrib" style="display:none">Avaliações do Google</div>
-  </div>
-</section>
 
 <!-- SERVIÇOS -->
 <section id="servicos">
@@ -1065,19 +1005,26 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
           </div>
         </div>
       </div>
-      <!-- Feedbacks reais: reaproveita /reviews/google (oculto até haver dados) -->
+      <!-- Avaliações no Google (R16): /reviews/google + avaliações manuais; oculto sem dados -->
       <div class="reveal-right ment-fb-col" id="ment-fb-col" hidden>
-        <div class="discord-mock">
-          <div class="discord-topbar">
-            <svg width="20" height="20" viewBox="0 0 71 55" fill="none"><path d="M60.105 4.898A58.55 58.55 0 0045.653.667a40.52 40.52 0 00-1.836 3.767 54.122 54.122 0 00-16.258 0A40.566 40.566 0 0025.705.667 58.418 58.418 0 0011.242 4.91C1.62 19.062-.992 32.83.314 46.41c6.056 4.43 11.913 7.12 17.678 8.889a44.282 44.282 0 003.826-6.207 38.383 38.383 0 01-6.025-2.895c.506-.369 1.002-.751 1.482-1.133 11.617 5.335 24.208 5.335 35.685 0l1.494 1.133a38.365 38.365 0 01-6.037 2.904 44.04 44.04 0 003.826 6.207c5.777-1.768 11.646-4.456 17.702-8.9 1.519-15.826-2.596-29.48-10.84-41.51z" fill="#5865F2"/></svg>
-            <span class="discord-name ment-fb-title" id="mentorship-channel">Feedbacks de quem já participou</span>
-            <span class="ment-fb-rating" id="ment-fb-rating" hidden></span>
+        <div class="ment-rv">
+          <div class="ment-rv-head">
+            <div class="section-label">Avaliações no Google</div>
+            <div class="ment-rv-score" id="ment-rv-score">
+              <span class="ment-rv-num" id="ment-rv-num"></span>
+              <div>
+                <div class="ment-rv-stars" id="ment-rv-stars" aria-hidden="true">★★★★★</div>
+                <div class="ment-rv-count" id="ment-rv-count"></div>
+              </div>
+            </div>
           </div>
-          <div class="discord-body ment-fb-body" id="ment-fb-body" aria-roledescription="carrossel" aria-label="Feedbacks"></div>
-          <div class="ment-fb-foot">
-            <div class="ment-fb-dots" id="ment-fb-dots" role="group" aria-label="Navegar entre feedbacks"></div>
-            <a class="ment-fb-link" id="ment-fb-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Ver no Google →</a>
+          <div class="ment-rv-body" id="ment-fb-body" role="region" aria-roledescription="carrossel" aria-label="Avaliações de clientes"></div>
+          <div class="ment-rv-nav" id="ment-rv-nav" hidden>
+            <button type="button" class="ment-rv-arrow" id="ment-rv-prev" aria-label="Avaliação anterior"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <div class="ment-fb-dots" id="ment-fb-dots" role="group" aria-label="Escolher avaliação"></div>
+            <button type="button" class="ment-rv-arrow" id="ment-rv-next" aria-label="Próxima avaliação"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
           </div>
+          <a class="btn-outline ment-rv-cta" id="ment-fb-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Ver avaliações no Google</a>
         </div>
       </div>
       <div class="reveal-left ment-ctas">
@@ -1421,6 +1368,29 @@ const colors=['port-color-1','port-color-2','port-color-3','port-color-4','port-
 
 let portItems = [];
 
+// R16: "Todos" abre compacto com os projetos marcados como Destaque no Admin (máx. 9).
+// Só apresentação: os demais continuam carregados e aparecem em "Ver todos" e nos filtros.
+const PORT_MAX_FEATURED = 9;
+const PORT_CAT_ORDER = ['AUTOMOTIVE', 'TSHIRT', 'STICKER', 'BRANDING'];
+let portExpanded = false;
+
+function portCompactItems(){
+  // Admin é a fonte de verdade: só destaques publicados (portItems já vem com isPublished=true).
+  // Menos de 9 → mostra só os existentes, sem completar.
+  const featured = portItems.filter(p => p.isFeatured).slice(0, PORT_MAX_FEATURED);
+  // Intercala categorias para a vitrine não agrupar trabalhos parecidos lado a lado
+  const groups = new Map();
+  featured.forEach(p => {
+    const k = PORT_CAT_ORDER.includes(p.category) ? p.category : 'OUTROS';
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(p);
+  });
+  const lists = [...PORT_CAT_ORDER, 'OUTROS'].map(k => groups.get(k) || []);
+  const out = [];
+  for (let i = 0; lists.some(l => i < l.length); i++) lists.forEach(l => l[i] && out.push(l[i]));
+  return out;
+}
+
 // Assets do portfólio seguem <slug>-<largura>.webp (ver Backend/scripts/seed-portfolio.mjs):
 // thumbnail = versão ampliada; o card usa a versão menor. URLs fora do padrão são usadas como estão.
 const PORT_CARD_WIDTH = { 1080: 600, 2400: 800 };
@@ -1442,9 +1412,13 @@ function portImage(url){
 
 function renderPortfolio(filter='all'){
   const grid=document.getElementById('port-grid');
+  if (filter !== 'all') portExpanded = false;
+  const featured = filter === 'all' && !portExpanded ? portCompactItems() : [];
+  const compact = featured.length ? featured : null; // sem destaques → "Todos" mostra tudo
   const items = filter==='all'
-    ? portItems
+    ? (compact || portItems)
     : portItems.filter(p => CAT_TO_FILTER[p.category] === filter);
+  updatePortMore(filter, compact);
 
   if (!items.length){
     grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem 0;color:var(--txt3);font-size:.9rem">
@@ -1471,12 +1445,33 @@ function renderPortfolio(filter='all'){
     `;
   }).join('');
   initStagger();
+  // Atraso de entrada curto e por posição no grid (evita cards surgindo segundos depois ao expandir)
+  grid.querySelectorAll('.port-card').forEach((c, i) => { c.style.transitionDelay = (Math.min(i, 8) * 0.06) + 's'; });
 }
+
+function updatePortMore(filter, compact){
+  const wrap = document.getElementById('port-more');
+  const btn  = document.getElementById('port-more-btn');
+  if (!wrap || !btn) return;
+  const nFeatured = portCompactItems().length;
+  const canToggle = filter === 'all' && nFeatured > 0 && nFeatured < portItems.length;
+  wrap.hidden = !canToggle;
+  if (!canToggle) return;
+  btn.textContent = compact ? 'Ver todos os projetos' : 'Mostrar menos';
+  btn.setAttribute('aria-expanded', compact ? 'false' : 'true');
+}
+
+document.getElementById('port-more-btn')?.addEventListener('click', () => {
+  portExpanded = !portExpanded;
+  renderPortfolio('all');
+  if (!portExpanded) document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
 
 document.querySelectorAll('.filter-btn').forEach(btn=>{
   btn.addEventListener('click',function(){
     document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
     this.classList.add('active');
+    portExpanded = false; // trocar de filtro sempre volta "Todos" ao modo compacto
     renderPortfolio(this.dataset.filter);
   });
 });
@@ -1580,111 +1575,6 @@ function applyAbout(s){
   }
 }
 
-function renderGoogleReviewCards(reviews){
-  const grid = document.getElementById('rv-grid');
-  const attrib = document.getElementById('rv-attrib');
-  if (!grid || !attrib) return;
-  grid.innerHTML = '';
-  if (!Array.isArray(reviews) || !reviews.length) {
-    grid.classList.remove('is-on');
-    attrib.style.display = 'none';
-    return;
-  }
-  reviews.slice(0, 10).forEach(r => {
-    const card = document.createElement('div');
-    card.className = 'rv-card';
-    card.setAttribute('role', 'listitem');
-
-    const head = document.createElement('div');
-    head.className = 'rv-card-head';
-    const avatar = document.createElement('div');
-    avatar.className = 'rv-avatar';
-    if (r.profilePhotoUrl) {
-      const img = document.createElement('img');
-      img.src = r.profilePhotoUrl;
-      img.alt = '';
-      img.referrerPolicy = 'no-referrer';
-      img.loading = 'lazy';
-      avatar.appendChild(img);
-    } else {
-      avatar.textContent = (r.author || '?').trim().charAt(0).toUpperCase();
-    }
-    head.appendChild(avatar);
-
-    const meta = document.createElement('div');
-    const author = document.createElement('div');
-    author.className = 'rv-author'; author.textContent = r.author || 'Cliente Google';
-    const when = document.createElement('div');
-    when.className = 'rv-when'; when.textContent = r.relativeTime || 'Avaliação no Google';
-    meta.appendChild(author); meta.appendChild(when);
-    head.appendChild(meta);
-    card.appendChild(head);
-
-    const stars = document.createElement('div');
-    stars.className = 'rv-card-stars';
-    const full = Math.round(Math.max(0, Math.min(5, Number(r.rating) || 0)));
-    stars.textContent = '★'.repeat(full) + '☆'.repeat(5 - full);
-    card.appendChild(stars);
-
-    const txt = document.createElement('div');
-    txt.className = 'rv-text'; txt.textContent = r.text || '';
-    card.appendChild(txt);
-
-    grid.appendChild(card);
-  });
-  grid.classList.add('is-on');
-  attrib.style.display = '';
-}
-
-function applyReviewsPayload(p){
-  const section = document.getElementById('reviews');
-  if (!section) return;
-  const hasCards = !!(p && Array.isArray(p.reviews) && p.reviews.length);
-  if (!p || p.source === 'off' || !p.enabled || (!p.mapsUrl && !hasCards)) {
-    section.classList.remove('is-on');
-    return;
-  }
-
-  const ratingEl = document.getElementById('rv-rating');
-  const starsEl  = document.getElementById('rv-stars');
-  const ratingNum = Number(p.rating);
-  if (Number.isFinite(ratingNum) && ratingNum > 0) {
-    ratingEl.textContent = ratingNum.toFixed(1).replace('.', ',');
-    const full = Math.round(Math.max(0, Math.min(5, ratingNum)));
-    starsEl.textContent = '★'.repeat(full) + '☆'.repeat(5 - full);
-  } else {
-    ratingEl.textContent = '';
-    starsEl.textContent = '★★★★★';
-  }
-
-  const countEl = document.getElementById('rv-count');
-  const count = Number(p.reviewsCount);
-  if (Number.isFinite(count) && count > 0) {
-    countEl.textContent = '· ' + count + ' avaliações';
-  } else {
-    countEl.textContent = 'avaliações';
-  }
-
-  const btnMaps = document.getElementById('rv-btn-maps');
-  if (p.mapsUrl) { btnMaps.href = p.mapsUrl; btnMaps.style.display = ''; }
-  else btnMaps.style.display = 'none';
-  const btnWrite = document.getElementById('rv-btn-write');
-  if (p.reviewUrl) {
-    btnWrite.href = p.reviewUrl;
-    btnWrite.style.display = '';
-  } else {
-    btnWrite.style.display = 'none';
-  }
-
-  if (p.source === 'google' || p.source === 'manual') {
-    renderGoogleReviewCards(p.reviews || []);
-  } else {
-    renderGoogleReviewCards([]);
-  }
-
-  section.classList.add('is-on');
-}
-
 // Avaliações manuais (R15): depoimentos de Clientes ativos cadastrados no Admin
 // (avaliações reais copiadas da ficha do Google). Exibidas com 5 estrelas.
 async function loadManualReviews(){
@@ -1723,80 +1613,46 @@ async function loadGoogleReviews(){
       };
     }
   }
-  if (!data) return; // mantém o que applyGoogleReviewsManual já desenhou via loadSettings
-  applyReviewsPayload(data);
-  applyMentorshipFeedback(data);
+  applyReviewsBlock(data); // sem dados → bloco permanece oculto
 }
 
-// ── MENTORIA: feedbacks reais (mesmo payload de /reviews/google) ─────
-// Sem avaliações disponíveis a coluna fica oculta e a seção vira 1 coluna.
-const FB_PER_PAGE = 2;
+// ── MENTORIA | AVALIAÇÕES NO GOOGLE (R16) ───────────────────────────
+// Uma avaliação por vez: setas, pontos, swipe e troca automática discreta.
+// Sem avaliações disponíveis a coluna fica oculta e a Mentoria ocupa a largura.
 const FB_INTERVAL_MS = 7000;
-const FB_COLORS = ['#5865f2','#1db954','#eb459e','#ed4245','#f0b232','#00a8fc'];
 let fbTimer = null, fbPage = 0, fbPages = [], fbPaused = false, fbInView = false;
 
 function fbStars(n){
   const full = Math.round(Math.max(0, Math.min(5, Number(n) || 0)));
   return '★'.repeat(full) + '☆'.repeat(5 - full);
 }
-function fbColor(name){
-  let h = 0;
-  for (const ch of String(name)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  return FB_COLORS[h % FB_COLORS.length];
-}
-function fbMessage(r){
-  const name = String(r.author || '').trim() || 'Cliente Google';
-  const color = fbColor(name);
-  const msg = document.createElement('div');
-  msg.className = 'dc-msg';
-
-  const avatar = document.createElement('div');
-  avatar.className = 'dc-avatar';
-  avatar.style.background = color;
-  avatar.style.color = '#fff';
-  avatar.textContent = name.charAt(0).toUpperCase();
-  if (r.profilePhotoUrl) {
-    const img = document.createElement('img');
-    img.src = r.profilePhotoUrl;
-    img.alt = '';
-    img.loading = 'lazy';
-    img.referrerPolicy = 'no-referrer';
-    img.onerror = () => img.remove(); // volta para a inicial
-    avatar.textContent = '';
-    avatar.appendChild(img);
-  }
-
-  const content = document.createElement('div');
-  content.className = 'dc-content';
-  const author = document.createElement('div');
-  author.className = 'dc-author';
-  const nameEl = document.createElement('span');
-  nameEl.style.color = color;
-  nameEl.textContent = name;
-  author.appendChild(nameEl);
+function fbSlide(r){
+  const fig = document.createElement('figure');
+  fig.className = 'ment-rv-slide';
+  fig.setAttribute('role', 'group');
+  fig.setAttribute('aria-roledescription', 'slide');
   const rating = Number(r.rating);
   if (Number.isFinite(rating) && rating > 0) {
-    const stars = document.createElement('span');
-    stars.className = 'dc-stars';
+    const stars = document.createElement('div');
+    stars.className = 'ment-rv-slide-stars';
     stars.textContent = fbStars(rating);
     stars.setAttribute('aria-label', 'Nota ' + rating + ' de 5');
-    author.appendChild(stars);
+    fig.appendChild(stars);
   }
-  if (r.relativeTime) {
-    const when = document.createElement('span');
-    when.className = 'dc-when';
-    when.textContent = r.relativeTime;
-    author.appendChild(when);
-  }
-  const text = document.createElement('div');
-  text.className = 'dc-text';
-  text.textContent = String(r.text).trim();
-  content.appendChild(author);
-  content.appendChild(text);
-
-  msg.appendChild(avatar);
-  msg.appendChild(content);
-  return msg;
+  const text = document.createElement('blockquote');
+  text.className = 'ment-rv-text';
+  text.textContent = '“' + String(r.text).trim() + '”';
+  const cap = document.createElement('figcaption');
+  cap.className = 'ment-rv-author';
+  const name = document.createElement('span');
+  name.className = 'ment-rv-name';
+  name.textContent = String(r.author || '').trim() || 'Cliente Google';
+  const src = document.createElement('span');
+  src.className = 'ment-rv-src';
+  src.textContent = 'Google';
+  cap.appendChild(name); cap.appendChild(src);
+  fig.appendChild(text); fig.appendChild(cap);
+  return fig;
 }
 
 function fbGo(i){
@@ -1819,85 +1675,63 @@ function fbSync(restart){
   if (shouldRun && !fbTimer) fbTimer = setInterval(() => fbGo(fbPage + 1), FB_INTERVAL_MS);
 }
 
-function applyMentorshipFeedback(p){
+function applyReviewsBlock(p){
   const col    = document.getElementById('ment-fb-col');
   const grid   = document.getElementById('ment-grid');
   const body   = document.getElementById('ment-fb-body');
   const dots   = document.getElementById('ment-fb-dots');
-  const rateEl = document.getElementById('ment-fb-rating');
+  const nav    = document.getElementById('ment-rv-nav');
   const link   = document.getElementById('ment-fb-link');
-  if (!col || !grid || !body || !dots || !rateEl || !link) return;
+  if (!col || !grid || !body || !dots || !nav || !link) return;
 
   fbPages = []; fbPage = 0; fbSync();
   body.innerHTML = ''; dots.innerHTML = '';
 
   const ok = !!(p && p.enabled && p.source !== 'off');
-  const reviews = (ok && (p.source === 'google' || p.source === 'manual') && Array.isArray(p.reviews))
+  const reviews = (ok && Array.isArray(p.reviews))
     ? p.reviews.filter(r => r && String(r.text || '').trim())
     : [];
-  const ratingNum = ok ? Number(p.rating) : NaN;
-  const hasRating = Number.isFinite(ratingNum) && ratingNum > 0;
-
-  if (!reviews.length && !hasRating) {
+  if (!reviews.length) {
     col.hidden = true;
     grid.classList.remove('has-fb');
     return;
   }
 
-  rateEl.hidden = !(hasRating && reviews.length);
-  if (!rateEl.hidden) rateEl.textContent = '★ ' + ratingNum.toFixed(1).replace('.', ',');
+  // Cabeçalho: nota e total vêm do Google/Admin; sem dado, a parte some (nada inventado)
+  const ratingNum = Number(p.rating);
+  const count = Number(p.reviewsCount);
+  const hasRating = Number.isFinite(ratingNum) && ratingNum > 0;
+  document.getElementById('ment-rv-num').textContent = hasRating ? ratingNum.toFixed(1).replace('.', ',') : '';
+  document.getElementById('ment-rv-stars').textContent = fbStars(hasRating ? ratingNum : 5);
+  document.getElementById('ment-rv-count').textContent =
+    Number.isFinite(count) && count > 0 ? count + ' avaliações no Google' : 'Avaliações no Google';
 
-  if (p.mapsUrl) {
-    link.href = p.mapsUrl;
-    link.textContent = reviews.length ? 'Avaliações do Google →' : 'Ver avaliações no Google →';
-    link.hidden = false;
-  } else {
-    link.hidden = true;
-  }
+  if (p.mapsUrl) { link.href = p.mapsUrl; link.hidden = false; }
+  else link.hidden = true;
 
-  if (reviews.length) {
-    for (let i = 0; i < reviews.length; i += FB_PER_PAGE) {
-      const pg = document.createElement('div');
-      pg.className = 'ment-fb-page';
-      pg.setAttribute('role', 'group');
-      pg.setAttribute('aria-roledescription', 'slide');
-      reviews.slice(i, i + FB_PER_PAGE).forEach(r => pg.appendChild(fbMessage(r)));
-      body.appendChild(pg);
-      fbPages.push(pg);
-    }
-    if (fbPages.length > 1) {
-      fbPages.forEach((_, k) => {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.setAttribute('aria-label', 'Feedbacks ' + (k + 1) + ' de ' + fbPages.length);
-        b.addEventListener('click', () => { fbGo(k); fbSync(true); });
-        dots.appendChild(b);
-      });
-    }
-    fbGo(0);
-  } else {
-    // Modo manual (sem API do Google): só nota/contagem reais cadastradas no Admin
-    const count = Number(p.reviewsCount);
-    const sum = document.createElement('div');
-    sum.className = 'ment-fb-summary';
-    const score = document.createElement('div');
-    score.className = 'ment-fb-score';
-    score.textContent = ratingNum.toFixed(1).replace('.', ',');
-    const stars = document.createElement('div');
-    stars.className = 'dc-stars';
-    stars.textContent = fbStars(ratingNum);
-    const cap = document.createElement('p');
-    cap.textContent = (Number.isFinite(count) && count > 0 ? count + ' avaliações' : 'Avaliações') + ' no Google';
-    sum.appendChild(score); sum.appendChild(stars); sum.appendChild(cap);
-    body.appendChild(sum);
+  reviews.forEach(r => {
+    const slide = fbSlide(r);
+    body.appendChild(slide);
+    fbPages.push(slide);
+  });
+  nav.hidden = fbPages.length < 2;
+  if (fbPages.length > 1) {
+    fbPages.forEach((_, k) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('aria-label', 'Avaliação ' + (k + 1) + ' de ' + fbPages.length);
+      b.addEventListener('click', () => { fbGo(k); fbSync(true); });
+      dots.appendChild(b);
+    });
   }
+  fbGo(0);
 
   col.hidden = false;
   grid.classList.add('has-fb');
   fbSync();
 }
 
-(function initMentorshipFeedback(){
+(function initReviewsBlock(){
   const col = document.getElementById('ment-fb-col');
   if (!col) return;
   const pause = on => { fbPaused = on; fbSync(); };
@@ -1905,60 +1739,24 @@ function applyMentorshipFeedback(p){
   col.addEventListener('mouseleave', () => pause(false));
   col.addEventListener('focusin',   () => pause(true));
   col.addEventListener('focusout',  () => pause(false));
+  document.getElementById('ment-rv-prev')?.addEventListener('click', () => { fbGo(fbPage - 1); fbSync(true); });
+  document.getElementById('ment-rv-next')?.addEventListener('click', () => { fbGo(fbPage + 1); fbSync(true); });
+  // Swipe horizontal no touch
+  const body = document.getElementById('ment-fb-body');
+  let x0 = null, y0 = null;
+  body?.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+  body?.addEventListener('touchend', e => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { fbGo(fbPage + (dx < 0 ? 1 : -1)); fbSync(true); }
+    x0 = y0 = null;
+  }, { passive: true });
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(es => { fbInView = es[0].isIntersecting; fbSync(); }).observe(col);
   } else {
     fbInView = true;
   }
 })();
-
-function applyGoogleReviewsManual(s){
-  const section = document.getElementById('reviews');
-  if (!section) return;
-
-  const enabled = s.googleEnabled === true;
-  const mapsUrl = (s.googleMapsUrl && String(s.googleMapsUrl).trim()) || '';
-  if (!enabled || !mapsUrl) {
-    // Não esconde se loadGoogleReviews já exibiu avaliações manuais
-    if (!document.getElementById('rv-grid')?.classList.contains('is-on')) section.classList.remove('is-on');
-    return;
-  }
-
-  // Nota: aceita 1-5 (incl. decimais). Renderiza estrelas cheias arredondadas.
-  const ratingNum = Number(s.googleRatingManual);
-  const ratingEl  = document.getElementById('rv-rating');
-  const starsEl   = document.getElementById('rv-stars');
-  if (Number.isFinite(ratingNum) && ratingNum > 0) {
-    ratingEl.textContent = ratingNum.toFixed(1).replace('.', ',');
-    const full = Math.round(Math.max(0, Math.min(5, ratingNum)));
-    starsEl.textContent = '★'.repeat(full) + '☆'.repeat(5 - full);
-  } else {
-    ratingEl.textContent = '';
-    starsEl.textContent = '★★★★★';
-  }
-
-  const countEl = document.getElementById('rv-count');
-  const count = Number(s.googleReviewsCount);
-  if (Number.isFinite(count) && count > 0) {
-    countEl.textContent = '· ' + count + ' avaliações';
-  } else {
-    countEl.textContent = 'avaliações';
-  }
-
-  const btnMaps = document.getElementById('rv-btn-maps');
-  btnMaps.href = mapsUrl;
-
-  const btnWrite = document.getElementById('rv-btn-write');
-  const reviewUrl = (s.googleReviewUrl && String(s.googleReviewUrl).trim()) || '';
-  if (reviewUrl) {
-    btnWrite.href = reviewUrl;
-    btnWrite.style.display = '';
-  } else {
-    btnWrite.style.display = 'none';
-  }
-
-  section.classList.add('is-on'); // revela a seção
-}
 
 function applyProcessHeader(s){
   setText('proc-label',    s.processLabel);
@@ -1981,9 +1779,6 @@ function applySectionHeaders(s){
   setText('cur-label',    s.coursesLabel);
   setText('cur-title',    s.coursesTitle);
   setText('cur-subtitle', s.coursesSubtitle);
-  // Avaliações (mantém h2 fixo "Avaliações no Google" por compliance)
-  setText('rv-label',    s.reviewsLabel);
-  setText('rv-subtitle', s.reviewsSubtitle);
 }
 
 function applyCta(s){
@@ -1997,10 +1792,6 @@ function applyMentorship(s){
   setText('mentorship-title',    s.mentorshipTitle);
   setText('mentorship-subtitle', s.mentorshipSubtitle);
 
-  // Campo "mentorshipChannelName" agora é o título da área de feedbacks (R12)
-  if (s.mentorshipChannelName) {
-    setText('mentorship-channel', String(s.mentorshipChannelName).replace(/^#/, ''));
-  }
 
   // CTAs: explícitos no admin > WhatsApp do Settings > #cta fallback
   const mCta1 = document.getElementById('mentoria-cta-primary');
@@ -2197,7 +1988,6 @@ async function loadSettings(){
     applySectionHeaders(s);
     applyCta(s);
     applyFooterCopyright(s);
-    applyGoogleReviewsManual(s);
 
     // ── Footer brand bio
     const brand = document.querySelector('.footer-brand p');
