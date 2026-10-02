@@ -6,6 +6,7 @@ import { env }          from '../config/env';
 import { ApiError }     from '../utils/ApiError';
 import prisma           from '../prisma/client';
 import { JwtPayload }   from '../types';
+import { passwordFingerprint } from '../utils/passwordFingerprint';
 
 // ─── authenticate ─────────────────────────────────────────────────────────────
 // Verifica o Bearer token e injeta req.user
@@ -53,6 +54,7 @@ export const authenticate = async (
         email:    true,
         role:     true,
         isActive: true,
+        password: true,
       },
     });
 
@@ -62,6 +64,11 @@ export const authenticate = async (
 
     if (!user.isActive) {
       throw ApiError.unauthorized('Conta desativada');
+    }
+
+    // Token emitido antes da última troca de senha (ou sem versão) não vale mais
+    if (!payload.pwv || payload.pwv !== passwordFingerprint(user.password)) {
+      throw ApiError.unauthorized('Sessão expirada. Faça login novamente.');
     }
 
     // ── Injeta usuário na request ─────────────────────────────────────────────
@@ -126,10 +133,10 @@ export const optionalAuth = async (
 
     const user = await prisma.user.findUnique({
       where:  { id: payload.sub },
-      select: { id: true, name: true, email: true, role: true, isActive: true },
+      select: { id: true, name: true, email: true, role: true, isActive: true, password: true },
     });
 
-    if (user && user.isActive) {
+    if (user && user.isActive && payload.pwv && payload.pwv === passwordFingerprint(user.password)) {
       req.user = {
         id:    user.id,
         name:  user.name,

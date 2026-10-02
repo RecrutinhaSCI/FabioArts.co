@@ -170,6 +170,10 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               Minha conta
             </button>
+            <button class="profile-item" data-action="change-password">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              Alterar senha
+            </button>
             <a href="settings.html" class="profile-item">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
               Configurações
@@ -262,7 +266,22 @@
   }
 
   // Modal "Minha conta" — criado on-demand
-  function openProfileModal() {
+  function escText(v) {
+    return String(v ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Requisitos (espelham a validação do backend em PUT /auth/change-password)
+  function passwordProblems(pw) {
+    const p = [];
+    if (pw.length < 10) p.push('mínimo de 10 caracteres');
+    if (pw.length > 72) p.push('máximo de 72 caracteres');
+    if (!/[a-z]/.test(pw)) p.push('uma letra minúscula');
+    if (!/[A-Z]/.test(pw)) p.push('uma letra maiúscula');
+    if (!/[0-9]/.test(pw)) p.push('um número');
+    return p;
+  }
+
+  function openProfileModal(focusPassword) {
     if (typeof Auth === 'undefined') return;
     const user = Auth.getUser() || {};
     let modal = document.getElementById('profile-modal');
@@ -270,37 +289,89 @@
       modal = document.createElement('div');
       modal.id = 'profile-modal';
       modal.className = 'modal-overlay';
+      modal.setAttribute('role', 'dialog');
+      modal.setAttribute('aria-modal', 'true');
       modal.innerHTML = `
         <div class="modal modal-md">
           <div class="modal-header">
             <div class="modal-title">Minha conta</div>
-            <button class="modal-close" data-modal-close="profile-modal">
+            <button class="modal-close" data-modal-close="profile-modal" aria-label="Fechar">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
           <div class="modal-body">
-            <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1.2rem">
-              <div class="profile-avatar" style="width:56px;height:56px;font-size:1.1rem">${(user.name||'FA').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}</div>
+            <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1.4rem">
+              <div class="profile-avatar" style="width:56px;height:56px;font-size:1.1rem">${escText((user.name||'FA').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase())}</div>
               <div>
-                <div style="font-weight:600;font-size:1rem;color:var(--txt)">${user.name || '—'}</div>
-                <div style="font-size:.8rem;color:var(--txt-2)">${user.email || '—'}</div>
-                <div style="margin-top:.3rem;font-size:.7rem;color:var(--gold);font-weight:600;letter-spacing:.1em">${user.role || 'ADMIN'}</div>
+                <div style="font-weight:600;font-size:1rem;color:var(--txt)">${escText(user.name || '—')}</div>
+                <div style="font-size:.8rem;color:var(--txt-2)">${escText(user.email || '—')}</div>
               </div>
             </div>
-            <p style="font-size:.82rem;color:var(--txt-2);line-height:1.55">
-              Para editar nome, e-mail, avatar ou senha, use a página de
-              <a href="settings.html" style="color:var(--gold);text-decoration:underline">Configurações</a>.
+            <form id="pw-form" autocomplete="off" novalidate>
+              <div class="form-block-title" style="margin-bottom:.8rem;font-weight:600;color:var(--txt)">Alterar senha</div>
+              <input type="text" name="username" autocomplete="username" value="${escText(user.email || '')}" hidden/>
+              <div class="form-group">
+                <label class="form-label" for="pw-current">Senha atual</label>
+                <input type="password" class="form-control" id="pw-current" autocomplete="current-password" required/>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="pw-new">Nova senha</label>
+                <input type="password" class="form-control" id="pw-new" autocomplete="new-password" required/>
+                <small class="form-hint">Mínimo de 10 caracteres, com letra maiúscula, letra minúscula e número.</small>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="pw-confirm">Confirmar nova senha</label>
+                <input type="password" class="form-control" id="pw-confirm" autocomplete="new-password" required/>
+              </div>
+              <div id="pw-error" role="alert" style="display:none;color:var(--red);font-size:.8rem;margin-top:.4rem"></div>
+            </form>
+            <p style="font-size:.78rem;color:var(--txt-2);line-height:1.5;margin-top:.8rem">
+              Ao trocar a senha, todas as sessões abertas são encerradas e você entra de novo com a nova senha.
             </p>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" data-modal-close="profile-modal">Fechar</button>
-            <a href="settings.html" class="btn btn-primary">Abrir configurações</a>
+            <button class="btn btn-secondary" data-modal-close="profile-modal" type="button">Fechar</button>
+            <button class="btn btn-primary" id="pw-submit" type="submit" form="pw-form">Alterar senha</button>
           </div>
         </div>`;
       document.body.appendChild(modal);
+
+      const form = modal.querySelector('#pw-form');
+      const errEl = modal.querySelector('#pw-error');
+      const submitBtn = modal.querySelector('#pw-submit');
+      const showErr = msg => { errEl.textContent = msg; errEl.style.display = msg ? 'block' : 'none'; };
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const currentPassword = modal.querySelector('#pw-current').value;
+        const newPassword     = modal.querySelector('#pw-new').value;
+        const confirmPassword = modal.querySelector('#pw-confirm').value;
+        showErr('');
+        if (!currentPassword || !newPassword || !confirmPassword) return showErr('Preencha os três campos.');
+        const problems = passwordProblems(newPassword);
+        if (problems.length) return showErr('A nova senha precisa de: ' + problems.join(', ') + '.');
+        if (newPassword !== confirmPassword) return showErr('A confirmação não confere com a nova senha.');
+        if (newPassword === currentPassword) return showErr('A nova senha deve ser diferente da atual.');
+
+        if (window.Helpers?.setButtonLoading) Helpers.setButtonLoading(submitBtn, true); else submitBtn.disabled = true;
+        try {
+          await API.put('/auth/change-password', { currentPassword, newPassword, confirmPassword });
+          form.reset();
+          if (typeof Toast !== 'undefined') Toast.success('Senha alterada. Entre novamente com a nova senha.');
+          Auth.clearSession();
+          setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+        } catch (err) {
+          showErr((err.errors && err.errors[0] && err.errors[0].message) || err.message || 'Não foi possível alterar a senha.');
+        } finally {
+          if (window.Helpers?.setButtonLoading) Helpers.setButtonLoading(submitBtn, false); else submitBtn.disabled = false;
+        }
+      });
     }
+    modal.querySelector('#pw-form').reset();
+    modal.querySelector('#pw-error').style.display = 'none';
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
+    if (focusPassword) setTimeout(() => modal.querySelector('#pw-current').focus(), 100);
   }
 
   // ─── HAMBURGER (mobile + desktop collapse) ──────────────────────────────────
@@ -364,7 +435,11 @@
     if (!t) return;
     if (t.dataset.action === 'open-profile') {
       e.preventDefault();
-      openProfileModal();
+      openProfileModal(false);
+    }
+    if (t.dataset.action === 'change-password') {
+      e.preventDefault();
+      openProfileModal(true);
     }
   });
 

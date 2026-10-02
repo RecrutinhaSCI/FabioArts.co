@@ -59,32 +59,12 @@ body{
   color:var(--txt);
   font-family:var(--ff-body);
   overflow-x:hidden;
-  cursor:none;
 }
 ::selection{background:var(--gold);color:#000}
+a:focus-visible,button:focus-visible,.port-card:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 a{color:inherit;text-decoration:none}
 img{display:block;max-width:100%}
-button{cursor:none;font-family:var(--ff-body);border:none;background:none}
-
-/* CURSOR */
-#cursor{
-  position:fixed;width:12px;height:12px;
-  background:var(--gold);border-radius:50%;
-  pointer-events:none;z-index:9999;
-  transform:translate(-50%,-50%);
-  transition:transform .15s var(--ease),width .25s var(--ease),height .25s var(--ease),opacity .25s;
-  mix-blend-mode:difference;
-}
-#cursor-ring{
-  position:fixed;width:36px;height:36px;
-  border:1.5px solid var(--gold);border-radius:50%;
-  pointer-events:none;z-index:9998;
-  transform:translate(-50%,-50%);
-  transition:transform .38s var(--ease),width .3s var(--ease),height .3s var(--ease),opacity .3s,border-color .3s;
-  opacity:.5;
-}
-body:has(a:hover) #cursor,body:has(button:hover) #cursor{width:20px;height:20px}
-body:has(a:hover) #cursor-ring,body:has(button:hover) #cursor-ring{width:56px;height:56px;opacity:.2}
+button{cursor:pointer;font-family:var(--ff-body);border:none;background:none}
 
 /* LOADING */
 #loader{
@@ -144,7 +124,7 @@ nav.scrolled{
 }
 .nav-cta:hover{background:var(--gold);color:#000;box-shadow:0 0 24px var(--gold-glow)}
 
-.hamburger{display:none;flex-direction:column;gap:5px;padding:8px;cursor:none}
+.hamburger{display:none;flex-direction:column;gap:5px;padding:8px;cursor:pointer}
 .hamburger span{display:block;width:24px;height:1.5px;background:var(--txt);transition:all .3s}
 .hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
 .hamburger.open span:nth-child(2){opacity:0}
@@ -241,18 +221,6 @@ nav.scrolled{
   transition:color .25s,border-color .25s,transform .25s;
 }
 .btn-ghost:hover{color:var(--txt);border-color:var(--border);transform:translateY(-2px)}
-.hero-scroll{
-  position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);
-  display:flex;flex-direction:column;align-items:center;gap:.6rem;
-  animation:fadeUp .8s var(--ease) 1.1s both;
-}
-.hero-scroll span{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--txt3)}
-.scroll-line{
-  width:1px;height:48px;background:linear-gradient(to bottom,var(--gold),transparent);
-  animation:scrollDrop 1.8s ease-in-out infinite;
-}
-@keyframes scrollDrop{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
-
 /* SECTIONS generic */
 section{padding:7rem 2rem}
 .container{max-width:1200px;margin:0 auto}
@@ -341,7 +309,7 @@ section{padding:7rem 2rem}
 .filter-btn{
   padding:.4rem 1.1rem;border:1px solid var(--border);border-radius:100px;
   font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);
-  transition:all .25s;cursor:none;
+  transition:all .25s;cursor:pointer;
 }
 .filter-btn.active,.filter-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(255,192,0,.06)}
 .port-more{display:flex;justify-content:center;margin-top:2.5rem}
@@ -353,7 +321,7 @@ section{padding:7rem 2rem}
 }
 .port-card{
   position:relative;border-radius:4px;overflow:hidden;
-  background:var(--bg2);cursor:none;
+  background:var(--bg2);cursor:pointer;
   border:1px solid var(--border);
   transition:transform .4s var(--ease),border-color .3s;
 }
@@ -427,7 +395,7 @@ section{padding:7rem 2rem}
   position:sticky;top:1rem;float:right;
   width:36px;height:36px;border:1px solid var(--border);border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-size:1.1rem;color:var(--txt3);cursor:none;
+  font-size:1.1rem;color:var(--txt3);cursor:pointer;
   transition:border-color .25s,color .25s;background:var(--bg1);
   margin:1rem 1rem 0 0;
 }
@@ -440,7 +408,6 @@ section{padding:7rem 2rem}
   padding:2.2rem;border:1px solid var(--border);border-radius:4px;
   background:var(--bg2);position:relative;overflow:hidden;
   transition:transform .35s var(--ease),border-color .35s;
-  cursor:none;
 }
 .srv-card::before{
   content:'';position:absolute;inset:0;
@@ -527,7 +494,7 @@ section{padding:7rem 2rem}
 .cursos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;margin-top:3.5rem}
 .curso-card{
   border:1px solid var(--border);border-radius:4px;background:var(--bg2);
-  overflow:hidden;transition:transform .35s var(--ease),border-color .3s;cursor:none;
+  overflow:hidden;transition:transform .35s var(--ease),border-color .3s;
 }
 .curso-card:hover{transform:translateY(-6px);border-color:var(--border2)}
 .curso-thumb{
@@ -762,7 +729,7 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
   background:#25d366;
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 8px 30px rgba(37,211,102,.4);
-  cursor:none;font-size:1.4rem;
+  font-size:1.4rem;
   transition:transform .3s,box-shadow .3s;
   animation:wiggle 3s ease-in-out infinite 3s;
 }
@@ -815,12 +782,9 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
 </head>
 <body>
 
-<!-- CURSOR -->
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
 
 <!-- WHATSAPP FLOAT -->
-<a id="wa-float" href="https://wa.me/555496840497" class="wa-float" title="WhatsApp" target="_blank" rel="noopener">
+<a id="wa-float" href="https://wa.me/555496840497" class="wa-float" title="WhatsApp" aria-label="Falar no WhatsApp" target="_blank" rel="noopener noreferrer">
   <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
   </svg>
@@ -872,10 +836,6 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
       <a id="hero-btn-secondary" href="#mentoria" class="btn-outline">Entrar na Mentoria</a>
       <a href="#cta" class="btn-ghost">Solicitar orçamento →</a>
     </div>
-  </div>
-  <div class="hero-scroll">
-    <span>Scroll</span>
-    <div class="scroll-line"></div>
   </div>
 </section>
 
@@ -949,7 +909,7 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
 <!-- MODAL -->
 <div class="modal-overlay" id="modal">
   <div class="modal-box">
-    <button class="modal-close" id="modal-close">✕</button>
+    <button class="modal-close" id="modal-close" aria-label="Fechar">✕</button>
     <div class="modal-img" id="modal-img"></div>
     <div class="modal-body">
       <div class="modal-cat" id="modal-cat"></div>
@@ -1116,10 +1076,10 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
         <div class="footer-logo">Fabioarts.co</div>
         <p>Design automotivo, streetwear e criação visual fora do padrão. Para marcas que querem ser inesquecíveis.</p>
         <div class="footer-social">
-          <a href="#" class="social-link" data-social="instagram" title="Instagram" target="_blank" rel="noopener">
+          <a href="#" class="social-link" data-social="instagram" title="Instagram" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
           </a>
-          <a href="#" class="social-link" data-social="whatsapp" title="WhatsApp" target="_blank" rel="noopener">
+          <a href="#" class="social-link" data-social="whatsapp" title="WhatsApp" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           </a>
         </div>
@@ -1250,25 +1210,11 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
 </div>
 
 <script>
-// CURSOR
-const cur = document.getElementById('cursor');
-const ring = document.getElementById('cursor-ring');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{
-  mx=e.clientX;my=e.clientY;
-  cur.style.left=mx+'px';cur.style.top=my+'px';
-});
-function animRing(){
-  rx+=(mx-rx)*.14;ry+=(my-ry)*.14;
-  ring.style.left=rx+'px';ring.style.top=ry+'px';
-  requestAnimationFrame(animRing);
-}animRing();
-
 // NAV SCROLL
 const nav=document.getElementById('navbar');
 window.addEventListener('scroll',()=>{
   nav.classList.toggle('scrolled',window.scrollY>60);
-});
+},{passive:true});
 
 // HAMBURGER
 const ham=document.getElementById('hamburger');
@@ -1298,7 +1244,9 @@ document.querySelectorAll('.mm-link').forEach(a=>a.addEventListener('click',()=>
       a:Math.random()*.5+.1
     });
   }
+  let running=false;
   function draw(){
+    if(!running) return;
     ctx.clearRect(0,0,W,H);
     particles.forEach(p=>{
       ctx.beginPath();
@@ -1310,7 +1258,12 @@ document.querySelectorAll('.mm-link').forEach(a=>a.addEventListener('click',()=>
       if(p.y<0)p.y=H;if(p.y>H)p.y=0;
     });
     requestAnimationFrame(draw);
-  }draw();
+  }
+  // Só anima enquanto o Hero está visível (sem interação com mouse/touch)
+  const start=()=>{ if(!running){ running=true; requestAnimationFrame(draw); } };
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(es=>{ es[0].isIntersecting ? start() : (running=false); }).observe(canvas);
+  } else start();
 })();
 
 // SCROLL REVEAL
@@ -1434,7 +1387,7 @@ function renderPortfolio(filter='all'){
       ? `<img class="port-thumb-img" src="${escAttr(img.card)}"${img.srcset ? ` srcset="${escAttr(img.srcset)}" sizes="${PORT_SIZES}"` : ''} alt="${escAttr(p.title)}" loading="lazy" decoding="async" onerror="this.style.display='none'"/>`
       : `<div class="port-thumb-label">${escHtml(p.title.substring(0,4).toUpperCase())}</div>`;
     return `
-      <div class="port-card stagger-child" data-id="${p.id}" onclick="openModal('${p.id}')">
+      <div class="port-card stagger-child" data-id="${p.id}" role="button" tabindex="0" aria-label="${escAttr('Ver projeto ' + p.title)}" onclick="openModal('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openModal('${p.id}')}">
         <div class="port-thumb ${colors[idx]}">${thumbInner}</div>
         <div class="port-overlay">
           <div class="port-overlay-cat">${CAT_LABEL[p.category] || p.category}</div>
@@ -1802,7 +1755,7 @@ function applyMentorship(s){
   const setCta = (el, text, url) => {
     if (!el) return;
     if (text) el.textContent = text;
-    if (url)  { el.href = url; el.target = '_blank'; el.rel = 'noopener'; }
+    if (url)  { el.href = url; el.target = '_blank'; el.rel = 'noopener noreferrer'; }
   };
   setCta(mCta1, s.mentorshipPrimaryText,   s.mentorshipPrimaryUrl   || waUrl);
   setCta(mCta2, s.mentorshipSecondaryText, s.mentorshipSecondaryUrl || waUrl);
@@ -2025,7 +1978,11 @@ async function loadSettings(){
 
     // ── Footer coluna Contato (por data-link)
     const byLink = sel => document.querySelector('#footer-contact-col a[data-link="' + sel + '"]');
-    const setIfHas = (el, val) => { if (el && val) el.href = val; };
+    const setIfHas = (el, val) => {
+      if (!el || !val) return;
+      el.href = val;
+      if (/^https?:/.test(val)) { el.target = '_blank'; el.rel = 'noopener noreferrer'; }
+    };
     setIfHas(byLink('instagram'), s.instagram && buildInstagramLink(s.instagram));
     setIfHas(byLink('whatsapp'),  s.whatsapp  && buildWhatsappLink(s.whatsapp));
     setIfHas(byLink('behance'),   s.behance   && (s.behance.startsWith('http') ? s.behance : 'https://' + s.behance));
@@ -2049,7 +2006,7 @@ function openModal(id){
   modalImg.className = 'modal-img ' + colors[colorIdx] + (img ? ' has-img' : '');
   modalImg.innerHTML = img
     ? `<img src="${escAttr(img.full)}" alt="${escAttr(p.title)}" decoding="async"/>` +
-      (img.isLarge ? `<a class="modal-zoom" href="${escAttr(img.full)}" target="_blank" rel="noopener">Ver em alta resolução ↗</a>` : '')
+      (img.isLarge ? `<a class="modal-zoom" href="${escAttr(img.full)}" target="_blank" rel="noopener noreferrer">Ver em alta resolução ↗</a>` : '')
     : escHtml(p.title.substring(0,2).toUpperCase());
   document.getElementById('modal-cat').textContent = CAT_LABEL[p.category] || p.category;
   document.getElementById('modal-title').textContent = p.title;
@@ -2071,6 +2028,7 @@ function closeModal(){
 document.getElementById('modal-close').addEventListener('click',closeModal);
 document.getElementById('modal-close2').addEventListener('click',closeModal);
 document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal()});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && document.getElementById('modal').classList.contains('open')) closeModal(); });
 
 // COURSES DATA
 const FA_WHATSAPP_FALLBACK = '555496840497';
@@ -2223,12 +2181,13 @@ async function loadCourses(){
 }
 
 // COUNTER ANIMATION — preserva prefixo (+, ~) e sufixo (Milhões, %, K, etc.)
-function animateCounter(el, target, prefix, suffix){
+function animateCounter(el, target, prefix, suffix, grouped){
   let current = 0;
   const step = Math.max(1, Math.ceil(target / 60));
+  const fmt = n => grouped ? n.toLocaleString('pt-BR') : String(n);
   const timer = setInterval(() => {
     current = Math.min(current + step, target);
-    el.textContent = prefix + current + suffix;
+    el.textContent = prefix + fmt(current) + suffix;
     if (current >= target) clearInterval(timer);
   }, 20);
 }
@@ -2236,12 +2195,14 @@ const statsObserver = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (!e.isIntersecting) return;
     const el = e.target;
-    const m = el.textContent.match(/^(\D*)(\d+)(.*)$/);
+    // Aceita número com ponto de milhar (ex.: +2.000.000) e termina exatamente no texto original
+    const m = el.textContent.match(/^(\D*)(\d{1,3}(?:\.\d{3})+|\d+)(.*)$/);
     if (!m) { statsObserver.unobserve(el); return; }
     const prefix = m[1];
-    const target = parseInt(m[2], 10);
+    const grouped = m[2].includes('.');
+    const target = parseInt(m[2].replace(/\./g, ''), 10);
     const suffix = m[3];
-    animateCounter(el, target, prefix, suffix);
+    animateCounter(el, target, prefix, suffix, grouped);
     statsObserver.unobserve(el);
   });
 }, { threshold: .5 });
@@ -2338,15 +2299,6 @@ loadCTAButtons();
 loadFooterColumns();
 loadGoogleReviews();
 
-// PARALLAX HERO
-window.addEventListener('scroll',()=>{
-  const y=window.scrollY;
-  const heroInner=document.querySelector('.hero-inner');
-  if(heroInner&&y<window.innerHeight){
-    heroInner.style.transform=`translateY(${y*0.28}px)`;
-    heroInner.style.opacity=1-(y/window.innerHeight)*1.3;
-  }
-});
 </script>
 
 </body>

@@ -100,25 +100,9 @@
               <input type="text" class="form-control" id="f-instagram" placeholder="@fabioarts"/>
             </div>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Behance</label>
-              <input type="text" class="form-control" id="f-behance" placeholder="behance.net/fabioarts"/>
-            </div>
-            <div class="form-group">
-              <label class="form-label">LinkedIn</label>
-              <input type="text" class="form-control" id="f-linkedin" placeholder="linkedin.com/in/fabioarts"/>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Logo (URL)</label>
-              <input type="text" class="form-control" id="f-logo" placeholder="https://..."/>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Banner (URL)</label>
-              <input type="text" class="form-control" id="f-banner" placeholder="https://..."/>
-            </div>
+          <div class="form-group">
+            <label class="form-label">Behance</label>
+            <input type="text" class="form-control" id="f-behance" placeholder="behance.net/fabioarts"/>
           </div>
         </div>
       </details>
@@ -196,15 +180,10 @@
             <label class="form-label">Parágrafo 2</label>
             <textarea class="form-control" id="f-aboutText2" rows="3" placeholder="Segundo parágrafo..."></textarea>
           </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Imagem 1 (URL)</label>
-              <input type="text" class="form-control" id="f-aboutImage1" placeholder="https://..."/>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Imagem 2 (URL)</label>
-              <input type="text" class="form-control" id="f-aboutImage2" placeholder="https://..."/>
-            </div>
+          <div class="form-group">
+            <label class="form-label">Foto do artista (URL)</label>
+            <input type="text" class="form-control" id="f-aboutImage1" placeholder="https://..."/>
+            <small class="sec-hint" style="margin-top:.3rem">Deixe vazio para manter a foto atual do site.</small>
           </div>
         </div>
       </details>
@@ -250,11 +229,6 @@
               <label class="form-label">Botão secundário — URL</label>
               <input type="text" class="form-control" id="f-mentorshipSecondaryUrl" placeholder="https://..."/>
             </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Título da área de feedbacks</label>
-            <input type="text" class="form-control" id="f-mentorshipChannelName" placeholder="Feedbacks de quem já participou"/>
-            <small class="sec-hint" style="margin-top:.3rem">Os feedbacks exibidos vêm das avaliações reais do Google (seção ⭐ Avaliações do Google). Sem avaliações disponíveis, a área fica oculta.</small>
           </div>
         </div>
       </details>
@@ -355,25 +329,6 @@
         </div>
       </details>
 
-      <!-- ═══════════════ HEADERS — AVALIAÇÕES ═══════════════ -->
-      <details class="settings-section">
-        <summary>
-          <span>⭐ Header — Avaliações</span>
-          <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-        </summary>
-        <div class="body">
-          <p class="sec-hint">Header da seção "Avaliações no Google". Para nota/contagem/place ID, use a seção ⭐ Avaliações do Google abaixo.</p>
-          <div class="form-group">
-            <label class="form-label">Label / Kicker</label>
-            <input type="text" class="form-control" id="f-reviewsLabel" placeholder="Prova social"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Subtítulo</label>
-            <textarea class="form-control" id="f-reviewsSubtitle" rows="2" placeholder="Centenas de clientes já confiaram..."></textarea>
-          </div>
-        </div>
-      </details>
-
       <!-- ═══════════════ CTA FINAL ═══════════════ -->
       <details class="settings-section">
         <summary>
@@ -404,40 +359,33 @@
           <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </summary>
         <div class="body">
-          <p class="sec-hint">Dados do perfil do Google para exibir prova social no site público. Sem chave da API, o site usa os valores manuais abaixo como fallback.</p>
+          <p class="sec-hint">Bloco "Avaliações no Google" ao lado da Mentoria: nota, total de avaliações e link da ficha. Os textos das avaliações exibidas são os depoimentos dos clientes ativos em <a href="clients.html" style="color:var(--gold);text-decoration:underline">Clientes</a>.</p>
           <div class="form-group">
             <label class="form-label" style="display:flex;align-items:center;gap:.5rem">
               <input type="checkbox" id="f-googleEnabled" style="width:auto;margin:0"/>
-              Exibir avaliações do Google no site
+              Mostrar nota, total e link do Google no site
             </label>
           </div>
           <div class="form-group">
             <label class="form-label">Place ID</label>
             <input type="text" class="form-control" id="f-googlePlaceId" placeholder="ChIJ..."/>
-            <small class="sec-hint" style="margin-top:.3rem">ID do local no Google Places.</small>
+            <small class="sec-hint" style="margin-top:.3rem">Opcional — só é usado se a API do Google Places for configurada no servidor.</small>
+          </div>
+          <div class="form-group">
+            <label class="form-label">URL do perfil no Google Maps</label>
+            <input type="text" class="form-control" id="f-googleMapsUrl" placeholder="https://g.page/fabioarts"/>
+            <small class="sec-hint" style="margin-top:.3rem">Botão "Ver avaliações no Google" do site.</small>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">URL do perfil no Google Maps</label>
-              <input type="text" class="form-control" id="f-googleMapsUrl" placeholder="https://g.page/fabioarts"/>
-              <small class="sec-hint" style="margin-top:.3rem">Link para ver todas as avaliações no Google.</small>
-            </div>
-            <div class="form-group">
-              <label class="form-label">URL para avaliar no Google</label>
-              <input type="text" class="form-control" id="f-googleReviewUrl" placeholder="https://search.google.com/local/writereview?placeid=..."/>
-              <small class="sec-hint" style="margin-top:.3rem">Link direto para o cliente avaliar no Google.</small>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">Nota manual (fallback)</label>
+              <label class="form-label">Nota no Google</label>
               <input type="number" step="0.1" min="0" max="5" class="form-control" id="f-googleRatingManual" placeholder="5.0"/>
               <small class="sec-hint" style="margin-top:.3rem">Nota manual de fallback, exemplo: 5.0.</small>
             </div>
             <div class="form-group">
-              <label class="form-label">Total de avaliações (fallback)</label>
+              <label class="form-label">Total de avaliações no Google</label>
               <input type="number" min="0" step="1" class="form-control" id="f-googleReviewsCount" placeholder="61"/>
-              <small class="sec-hint" style="margin-top:.3rem">Quantidade manual de avaliações, exemplo: 61.</small>
+              <small class="sec-hint" style="margin-top:.3rem">Exemplo: 70. Atualize quando o número na ficha do Google mudar.</small>
             </div>
           </div>
         </div>

@@ -7,6 +7,7 @@ import prisma          from '../prisma/client';
 import { env }         from '../config/env';
 import { ApiError }    from '../utils/ApiError';
 import { JwtPayload, AuthenticatedUser } from '../types';
+import { passwordFingerprint } from '../utils/passwordFingerprint';
 
 // ─── DTOs ─────────────────────────────────────────────────────────────────────
 
@@ -39,9 +40,12 @@ export interface AuthResult {
 
 // ─── Helpers internos ─────────────────────────────────────────────────────────
 
-function signAccessToken(user: { id: string; email: string; role: Role }): string {
+function signAccessToken(user: { id: string; email: string; role: Role; password: string }): string {
   return jwt.sign(
-    { sub: user.id, email: user.email, role: user.role } satisfies Omit<JwtPayload, 'iat' | 'exp'>,
+    {
+      sub: user.id, email: user.email, role: user.role,
+      pwv: passwordFingerprint(user.password), // troca de senha invalida tokens antigos
+    } satisfies Omit<JwtPayload, 'iat' | 'exp'>,
     env.JWT_SECRET,
     { expiresIn: env.JWT_EXPIRES_IN } as jwt.SignOptions
   );
@@ -150,7 +154,7 @@ export const AuthService = {
       where:   { token: refreshToken },
       include: {
         user: {
-          select: { id: true, email: true, role: true, isActive: true },
+          select: { id: true, email: true, role: true, isActive: true, password: true },
         },
       },
     });

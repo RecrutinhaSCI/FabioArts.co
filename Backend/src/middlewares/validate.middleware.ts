@@ -21,11 +21,15 @@ export const validate = (
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    const formatted = errors.array().map(err => ({
-      field:   'path' in err ? err.path : 'unknown',
-      message: err.msg,
-      value:   'value' in err ? err.value : undefined,
-    }));
+    const formatted = errors.array().map(err => {
+      const field = 'path' in err ? err.path : 'unknown';
+      return {
+        field,
+        message: err.msg,
+        // Nunca devolve o conteúdo de campos de senha
+        value: /password/i.test(field) ? undefined : ('value' in err ? err.value : undefined),
+      };
+    });
 
     return next(
       new ApiError(422, 'Dados de entrada inválidos', formatted)

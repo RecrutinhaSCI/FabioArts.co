@@ -4,6 +4,7 @@ export interface JwtPayload {
   sub:   string;
   email: string;
   role:  Role;
+  pwv?:  string; // versão da senha (ver utils/passwordFingerprint)
   iat?:  number;
   exp?:  number;
 }

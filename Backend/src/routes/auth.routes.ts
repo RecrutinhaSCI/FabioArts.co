@@ -47,7 +47,9 @@ const changePasswordValidation = validateRequest([
 
   body('newPassword')
     .notEmpty().withMessage('Nova senha é obrigatória')
-    .isLength({ min: 8 }).withMessage('Nova senha deve ter no mínimo 8 caracteres')
+    .isLength({ min: 10 }).withMessage('Nova senha deve ter no mínimo 10 caracteres')
+    .isLength({ max: 72 }).withMessage('Nova senha deve ter no máximo 72 caracteres')
+    .matches(/[a-z]/).withMessage('Nova senha deve conter ao menos uma letra minúscula')
     .matches(/[A-Z]/).withMessage('Nova senha deve conter ao menos uma letra maiúscula')
     .matches(/[0-9]/).withMessage('Nova senha deve conter ao menos um número')
     .custom((value, { req }) => {
