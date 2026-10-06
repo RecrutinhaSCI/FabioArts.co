@@ -18,6 +18,7 @@
   let filterFeatured = false;
   let filterPublishedOnly = false;
   let filterCategory = 'all';
+  let filterWork = '';
   let searchQuery = '';
   let editingId = null;
   let editingWasFeatured = false;
@@ -50,6 +51,10 @@
   const fPublished    = document.getElementById('f-published');
   const fFeatured     = document.getElementById('f-featured');
   const fClient       = document.getElementById('f-client');
+  const fCar          = document.getElementById('f-car');
+  const fWork         = document.getElementById('f-work');
+  const fDelivery     = document.getElementById('f-delivery');
+  const catFilters    = document.getElementById('category-filters');
   const modalTitle    = document.getElementById('modal-project-title');
   const thumbPreview  = document.getElementById('thumb-preview-box');
   const thumbPrevInfo = document.getElementById('thumb-preview-info');
@@ -91,6 +96,7 @@
       if (filterFeatured) params.set('isFeatured', 'true');
       if (filterPublishedOnly) params.set('isPublished', 'true');
       if (filterCategory && filterCategory !== 'all') params.set('category', filterCategory);
+      if (filterWork) params.set('workStatus', filterWork);
 
       const res = await API.get(`/projects?${params.toString()}`);
       projects = res.data || [];
@@ -123,7 +129,7 @@
       if (!fClient) return;
       const current = fClient.value;
       const opts = ['<option value="">— Sem cliente —</option>']
-        .concat(clientsCache.map(c => `<option value="${c.id}">${escHtml(c.name)}${c.company ? ' · ' + escHtml(c.company) : ''}</option>`));
+        .concat(clientsCache.map(c => `<option value="${c.id}">${escHtml(c.name)}${c.phone ? ' · ' + escHtml(c.phone) : ''}</option>`));
       fClient.innerHTML = opts.join('');
       if (current) fClient.value = current;
     } catch (err) { console.warn('clients:', err.message); }
@@ -168,11 +174,13 @@
               <div class="project-thumb">${thumb}</div>
               <div style="min-width:0">
                 <div class="title">${escHtml(p.title)}</div>
-                <div class="slug truncate">/${escHtml(p.slug)}</div>
+                <div class="slug truncate">${p.clientName ? escHtml(p.clientName) : '/' + escHtml(p.slug)}</div>
               </div>
             </div>
           </td>
           <td><span class="badge">${escHtml(categoryLabel(p.category))}</span></td>
+          <td>${Catalog.workStatusBadge(p.workStatus)}</td>
+          <td>${deliveryCell(p)}</td>
           <td>${statusBadge}${featBadge}</td>
           <td class="text-muted text-sm">${fmtDate(p.projectDate || p.createdAt)}</td>
           <td>
@@ -223,11 +231,14 @@
     fSlug.value        = p?.slug        || '';
     fSlug.dataset.auto = p ? '0' : '1';
     if (fSlugPreview) fSlugPreview.textContent = fSlug.value || 'slug';
-    fCategory.value    = p?.category    || '';
+    fCategory.innerHTML = Catalog.categoryOptions(p?.category || '');
+    fWork.innerHTML    = Catalog.options(Catalog.workStatuses, p?.workStatus || 'NOT_STARTED');
+    fCar.value         = p?.carModel    || '';
+    fDelivery.value    = p?.deliveryDate ? DateOnly.of(p.deliveryDate) : '';
     fThumbnail.value   = p?.thumbnail   || '';
     fDescription.value = p?.description || '';
     fTags.value        = (p?.tags || []).join(', ');
-    fDate.value        = p?.projectDate ? p.projectDate.slice(0,10) : '';
+    fDate.value        = p?.projectDate ? DateOnly.of(p.projectDate) : '';
     fPublished.checked = p ? !!p.isPublished : true;
     fFeatured.checked  = p ? !!p.isFeatured  : false;
     editingWasFeatured = !!p?.isFeatured;
@@ -261,6 +272,9 @@
       isFeatured:  fFeatured.checked,
       projectDate: fDate.value || null,
       clientId:    fClient.value || null,
+      carModel:     fCar.value.trim() || null,
+      workStatus:   fWork.value || 'NOT_STARTED',
+      deliveryDate: fDelivery.value || null,
     };
   }
 
@@ -334,7 +348,11 @@
           <div class="pv-meta-item"><div class="lbl">Categoria</div><div class="val">${escHtml(categoryLabel(p.category))}</div></div>
           <div class="pv-meta-item"><div class="lbl">Cliente</div><div class="val">${p.clientName ? escHtml(p.clientName) : '<span class="text-muted">—</span>'}</div></div>
           <div class="pv-meta-item"><div class="lbl">Data</div><div class="val">${fmtDate(p.projectDate || p.createdAt)}</div></div>
+          <div class="pv-meta-item"><div class="lbl">Andamento</div><div class="val">${Catalog.workStatusBadge(p.workStatus)}</div></div>
+          <div class="pv-meta-item"><div class="lbl">Entrega</div><div class="val">${escHtml(DateOnly.delivery(p.deliveryDate, p.workStatus).text)}</div></div>
+          ${p.carModel ? `<div class="pv-meta-item"><div class="lbl">Modelo do carro</div><div class="val">${escHtml(p.carModel)}</div></div>` : ''}
         </div>
+        ${p.clientId ? `<div style="margin-top:.8rem"><a class="btn btn-secondary btn-sm" href="pedidos.html?id=${encodeURIComponent(p.id)}">Ver pedido completo →</a></div>` : ''}
         <div class="pv-section">
           <h4>Descrição</h4>
           <p>${p.description ? escHtml(p.description) : '<span class="text-muted">Sem descrição.</span>'}</p>
@@ -400,7 +418,12 @@
     loadList();
   });
 
-  // Filtros de categoria
+  // Filtros de categoria — gerados do Catalog (fonte única)
+  if (catFilters) {
+    catFilters.innerHTML = [{ code: 'all', label: 'Todos' }, ...Catalog.categories]
+      .map(c => `<button class="filter-btn${c.code === 'all' ? ' active' : ''}" data-filter="${c.code}" type="button">${escHtml(c.label)}</button>`)
+      .join('');
+  }
   document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
@@ -435,6 +458,18 @@
     if (btn.dataset.action === 'delete') remove(id, btn.dataset.title);
   });
 
+  function deliveryCell(p) {
+    const d = DateOnly.delivery(p.deliveryDate, p.workStatus);
+    if (d.state === 'none') return '<span class="text-muted">—</span>';
+    const color = d.state === 'late' ? 'var(--red)' : d.state === 'today' ? 'var(--gold)' : 'var(--txt-2)';
+    const label = d.state === 'late' ? `Atrasada · ${DateOnly.format(p.deliveryDate)}` : DateOnly.format(p.deliveryDate);
+    return `<span class="text-sm" style="color:${color};white-space:nowrap" title="${escAttr(d.text)}">${escHtml(label)}</span>`;
+  }
+
   // ─── INIT ───────────────────────────────────────────────────────────────────
-  Promise.all([loadClients(), loadStats(), loadList()]);
+  Promise.all([loadClients(), loadStats(), loadList()]).then(() => {
+    // projects.html?id=... (atalho vindo de Pedidos) abre a edição
+    const openId = new URLSearchParams(location.search).get('id');
+    if (openId) startEdit(openId);
+  });
 })();

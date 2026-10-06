@@ -1,6 +1,8 @@
 import prisma from '../prisma/client';
 import { ApiError } from '../utils/ApiError';
 import { FinancialType, FinancialStatus } from '@prisma/client';
+import { ALL_FINANCIAL_STATUS_CODES, normalizePaymentMethod } from '../constants/catalog';
+import { parseDateInput } from '../utils/dates';
 
 /* ============================================================
    FinancialEntry — entradas e saídas com vínculo opcional a
@@ -9,7 +11,8 @@ import { FinancialType, FinancialStatus } from '@prisma/client';
    ============================================================ */
 
 const TYPES:   FinancialType[]   = ['INCOME', 'EXPENSE'];
-const STATUSES: FinancialStatus[] = ['PAID', 'PENDING', 'CANCELLED'];
+// PENDING / PARTIAL / PAID visíveis; CANCELLED mantido por compatibilidade
+const STATUSES = ALL_FINANCIAL_STATUS_CODES as FinancialStatus[];
 
 export interface CreateFinancialEntryDTO {
   type: FinancialType;
@@ -155,9 +158,9 @@ export const FinancialService = {
         description:   dto.description.trim(),
         category:      dto.category ?? null,
         status:        dto.status ?? 'PAID',
-        occurredAt:    new Date(dto.occurredAt),
-        dueDate:       dto.dueDate ? new Date(dto.dueDate) : null,
-        paymentMethod: dto.paymentMethod ?? null,
+        occurredAt:    parseDateInput(dto.occurredAt),
+        dueDate:       dto.dueDate ? parseDateInput(dto.dueDate) : null,
+        paymentMethod: normalizePaymentMethod(dto.paymentMethod),
         notes:         dto.notes ?? null,
         clientId:      dto.clientId ?? null,
         projectId:     dto.projectId ?? null,
@@ -201,9 +204,9 @@ export const FinancialService = {
         ...(dto.description   !== undefined && { description: dto.description }),
         ...(dto.category      !== undefined && { category: dto.category }),
         ...(dto.status        !== undefined && { status: dto.status }),
-        ...(dto.occurredAt    !== undefined && { occurredAt: dto.occurredAt ? new Date(dto.occurredAt) : null }),
-        ...(dto.dueDate       !== undefined && { dueDate: dto.dueDate ? new Date(dto.dueDate) : null }),
-        ...(dto.paymentMethod !== undefined && { paymentMethod: dto.paymentMethod }),
+        ...(dto.occurredAt    !== undefined && { occurredAt: dto.occurredAt ? parseDateInput(dto.occurredAt) : null }),
+        ...(dto.dueDate       !== undefined && { dueDate: dto.dueDate ? parseDateInput(dto.dueDate) : null }),
+        ...(dto.paymentMethod !== undefined && { paymentMethod: normalizePaymentMethod(dto.paymentMethod) }),
         ...(dto.notes         !== undefined && { notes: dto.notes }),
         ...(dto.clientId      !== undefined && { clientId: dto.clientId }),
         ...(dto.projectId     !== undefined && { projectId: dto.projectId }),
@@ -236,7 +239,8 @@ export const FinancialService = {
         _sum: { amount: true }, _count: { _all: true },
       }),
       prisma.financialEntry.aggregate({
-        where: { status: 'PENDING' },
+        // "A receber": pendentes e parcialmente pagos
+        where: { status: { in: ['PENDING', 'PARTIAL'] } },
         _sum: { amount: true }, _count: { _all: true },
       }),
       prisma.financialEntry.aggregate({

@@ -1,4 +1,5 @@
 import pool from '../config/pool';
+import { normalizePhone, isValidPhone } from '../utils/phone';
 
 export interface ClientRow {
   id: string;
@@ -6,9 +7,11 @@ export interface ClientRow {
   company: string | null;
   instagram: string | null;
   website: string | null;
+  phone: string | null;
   testimonial: string | null;
   logo: string | null;
   isActive: boolean;
+  projectsCount?: string | number;
   createdAt: string;
   updatedAt: string;
 }
@@ -18,6 +21,7 @@ export interface CreateClientDTO {
   company?: string;
   instagram?: string;
   website?: string;
+  phone?: string | null;
   testimonial?: string;
   logo?: string;
   isActive?: boolean;
@@ -30,6 +34,8 @@ export interface ListClientsOptions {
   search?: string;
   page?: string;
   limit?: string;
+  /** false → visão pública: só ativos e apenas nome + feedback (sem telefone/contato). */
+  isAdmin?: boolean;
 }
 
 const SELECT_FIELDS = `
@@ -38,9 +44,11 @@ const SELECT_FIELDS = `
   c.company,
   c.instagram,
   c.website,
+  c.phone,
   c.testimonial,
   c.logo,
   c."isActive"  AS "isActive",
+  (SELECT COUNT(*) FROM projects p WHERE p."clientId" = c.id) AS "projectsCount",
   c."createdAt" AS "createdAt",
   c."updatedAt" AS "updatedAt"
 `;
@@ -52,12 +60,50 @@ function formatClient(row: ClientRow) {
     company: row.company ?? null,
     instagram: row.instagram ?? null,
     website: row.website ?? null,
+    phone: row.phone ?? null,
     testimonial: row.testimonial ?? null,
     logo: row.logo ?? null,
     isActive: row.isActive,
+    projectsCount: Number(row.projectsCount ?? 0),
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };
+}
+
+// Visão pública: nada de telefone/contato — só o necessário para avaliações.
+function formatPublicClient(row: ClientRow) {
+  return {
+    id: row.id,
+    name: row.name,
+    testimonial: row.testimonial ?? null,
+    isActive: row.isActive,
+  };
+}
+
+/** Normaliza o telefone e garante que nenhum outro cliente usa o mesmo. */
+async function resolvePhone(phone: string | null | undefined, excludeId?: string) {
+  const raw = String(phone ?? '').trim();
+  if (!raw) return { phone: null, phoneNormalized: null };
+  if (!isValidPhone(raw)) {
+    throw Object.assign(new Error('Telefone inválido. Use DDD + número, ex.: (54) 99999-9999.'), { status: 400 });
+  }
+  const phoneNormalized = normalizePhone(raw);
+  const dup = await pool.query<{ id: string; name: string }>(
+    `SELECT id, name FROM clients WHERE "phoneNormalized" = $1 AND id <> $2 LIMIT 1`,
+    [phoneNormalized, excludeId ?? '']
+  );
+  if (dup.rows.length) {
+    throw Object.assign(new Error(`Telefone já cadastrado para o cliente: ${dup.rows[0].name}`), { status: 409 });
+  }
+  return { phone: raw, phoneNormalized };
+}
+
+// Corrida entre dois cadastros com o mesmo telefone: o índice UNIQUE barra.
+function uniquePhoneError(err: { code?: string; constraint?: string }): never {
+  if (err?.code === '23505' && String(err.constraint || '').includes('phoneNormalized')) {
+    throw Object.assign(new Error('Telefone já cadastrado para outro cliente.'), { status: 409 });
+  }
+  throw err;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -69,21 +115,34 @@ export async function listClients(opts: ListClientsOptions) {
   const params: unknown[] = [];
   let idx = 1;
 
-  if (opts.isActive !== undefined) {
+  const isAdmin = opts.isAdmin === true;
+
+  if (!isAdmin) {
+    // Site público só enxerga clientes ativos (bloco de avaliações).
+    conditions.push(`c."isActive" = true`);
+  } else if (opts.isActive !== undefined) {
     conditions.push(`c."isActive" = $${idx++}`);
     params.push(opts.isActive === 'true');
   }
 
   if (opts.search) {
+    const digits = isAdmin ? normalizePhone(opts.search) : '';
+    const byPhone = digits.length >= 4;
     conditions.push(`
       (
         c.name ILIKE $${idx}
         OR c.company ILIKE $${idx}
         OR c.instagram ILIKE $${idx}
+        OR c.website ILIKE $${idx}
+        ${byPhone ? `OR c."phoneNormalized" LIKE $${idx + 1}` : ''}
       )
     `);
     params.push(`%${opts.search}%`);
     idx++;
+    if (byPhone) {
+      params.push(`%${digits}%`);
+      idx++;
+    }
   }
 
   const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
@@ -113,7 +172,7 @@ export async function listClients(opts: ListClientsOptions) {
   );
 
   return {
-    data: result.rows.map(formatClient),
+    data: isAdmin ? result.rows.map(formatClient) : result.rows.map(formatPublicClient),
     pagination: {
       total,
       page: pageNum,
@@ -149,7 +208,9 @@ export async function createClient(dto: CreateClientDTO) {
     throw Object.assign(new Error('O campo name é obrigatório'), { status: 400 });
   }
 
-  const result = await pool.query<ClientRow>(
+  const { phone, phoneNormalized } = await resolvePhone(dto.phone);
+
+  const result = await pool.query<{ id: string }>(
     `
       INSERT INTO clients (
         id,
@@ -157,6 +218,8 @@ export async function createClient(dto: CreateClientDTO) {
         company,
         instagram,
         website,
+        phone,
+        "phoneNormalized",
         testimonial,
         logo,
         "isActive",
@@ -165,27 +228,25 @@ export async function createClient(dto: CreateClientDTO) {
       )
       VALUES (
         gen_random_uuid()::text,
-        $1, $2, $3, $4, $5, $6, $7,
+        $1, $2, $3, $4, $5, $6, $7, $8, $9,
         NOW(), NOW()
       )
-      RETURNING
-        id, name, company, instagram, website, testimonial, logo,
-        "isActive" AS "isActive",
-        "createdAt" AS "createdAt",
-        "updatedAt" AS "updatedAt"
+      RETURNING id
     `,
     [
       dto.name.trim(),
       dto.company ?? null,
       dto.instagram ?? null,
       dto.website ?? null,
+      phone,
+      phoneNormalized,
       dto.testimonial ?? null,
       dto.logo ?? null,
       dto.isActive ?? true,
     ]
-  );
+  ).catch(uniquePhoneError);
 
-  return formatClient(result.rows[0]);
+  return getClientById(result.rows[0].id);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -214,6 +275,11 @@ export async function updateClient(id: string, dto: UpdateClientDTO) {
   if (dto.website     !== undefined) push('website',       dto.website     ?? null);
   if (dto.testimonial !== undefined) push('testimonial',   dto.testimonial ?? null);
   if (dto.logo        !== undefined) push('logo',          dto.logo        ?? null);
+  if (dto.phone       !== undefined) {
+    const { phone, phoneNormalized } = await resolvePhone(dto.phone, id);
+    push('phone',             phone);
+    push('"phoneNormalized"', phoneNormalized);
+  }
   if (dto.isActive    !== undefined) push('"isActive"',    dto.isActive);
 
   if (!fields.length) {
@@ -226,7 +292,7 @@ export async function updateClient(id: string, dto: UpdateClientDTO) {
   await pool.query(
     `UPDATE clients SET ${fields.join(', ')} WHERE id = $${idx}`,
     params
-  );
+  ).catch(uniquePhoneError);
 
   return getClientById(id);
 }

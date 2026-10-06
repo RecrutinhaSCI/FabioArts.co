@@ -114,6 +114,43 @@ window.__FA_API_BASE__ = 'https://api.fabioarts.co';
 
 ---
 
+## 🧾 Pedidos (fluxo rápido do dia a dia)
+
+**Admin → Pedidos → Novo Pedido** lança um trabalho em 3 etapas:
+
+1. **Cliente** — telefone + nome. O telefone é o identificador: se já existir (em qualquer formato — `(54) 99999-9999`, `54999999999`, `+55…`), o painel mostra *"Cliente já cadastrado"* e reaproveita o cliente. Nunca duplica.
+2. **Projeto** — categoria (lista fixa) + modelo do carro (opcional). Nasce **não publicado** e **sem destaque**.
+3. **Orçamento / Financeiro** — valor, data de lançamento, data de entrega, status financeiro (Pendente / Parcialmente pago / Pago) e pagamento (Pix / Cartão / Boleto).
+
+Ao salvar, `POST /api/orders` cria **Cliente → Projeto → Orçamento → Lançamento financeiro** numa única transação Prisma (se algo falhar, nada fica gravado). Depois, cada registro é completado na sua própria área.
+
+- "Pedido" **não é uma tabela**: é um Projeto com cliente vinculado + seu Orçamento (`quotes.projectId`) e Financeiro (`financial_entries.projectId`).
+- **Andamento** (Não iniciado / Em andamento / Concluído / Cancelado) fica no Projeto; **status financeiro** fica no Financeiro — são independentes.
+- **Dashboard → Próximas entregas**: trabalhos em aberto com entrega entre hoje e hoje + 14 dias; atrasados aparecem primeiro, em vermelho.
+- **Categorias** têm fonte única: `Backend/src/constants/catalog.ts`, espelhada em `Catalog` (`Frontend/admin/assets/js/admin.js`). O teste `tests/unit.test.ts` falha se as duas divergirem.
+
+---
+
+## 🧪 Testes (Backend)
+
+```bash
+npm test
+```
+
+Sem banco, roda só os testes unitários. Para rodar também a integração (cenários do Novo Pedido, transação, deduplicação, agenda), suba um Postgres **local descartável** e passe `TEST_DATABASE_URL`:
+
+```bash
+docker run -d --name fabioarts-testdb -e POSTGRES_PASSWORD=test -e POSTGRES_DB=fabioarts_test -p 55432:5432 postgres:18-alpine
+```
+
+```bash
+TEST_DATABASE_URL=postgresql://postgres:test@localhost:55432/fabioarts_test npm test
+```
+
+⚠️ O teste de integração **apaga** o banco informado (`prisma migrate reset`) e por isso recusa qualquer host que não seja `localhost`.
+
+---
+
 ## 🗄️ Prisma (dev vs produção)
 
 | Cenário | Comando | Quando |
@@ -136,6 +173,7 @@ window.__FA_API_BASE__ = 'https://api.fabioarts.co';
 | `npm run build` | `tsc` | Compila TS para `dist/` |
 | `npm start` | `node dist/server.js` | Produção (após `build`) |
 | `npm run typecheck` | `tsc --noEmit` | CI / pre-commit |
+| `npm test` | `node --test` (unit + integração opcional) | Antes de subir |
 | `npm run release` | `prisma generate && prisma migrate deploy` | Pre-start em produção |
 | `npm run prisma:seed` | seed admin do `.env` | One-shot |
 | `npm run prisma:studio` | abre Prisma Studio | Inspeção de dados |
@@ -224,15 +262,15 @@ Todos sob `/api/`. Resposta padrão `{ success, message?, data?, pagination? }`.
 | `GET` | `/auth/me` | admin | perfil do admin |
 | `PUT` | `/auth/me` | admin | edita nome/email/avatar |
 | `PUT` | `/auth/change-password` | admin | troca senha |
-| `GET` | `/projects` | público | lista + paginação |
-| `GET` | `/projects/:id` | público | um projeto |
-| `GET` | `/projects/slug/:slug` | público | um projeto por slug |
+| `GET` | `/projects` | público* | lista + paginação (*sem token: só publicados) |
+| `GET` | `/projects/:id` | público* | um projeto (*rascunho só com token) |
+| `GET` | `/projects/slug/:slug` | público* | um projeto por slug (*rascunho só com token) |
 | `GET` | `/projects/stats` | público | totais agregados |
 | `POST` | `/projects` | admin | cria |
 | `PUT` | `/projects/:id` | admin | edita |
 | `DELETE` | `/projects/:id` | admin | remove |
-| `GET` | `/clients` | público | lista |
-| `GET` | `/clients/:id` | público | um cliente |
+| `GET` | `/clients` | público* | lista (*sem token: só ativos, apenas nome + feedback) |
+| `GET` | `/clients/:id` | admin | ficha completa (telefone, contato, projetos) |
 | `GET` | `/clients/stats` | público | totais |
 | `POST/PUT/DELETE` | `/clients[/:id]` | admin | CRUD |
 | `GET` | `/services` | público | lista |
@@ -242,12 +280,19 @@ Todos sob `/api/`. Resposta padrão `{ success, message?, data?, pagination? }`.
 | `GET` | `/quotes` | admin | lista |
 | `GET` | `/quotes/stats` | admin | totais por status |
 | `GET` | `/quotes/:id` | admin | um |
+| `POST` | `/quotes/manual` | admin | orçamento manual (nome, telefone, tipo) |
+| `PUT` | `/quotes/:id` | admin | edita orçamento |
 | `PATCH` | `/quotes/:id/status` | admin | muda status |
 | `DELETE` | `/quotes/:id` | admin | remove |
 | `GET` | `/settings` | público | singleton |
 | `PUT` | `/settings` | admin | atualiza |
 | `GET` | `/dashboard/stats` | admin | KPIs |
 | `GET` | `/dashboard/recent` | admin | últimas atividades |
+| `GET` | `/dashboard/deliveries` | admin | próximas entregas (hoje + 14 dias) |
+| `GET` | `/orders` | admin | pedidos (projetos com cliente) |
+| `GET` | `/orders/client-lookup?phone=` | admin | procura cliente pelo telefone |
+| `GET` | `/orders/:id` | admin | pedido completo (cliente, projeto, orçamento, financeiro) |
+| `POST` | `/orders` | admin | Novo Pedido (transação única) |
 
 ---
 

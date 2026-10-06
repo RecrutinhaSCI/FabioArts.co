@@ -21,4 +21,11 @@ router.get('/stats', DashboardController.getStats);
  */
 router.get('/recent', DashboardController.getRecent);
 
+/**
+ * @route  GET /api/dashboard/deliveries
+ * @desc   Próximas entregas: trabalhos em aberto até hoje + 14 dias (atrasados primeiro)
+ * @access Admin
+ */
+router.get('/deliveries', DashboardController.getDeliveries);
+
 export default router;

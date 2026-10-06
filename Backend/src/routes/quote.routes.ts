@@ -22,9 +22,11 @@ const publicQuoteLimiter = rateLimit({
 router.post('/', publicQuoteLimiter, QuoteController.create);
 
 // Admin
+router.post('/manual',       requireAdmin, QuoteController.createManual);
 router.get('/stats',         requireAdmin, QuoteController.stats);
 router.get('/',              requireAdmin, QuoteController.list);
 router.get('/:id',           requireAdmin, QuoteController.getById);
+router.put('/:id',           requireAdmin, QuoteController.update);
 router.patch('/:id/status',  requireAdmin, QuoteController.updateStatus);
 router.delete('/:id',        requireAdmin, QuoteController.remove);
 

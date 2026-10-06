@@ -1,14 +1,14 @@
 import { Router } from 'express';
-import { requireAdmin } from '../middlewares/auth.middleware';
+import { requireAdmin, optionalAuth } from '../middlewares/auth.middleware';
 import * as ctrl from '../controllers/project.controller';
 
 const router = Router();
 
-// Pública (portfólio)
+// Pública (portfólio) — sem token só retorna projetos publicados
 router.get('/stats',      ctrl.stats);
-router.get('/slug/:slug', ctrl.getBySlug);
-router.get('/',           ctrl.list);
-router.get('/:id',        ctrl.getById);
+router.get('/slug/:slug', optionalAuth, ctrl.getBySlug);
+router.get('/',           optionalAuth, ctrl.list);
+router.get('/:id',        optionalAuth, ctrl.getById);
 
 // Protegidas (admin)
 router.post('/',    requireAdmin, ctrl.create);

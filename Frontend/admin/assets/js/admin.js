@@ -354,6 +354,150 @@ const Topbar = {
   },
 };
 
+// ─── CATÁLOGO (fonte única do painel) ────────────────────────────────────────
+// Espelha Backend/src/constants/catalog.ts — o teste tests/unit.test.ts garante
+// que as listas são iguais. Nenhuma página deve ter lista própria de categorias.
+
+const Catalog = {
+  categories: [
+    { code: 'AUTOMOTIVE', label: 'Design Automotivo' },
+    { code: 'TSHIRT', label: 'Camiseta' },
+    { code: 'STICKER', label: 'Adesivo' },
+    { code: 'BRANDING', label: 'Identidade Visual' },
+    { code: 'COMBO', label: 'Combos' },
+    { code: 'OTHER', label: 'Outros' },
+  ],
+  // Só para exibir registros antigos — nunca oferecidas em novos cadastros
+  legacyCategories: [
+    { code: 'SOCIAL_MEDIA', label: 'Social Media' },
+    { code: 'LOGO', label: 'Logo' },
+    { code: 'PACKAGING', label: 'Embalagem' },
+    { code: 'ILLUSTRATION', label: 'Ilustração' },
+  ],
+  workStatuses: [
+    { code: 'NOT_STARTED', label: 'Não iniciado' },
+    { code: 'IN_PROGRESS', label: 'Em andamento' },
+    { code: 'COMPLETED', label: 'Concluído' },
+    { code: 'CANCELLED', label: 'Cancelado' },
+  ],
+  financialStatuses: [
+    { code: 'PENDING', label: 'Pendente' },
+    { code: 'PARTIAL', label: 'Parcialmente pago' },
+    { code: 'PAID', label: 'Pago' },
+  ],
+  paymentMethods: [
+    { code: 'PIX', label: 'Pix' },
+    { code: 'CARTAO', label: 'Cartão' },
+    { code: 'BOLETO', label: 'Boleto' },
+  ],
+
+  WORK_BADGE: { NOT_STARTED: 'badge-grey', IN_PROGRESS: 'badge-blue', COMPLETED: 'badge-green', CANCELLED: 'badge-red' },
+  FIN_BADGE:  { PENDING: 'badge-yellow', PARTIAL: 'badge-blue', PAID: 'badge-green', CANCELLED: 'badge-grey' },
+
+  // Textos antigos de Orçamento (formulário do site antes da padronização)
+  LEGACY_QUOTE_TYPES: {
+    'Design Automotivo': 'AUTOMOTIVE', 'Camiseta / Streetwear': 'TSHIRT', 'Adesivos': 'STICKER',
+    'Identidade Visual': 'BRANDING', 'Outro': 'OTHER',
+  },
+
+  _label(list, code) {
+    const item = list.find(x => x.code === code);
+    return item ? item.label : (code || '—');
+  },
+  categoryLabel(code) {
+    return this._label([...this.categories, ...this.legacyCategories], code);
+  },
+  /** Código de categoria a partir de um projectType de orçamento (código ou texto antigo). */
+  quoteTypeCode(value) {
+    if (!value) return '';
+    if ([...this.categories, ...this.legacyCategories].some(c => c.code === value)) return value;
+    return this.LEGACY_QUOTE_TYPES[value] || '';
+  },
+  quoteTypeLabel(value) {
+    const code = this.quoteTypeCode(value);
+    return code ? this.categoryLabel(code) : (value || '—');
+  },
+  workStatusLabel(code)      { return code === 'CANCELLED' ? 'Cancelado' : this._label(this.workStatuses, code); },
+  financialStatusLabel(code) { return code === 'CANCELLED' ? 'Cancelado' : this._label(this.financialStatuses, code); },
+  paymentLabel(code) {
+    if (!code) return '—';
+    const m = this.paymentMethods.find(x => x.code === String(code).toUpperCase());
+    return m ? m.label : code;
+  },
+  workStatusBadge(code) {
+    return `<span class="badge ${this.WORK_BADGE[code] || 'badge-grey'}"><span class="badge-dot"></span>${this.workStatusLabel(code)}</span>`;
+  },
+  financialStatusBadge(code) {
+    if (!code) return '<span class="text-muted">—</span>';
+    return `<span class="badge ${this.FIN_BADGE[code] || 'badge-grey'}"><span class="badge-dot"></span>${this.financialStatusLabel(code)}</span>`;
+  },
+
+  /**
+   * <option>s de um select a partir de uma lista do catálogo.
+   * Se `current` for um código legado (ex.: SOCIAL_MEDIA num projeto antigo),
+   * ele aparece como opção extra só para não perder o valor na edição.
+   */
+  options(list, current, { placeholder, legacy } = {}) {
+    const esc = v => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    const opts = list.map(x => `<option value="${esc(x.code)}"${x.code === current ? ' selected' : ''}>${esc(x.label)}</option>`);
+    if (current && !list.some(x => x.code === current)) {
+      const label = legacy ? legacy(current) : current;
+      opts.push(`<option value="${esc(current)}" selected>${esc(label)} (antigo)</option>`);
+    }
+    if (placeholder) opts.unshift(`<option value="">${esc(placeholder)}</option>`);
+    return opts.join('');
+  },
+  categoryOptions(current, placeholder = 'Selecione...') {
+    return this.options(this.categories, current, { placeholder, legacy: c => this.categoryLabel(c) });
+  },
+};
+
+// ─── DATAS SEM HORA ("YYYY-MM-DD") ───────────────────────────────────────────
+// Datas de entrega são só dia: formatar sem passar por Date evita o bug de
+// "voltar um dia" no fuso do Brasil.
+
+const DateOnly = {
+  today() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  },
+  of(value) {
+    if (!value) return '';
+    const s = String(value);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    // coluna DATE serializada (meia-noite UTC) → o próprio dia, sem converter fuso
+    const midnight = s.match(/^(\d{4}-\d{2}-\d{2})T00:00:00(?:\.0+)?Z$/);
+    if (midnight) return midnight[1];
+    // timestamp gravado ao meio-dia UTC (ou ISO) → dia local
+    const d = new Date(s);
+    if (Number.isNaN(d.getTime())) return '';
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  },
+  format(value, short = false) {
+    const iso = this.of(value);
+    if (!iso) return '—';
+    const [y, m, d] = iso.split('-');
+    return short ? `${d}/${m}` : `${d}/${m}/${y}`;
+  },
+  diffDays(iso, from = this.today()) {
+    const a = Date.UTC(...from.split('-').map((n, i) => i === 1 ? n - 1 : +n));
+    const b = Date.UTC(...iso.split('-').map((n, i) => i === 1 ? n - 1 : +n));
+    return Math.round((b - a) / 86400000);
+  },
+  /** Situação da entrega: atrasada só se o trabalho ainda está em aberto. */
+  delivery(deliveryDate, workStatus) {
+    const iso = this.of(deliveryDate);
+    if (!iso) return { state: 'none', text: 'Sem data de entrega' };
+    const open = workStatus === 'NOT_STARTED' || workStatus === 'IN_PROGRESS';
+    const diff = this.diffDays(iso);
+    const date = this.format(iso);
+    if (!open) return { state: 'closed', text: `Entrega: ${date}` };
+    if (diff < 0)  return { state: 'late',  text: `Entrega atrasada — prevista para ${date}` };
+    if (diff === 0) return { state: 'today', text: `Entrega hoje — ${date}` };
+    return { state: 'ok', text: `Entrega prevista: ${date}` };
+  },
+};
+
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
 const Helpers = {
@@ -394,30 +538,21 @@ const Helpers = {
     return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
   },
 
+  // Acompanhamento do orçamento (negociação) — não é status financeiro.
+  QUOTE_STATUS: {
+    PENDING:   { cls: 'badge-yellow', label: 'Novo'       },
+    REPLIED:   { cls: 'badge-blue',   label: 'Respondido' },
+    CLOSED:    { cls: 'badge-green',  label: 'Fechado'    },
+    CANCELLED: { cls: 'badge-grey',   label: 'Cancelado'  },
+  },
+
   quoteStatusBadge(status) {
-    const map = {
-      PENDING:   { cls: 'badge-yellow', label: 'Pendente'    },
-      REPLIED:   { cls: 'badge-blue',   label: 'Respondido'  },
-      CLOSED:    { cls: 'badge-green',  label: 'Fechado'     },
-      CANCELLED: { cls: 'badge-grey',   label: 'Cancelado'   },
-    };
-    const s = map[status] || { cls: 'badge-grey', label: status };
+    const s = this.QUOTE_STATUS[status] || { cls: 'badge-grey', label: status };
     return `<span class="badge ${s.cls}"><span class="badge-dot"></span>${s.label}</span>`;
   },
 
   categoryLabel(cat) {
-    const map = {
-      AUTOMOTIVE:   'Automotivo',
-      TSHIRT:       'Camiseta',
-      STICKER:      'Adesivo',
-      BRANDING:     'Branding',
-      SOCIAL_MEDIA: 'Social Media',
-      LOGO:         'Logo',
-      PACKAGING:    'Embalagem',
-      ILLUSTRATION: 'Ilustração',
-      OTHER:        'Outro',
-    };
-    return map[cat] || cat;
+    return Catalog.categoryLabel(cat);
   },
 
   showPageLoader() {

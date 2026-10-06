@@ -13,7 +13,8 @@ function handleError(res: Response, error: unknown) {
 export async function list(req: Request, res: Response): Promise<void> {
   try {
     const { isActive, search, page, limit } = req.query as Record<string, string>;
-    const result = await ClientsService.listClients({ isActive, search, page, limit });
+    const isAdmin = req.user?.role === 'ADMIN' || req.user?.role === 'SUPER_ADMIN';
+    const result = await ClientsService.listClients({ isActive, search, page, limit, isAdmin });
     res.json({ success: true, ...result });
   } catch (error) {
     handleError(res, error);

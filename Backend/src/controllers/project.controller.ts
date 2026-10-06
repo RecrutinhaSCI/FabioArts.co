@@ -9,6 +9,10 @@ function handleError(res: Response, error: unknown) {
   res.status(status).json({ success: false, message });
 }
 
+function isAdminReq(req: Request): boolean {
+  return req.user?.role === 'ADMIN' || req.user?.role === 'SUPER_ADMIN';
+}
+
 // GET /api/projects
 export async function list(req: Request, res: Response): Promise<void> {
   try {
@@ -17,8 +21,10 @@ export async function list(req: Request, res: Response): Promise<void> {
       isFeatured, is_featured,
       isPublished, is_published,
       clientId, client_id,
+      workStatus,
       search, page, limit,
     } = req.query as Record<string, string>;
+    const isAdmin = req.user?.role === 'ADMIN' || req.user?.role === 'SUPER_ADMIN';
 
     // Aceita ambos formatos (camelCase ou snake_case) por compatibilidade
     const result = await ProjectsService.listProjects({
@@ -26,7 +32,9 @@ export async function list(req: Request, res: Response): Promise<void> {
       isFeatured:  isFeatured  ?? is_featured,
       isPublished: isPublished ?? is_published,
       clientId:    clientId    ?? client_id,
+      workStatus,
       search, page, limit,
+      isAdmin,
     });
 
     res.json({ success: true, ...result });
@@ -39,6 +47,10 @@ export async function list(req: Request, res: Response): Promise<void> {
 export async function getById(req: Request, res: Response): Promise<void> {
   try {
     const data = await ProjectsService.getProjectById(req.params.id);
+    if (!data.isPublished && !isAdminReq(req)) {
+      res.status(404).json({ success: false, message: 'Projeto não encontrado' });
+      return;
+    }
     res.json({ success: true, data });
   } catch (error) {
     handleError(res, error);
@@ -49,6 +61,10 @@ export async function getById(req: Request, res: Response): Promise<void> {
 export async function getBySlug(req: Request, res: Response): Promise<void> {
   try {
     const data = await ProjectsService.getProjectBySlug(req.params.slug);
+    if (!data.isPublished && !isAdminReq(req)) {
+      res.status(404).json({ success: false, message: 'Projeto não encontrado' });
+      return;
+    }
     res.json({ success: true, data });
   } catch (error) {
     handleError(res, error);

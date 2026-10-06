@@ -11,6 +11,7 @@
   const NAV = [
     { section: 'Principal' },
     { href: 'dashboard.html',   label: 'Dashboard',     icon: 'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z' },
+    { href: 'pedidos.html',     label: 'Pedidos',       icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 12h6M9 16h4' },
     { href: 'clients.html',     label: 'Clientes',      icon: 'M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 7a4 4 0 100 8 4 4 0 000-8z' },
     { href: 'projects.html',    label: 'Projetos',      icon: 'M3 3h18v18H3zM3 15l5-5 13 13' },
     { href: 'orcamentos.html',  label: 'Orçamentos',    icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z' },
@@ -34,6 +35,7 @@
   function pageTitle() {
     const titles = {
       'dashboard.html':            'Dashboard',
+      'pedidos.html':              'Pedidos',
       'clients.html':              'Clientes',
       'projects.html':             'Projetos',
       'orcamentos.html':           'Orçamentos',
@@ -243,8 +245,8 @@
         <a href="orcamentos.html" class="notif-item">
           <div class="notif-item-avatar">${(q.name||'?').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase()}</div>
           <div class="notif-item-text">
-            <div class="notif-item-title">${q.name || '—'} <span class="notif-item-badge">novo</span></div>
-            <div class="notif-item-sub">${q.projectType || ''} · ${fmt(q.createdAt)}</div>
+            <div class="notif-item-title">${escText(q.name || '—')} <span class="notif-item-badge">novo</span></div>
+            <div class="notif-item-sub">${escText(typeof Catalog !== 'undefined' ? Catalog.quoteTypeLabel(q.projectType) : (q.projectType || ''))} · ${fmt(q.createdAt)}</div>
           </div>
         </a>
       `).join('');

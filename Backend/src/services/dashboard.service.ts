@@ -108,6 +108,7 @@ export const DashboardService = {
           id: true,
           name: true,
           email: true,
+          whatsapp: true,
           projectType: true,
           estimatedBudget: true,
           status: true,
@@ -121,8 +122,7 @@ export const DashboardService = {
         select: {
           id: true,
           name: true,
-          company: true,
-          logo: true,
+          phone: true,
           createdAt: true,
         },
       }),

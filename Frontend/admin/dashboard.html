@@ -94,6 +94,32 @@
 
     .section-gap { margin-bottom: 1rem; }
 
+    /* ── Próximas entregas (hoje + 14 dias) ── */
+    .deliv-summary { font-size: .84rem; color: var(--txt-2); margin: -.15rem 0 .85rem; line-height: 1.5; }
+    .deliv-summary b { color: var(--txt); font-weight: 600; }
+    .deliv-summary .late { color: var(--red); font-weight: 600; }
+    .deliv-list { display: flex; flex-direction: column; gap: .45rem; }
+    .deliv-item {
+      display: grid; grid-template-columns: 64px 1fr auto; align-items: center; gap: .8rem;
+      padding: .6rem .8rem; border-radius: var(--radius);
+      background: var(--bg-input); border: 1px solid var(--border);
+      text-decoration: none; color: inherit; transition: border-color .15s;
+    }
+    .deliv-item:hover { border-color: var(--gold-border); }
+    .deliv-date { font-weight: 700; font-size: .95rem; color: var(--txt); line-height: 1.1; }
+    .deliv-date small { display: block; font-size: .62rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--txt-3); margin-top: .15rem; }
+    .deliv-main { min-width: 0; }
+    .deliv-main .who { font-size: .84rem; font-weight: 600; color: var(--txt); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .deliv-main .what { font-size: .74rem; color: var(--txt-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .deliv-item.late  { border-color: rgba(239,68,68,.4); background: var(--red-dim); }
+    .deliv-item.late .deliv-date, .deliv-item.late .deliv-date small { color: var(--red); }
+    .deliv-item.today { border-color: var(--gold); background: var(--gold-dim); }
+    .deliv-item.today .deliv-date, .deliv-item.today .deliv-date small { color: var(--gold); }
+    @media (max-width: 520px) {
+      .deliv-item { grid-template-columns: 54px 1fr; }
+      .deliv-item .badge { grid-column: 2; justify-self: start; }
+    }
+
     /* Pending badge pulsando */
     .pulse-badge {
       animation: pulseBadge 2s ease-in-out infinite;
@@ -136,14 +162,26 @@
           <p>Aqui está o resumo do seu negócio hoje.</p>
         </div>
         <div class="welcome-actions">
-          <a href="projects.html?action=new" class="btn btn-primary btn-sm">
+          <a href="pedidos.html?new=1" class="btn btn-primary btn-sm">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Novo Projeto
+            Novo Pedido
           </a>
           <a href="orcamentos.html" class="btn btn-secondary btn-sm">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
             Ver Orçamentos
           </a>
+        </div>
+      </div>
+
+      <!-- PRÓXIMAS ENTREGAS (hoje + 14 dias, atrasados primeiro) -->
+      <div class="card section-gap animate-fade-up" id="deliveries-card">
+        <div class="card-header">
+          <div class="card-title">Próximas entregas</div>
+          <a href="pedidos.html" class="card-action">Ver pedidos →</a>
+        </div>
+        <div class="card-body">
+          <p class="deliv-summary" id="deliv-summary">Carregando entregas...</p>
+          <div class="deliv-list" id="deliv-list"></div>
         </div>
       </div>
 

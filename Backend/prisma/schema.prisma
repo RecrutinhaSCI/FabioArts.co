@@ -28,6 +28,10 @@ enum QuoteStatus {
   CANCELLED
 }
 
+// Categorias ativas no painel (fonte única: src/constants/catalog.ts):
+// AUTOMOTIVE, TSHIRT, STICKER, BRANDING (Identidade Visual), COMBO, OTHER.
+// SOCIAL_MEDIA, LOGO, PACKAGING e ILLUSTRATION ficam só por compatibilidade
+// com registros antigos — não aparecem para novos cadastros.
 enum ProjectCategory {
   AUTOMOTIVE
   TSHIRT
@@ -38,6 +42,15 @@ enum ProjectCategory {
   PACKAGING
   ILLUSTRATION
   OTHER
+  COMBO
+}
+
+// Andamento do trabalho (separado do status financeiro)
+enum WorkStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
 }
 
 enum CourseLevel {
@@ -51,10 +64,12 @@ enum FinancialType {
   EXPENSE
 }
 
+// PAID / PARTIAL / PENDING são os visíveis; CANCELLED fica por compatibilidade
 enum FinancialStatus {
   PAID
   PENDING
   CANCELLED
+  PARTIAL
 }
 
 // ============================================================
@@ -98,19 +113,22 @@ model RefreshToken {
 // ============================================================
 
 model Client {
-  id          String   @id @default(uuid())
-  name        String
-  company     String?
-  logo        String?
-  testimonial String?
-  instagram   String?
-  website     String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String   @id @default(uuid())
+  name            String
+  company         String?
+  logo            String?
+  testimonial     String? // UI: "Feedback do cliente"
+  instagram       String? // UI: "Contato" (histórico: Fabio já guardava telefone aqui)
+  website         String? // UI: "Instagram"
+  phone           String?
+  phoneNormalized String?  @unique // só dígitos — identificador anti-duplicação
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   projects         Project[]
   financialEntries FinancialEntry[]
+  quotes           Quote[]
 
   @@map("clients")
 }
@@ -120,24 +138,30 @@ model Client {
 // ============================================================
 
 model Project {
-  id          String          @id @default(uuid())
-  title       String
-  slug        String          @unique
-  description String
-  category    ProjectCategory
-  thumbnail   String
-  tags        String[]
-  clientId    String?
-  isFeatured  Boolean         @default(false)
-  isPublished Boolean         @default(true)
-  projectDate DateTime?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id           String          @id @default(uuid())
+  title        String
+  slug         String          @unique
+  description  String
+  category     ProjectCategory
+  thumbnail    String
+  tags         String[]
+  clientId     String?
+  isFeatured   Boolean         @default(false)
+  isPublished  Boolean         @default(true)
+  projectDate  DateTime? // data de lançamento do pedido
+  carModel     String?
+  workStatus   WorkStatus      @default(NOT_STARTED)
+  deliveryDate DateTime?       @db.Date
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
 
   client           Client?          @relation(fields: [clientId], references: [id], onDelete: SetNull)
   images           ProjectImage[]
   financialEntries FinancialEntry[]
+  quotes           Quote[]
 
+  @@index([clientId])
+  @@index([deliveryDate])
   @@map("projects")
 }
 
@@ -180,11 +204,11 @@ model Service {
 model Quote {
   id              String      @id @default(uuid())
   name            String
-  email           String
+  email           String?
   whatsapp        String
   company         String?
   projectType     String
-  description     String
+  description     String?
   estimatedBudget String?
   status          QuoteStatus @default(PENDING)
   adminNotes      String?
@@ -192,8 +216,15 @@ model Quote {
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
+  clientId  String?
+  client    Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
   financialEntries FinancialEntry[]
 
+  @@index([clientId])
+  @@index([projectId])
   @@map("quotes")
 }
 

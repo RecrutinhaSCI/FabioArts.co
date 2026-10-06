@@ -1,17 +1,13 @@
 import pool from '../config/pool';
+import {
+  ProjectCategoryCode, WorkStatusCode,
+  ALL_CATEGORY_CODES, isActiveCategory, isKnownCategory, WORK_STATUS_CODES,
+} from '../constants/catalog';
+import { isDateOnly, parseDateInput } from '../utils/dates';
 
 // ─── TIPOS ────────────────────────────────────────────────────────────────────
 
-export type ProjectCategory =
-  | 'AUTOMOTIVE'
-  | 'TSHIRT'
-  | 'STICKER'
-  | 'BRANDING'
-  | 'SOCIAL_MEDIA'
-  | 'LOGO'
-  | 'PACKAGING'
-  | 'ILLUSTRATION'
-  | 'OTHER';
+export type ProjectCategory = ProjectCategoryCode;
 
 export interface ProjectRow {
   id:          string;
@@ -25,6 +21,9 @@ export interface ProjectRow {
   isFeatured:  boolean;
   isPublished: boolean;
   projectDate: string | null;
+  carModel:     string | null;
+  workStatus:   WorkStatusCode;
+  deliveryDate: string | null; // "YYYY-MM-DD"
   createdAt:   string;
   updatedAt:   string;
   // JOIN
@@ -43,6 +42,9 @@ export interface CreateProjectDTO {
   isFeatured?:  boolean;
   isPublished?: boolean;
   projectDate?: string;
+  carModel?:     string | null;
+  workStatus?:   WorkStatusCode;
+  deliveryDate?: string | null;
 }
 
 export interface UpdateProjectDTO extends Partial<CreateProjectDTO> {}
@@ -52,15 +54,31 @@ export interface ListProjectsOptions {
   isFeatured?:  string;
   isPublished?: string;
   clientId?:    string;
+  workStatus?:  string;
   search?:      string;
   page?:        string;
   limit?:       string;
+  /** false → visão pública: só projetos publicados. */
+  isAdmin?:     boolean;
 }
 
-const VALID_CATEGORIES: ProjectCategory[] = [
-  'AUTOMOTIVE', 'TSHIRT', 'STICKER', 'BRANDING',
-  'SOCIAL_MEDIA', 'LOGO', 'PACKAGING', 'ILLUSTRATION', 'OTHER',
-];
+// Categorias: fonte única em src/constants/catalog.ts
+const VALID_CATEGORIES = ALL_CATEGORY_CODES;
+
+function assertWorkStatus(value: unknown) {
+  if (value !== undefined && !WORK_STATUS_CODES.includes(String(value))) {
+    throw Object.assign(
+      new Error('Status de andamento inválido (Não iniciado, Em andamento, Concluído ou Cancelado).'),
+      { status: 400 }
+    );
+  }
+}
+
+function assertDeliveryDate(value: unknown) {
+  if (value !== undefined && value !== null && value !== '' && !isDateOnly(value)) {
+    throw Object.assign(new Error('Data de entrega inválida.'), { status: 400 });
+  }
+}
 
 // Vitrine "Todos" do portfólio público: no máximo 9 projetos em destaque (R16)
 export const MAX_FEATURED = 9;
@@ -91,6 +109,9 @@ const SELECT_FIELDS = `
   p."isFeatured"  AS "isFeatured",
   p."isPublished" AS "isPublished",
   p."projectDate" AS "projectDate",
+  p."carModel"    AS "carModel",
+  p."workStatus"  AS "workStatus",
+  to_char(p."deliveryDate", 'YYYY-MM-DD') AS "deliveryDate",
   p."createdAt"   AS "createdAt",
   p."updatedAt"   AS "updatedAt",
   c.name    AS "clientName",
@@ -112,6 +133,9 @@ function formatProject(row: ProjectRow) {
     isFeatured:    row.isFeatured,
     isPublished:   row.isPublished,
     projectDate:   row.projectDate  ?? null,
+    carModel:      row.carModel     ?? null,
+    workStatus:    row.workStatus,
+    deliveryDate:  row.deliveryDate ?? null,
     createdAt:     row.createdAt,
     updatedAt:     row.updatedAt,
   };
@@ -125,7 +149,7 @@ export async function listProjects(opts: ListProjectsOptions) {
   let   idx = 1;
 
   if (opts.category) {
-    if (!VALID_CATEGORIES.includes(opts.category as ProjectCategory)) {
+    if (!VALID_CATEGORIES.includes(opts.category)) {
       throw Object.assign(new Error(`Categoria inválida: ${opts.category}`), { status: 400 });
     }
     conditions.push(`p.category::text = $${idx++}`);
@@ -137,9 +161,18 @@ export async function listProjects(opts: ListProjectsOptions) {
     params.push(opts.isFeatured === 'true');
   }
 
-  if (opts.isPublished !== undefined) {
+  if (opts.isAdmin === false) {
+    // Público nunca enxerga rascunhos (ex.: pedidos recém-lançados).
+    conditions.push(`p."isPublished" = true`);
+  } else if (opts.isPublished !== undefined) {
     conditions.push(`p."isPublished" = $${idx++}`);
     params.push(opts.isPublished === 'true');
+  }
+
+  if (opts.workStatus) {
+    assertWorkStatus(opts.workStatus);
+    conditions.push(`p."workStatus"::text = $${idx++}`);
+    params.push(opts.workStatus);
   }
 
   if (opts.clientId) {
@@ -231,12 +264,11 @@ export async function createProject(dto: CreateProjectDTO) {
   if (!dto.slug?.trim()) {
     throw Object.assign(new Error('O campo slug é obrigatório'), { status: 400 });
   }
-  if (!dto.category || !VALID_CATEGORIES.includes(dto.category)) {
-    throw Object.assign(
-      new Error(`Categoria inválida. Valores aceitos: ${VALID_CATEGORIES.join(', ')}`),
-      { status: 400 }
-    );
+  if (!isActiveCategory(dto.category)) {
+    throw Object.assign(new Error('Selecione uma categoria válida.'), { status: 400 });
   }
+  assertWorkStatus(dto.workStatus);
+  assertDeliveryDate(dto.deliveryDate);
 
   const slugCheck = await pool.query(
     `SELECT id FROM projects WHERE slug = $1`,
@@ -262,25 +294,30 @@ export async function createProject(dto: CreateProjectDTO) {
     `INSERT INTO projects
        (id, title, slug, description, category, thumbnail, tags,
         "clientId", "isFeatured", "isPublished", "projectDate",
+        "carModel", "workStatus", "deliveryDate",
         "createdAt", "updatedAt")
      VALUES (
        gen_random_uuid()::text,
        $1, $2, $3, $4::text::"ProjectCategory", $5, $6,
        $7, $8, $9, $10,
+       $11, $12::text::"WorkStatus", $13::date,
        NOW(), NOW()
      )
      RETURNING id`,
     [
       dto.title.trim(),
       dto.slug.trim(),
-      dto.description ?? null,
+      dto.description ?? '',
       dto.category,
-      dto.thumbnail   ?? null,
+      dto.thumbnail   ?? '',
       dto.tags        ?? [],
-      dto.clientId    ?? null,
+      dto.clientId    || null,
       dto.isFeatured  ?? false,
       dto.isPublished ?? true,
-      dto.projectDate ?? null,
+      dto.projectDate ? parseDateInput(dto.projectDate) : null,
+      dto.carModel?.trim() || null,
+      dto.workStatus  ?? 'NOT_STARTED',
+      dto.deliveryDate || null,
     ]
   );
 
@@ -295,12 +332,15 @@ export async function updateProject(id: string, dto: UpdateProjectDTO) {
     throw Object.assign(new Error('Projeto não encontrado'), { status: 404 });
   }
 
-  if (dto.category && !VALID_CATEGORIES.includes(dto.category)) {
-    throw Object.assign(
-      new Error(`Categoria inválida. Valores aceitos: ${VALID_CATEGORIES.join(', ')}`),
-      { status: 400 }
-    );
+  // Categoria legada só é aceita se já era a do projeto (editar registro antigo).
+  if (dto.category !== undefined && !isActiveCategory(dto.category)) {
+    const cur = await pool.query<{ category: string }>(`SELECT category::text AS category FROM projects WHERE id = $1`, [id]);
+    if (!isKnownCategory(dto.category) || cur.rows[0]?.category !== dto.category) {
+      throw Object.assign(new Error('Selecione uma categoria válida.'), { status: 400 });
+    }
   }
+  assertWorkStatus(dto.workStatus);
+  assertDeliveryDate(dto.deliveryDate);
 
   if (dto.slug) {
     const slugCheck = await pool.query(
@@ -328,8 +368,13 @@ export async function updateProject(id: string, dto: UpdateProjectDTO) {
   const params: unknown[] = [];
   let   idx = 1;
 
+  const CASTS: Record<string, string> = {
+    category: '::text::"ProjectCategory"',
+    '"workStatus"': '::text::"WorkStatus"',
+    '"deliveryDate"': '::date',
+  };
   const push = (expr: string, val: unknown) => {
-    fields.push(`${expr} = $${idx++}`);
+    fields.push(`${expr} = $${idx++}${val === null ? '' : (CASTS[expr] ?? '')}`);
     params.push(val);
   };
 
@@ -337,12 +382,15 @@ export async function updateProject(id: string, dto: UpdateProjectDTO) {
   if (dto.slug        !== undefined) push('slug',          dto.slug?.trim());
   if (dto.description !== undefined) push('description',   dto.description ?? null);
   if (dto.category    !== undefined) push('category',      dto.category);
+  if (dto.carModel    !== undefined) push('"carModel"',    dto.carModel?.trim() || null);
+  if (dto.workStatus  !== undefined) push('"workStatus"',  dto.workStatus);
+  if (dto.deliveryDate !== undefined) push('"deliveryDate"', dto.deliveryDate || null);
   if (dto.thumbnail   !== undefined) push('thumbnail',     dto.thumbnail   ?? null);
   if (dto.tags        !== undefined) push('tags',          dto.tags        ?? []);
-  if (dto.clientId    !== undefined) push('"clientId"',    dto.clientId    ?? null);
+  if (dto.clientId    !== undefined) push('"clientId"',    dto.clientId    || null);
   if (dto.isFeatured  !== undefined) push('"isFeatured"',  dto.isFeatured);
   if (dto.isPublished !== undefined) push('"isPublished"', dto.isPublished);
-  if (dto.projectDate !== undefined) push('"projectDate"', dto.projectDate ?? null);
+  if (dto.projectDate !== undefined) push('"projectDate"', dto.projectDate ? parseDateInput(dto.projectDate) : null);
 
   if (!fields.length) {
     throw Object.assign(new Error('Nenhum campo para atualizar'), { status: 400 });

@@ -73,7 +73,7 @@
       <div class="page-header">
         <div>
           <h1 class="page-title">Orçamentos</h1>
-          <p class="page-subtitle">Solicitações recebidas pelo formulário público.</p>
+          <p class="page-subtitle">Solicitações do site e orçamentos dos pedidos. Para lançar um trabalho fechado, use Pedidos → Novo Pedido.</p>
         </div>
         <div class="page-actions">
           <button class="btn btn-secondary btn-sm" id="btn-refresh" type="button">
@@ -101,7 +101,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-card-top">
-            <span class="stat-label">Pendentes</span>
+            <span class="stat-label">Novos</span>
             <div class="stat-icon stat-icon-yellow">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             </div>
@@ -135,14 +135,14 @@
       <div class="filters-bar">
         <div class="filters-row">
           <button class="filter-btn active" data-f="all" type="button">Todos</button>
-          <button class="filter-btn" data-f="PENDING" type="button">Pendentes</button>
+          <button class="filter-btn" data-f="PENDING" type="button">Novos</button>
           <button class="filter-btn" data-f="REPLIED" type="button">Respondidos</button>
           <button class="filter-btn" data-f="CLOSED" type="button">Fechados</button>
           <button class="filter-btn" data-f="CANCELLED" type="button">Cancelados</button>
         </div>
         <div class="filter-search">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="filter-search" placeholder="Buscar por nome, e-mail ou tipo..."/>
+          <input type="text" id="filter-search" placeholder="Buscar por nome ou telefone..."/>
         </div>
       </div>
 
@@ -154,9 +154,9 @@
               <tr>
                 <th style="width:80px">#</th>
                 <th>Cliente</th>
-                <th>Tipo</th>
-                <th>Orçamento</th>
-                <th>Status</th>
+                <th>Tipo de projeto</th>
+                <th>Valor estimado</th>
+                <th>Acompanhamento</th>
                 <th>Recebido</th>
                 <th style="width:120px;text-align:right">Ações</th>
               </tr>
@@ -184,7 +184,7 @@
     <div class="modal-header">
       <div>
         <div class="modal-title" id="modal-title">Criar Orçamento</div>
-        <div class="modal-subtitle">Cadastre uma solicitação manualmente.</div>
+        <div class="modal-subtitle">Só o essencial: nome, telefone e tipo de projeto.</div>
       </div>
       <button class="modal-close" data-close-modal="modal-orcamento" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -192,25 +192,15 @@
     </div>
     <div class="modal-body">
       <div class="form-block">
-        <div class="form-block-title">Contato</div>
+        <div class="form-block-title">Cliente</div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Nome <span class="req">*</span></label>
-            <input class="form-control" id="f-nome" placeholder="Ex: João Silva"/>
+            <label class="form-label" for="f-nome">Nome <span class="req">*</span></label>
+            <input class="form-control" id="f-nome" placeholder="Ex: João Silva" maxlength="120"/>
           </div>
           <div class="form-group">
-            <label class="form-label">Empresa</label>
-            <input class="form-control" id="f-empresa" placeholder="Nome da empresa"/>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">E-mail <span class="req">*</span></label>
-            <input class="form-control" id="f-email" type="email" placeholder="email@exemplo.com"/>
-          </div>
-          <div class="form-group">
-            <label class="form-label">WhatsApp <span class="req">*</span></label>
-            <input class="form-control" id="f-whats" placeholder="(11) 99999-9999"/>
+            <label class="form-label" for="f-whats">Telefone <span class="req">*</span></label>
+            <input class="form-control" id="f-whats" type="tel" inputmode="tel" placeholder="(54) 99999-9999"/>
           </div>
         </div>
       </div>
@@ -219,40 +209,23 @@
         <div class="form-block-title">Projeto</div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Tipo <span class="req">*</span></label>
-            <select class="form-control" id="f-tipo">
-              <option value="">Selecione...</option>
-              <option>Design Automotivo</option>
-              <option>Camiseta / Streetwear</option>
-              <option>Adesivos</option>
-              <option>Identidade Visual</option>
-              <option>Branding Completo</option>
-              <option>Social Media</option>
-              <option>Outro</option>
-            </select>
+            <label class="form-label" for="f-tipo">Tipo de projeto <span class="req">*</span></label>
+            <select class="form-control" id="f-tipo"><!-- opções do Catalog (admin.js) --></select>
           </div>
           <div class="form-group">
-            <label class="form-label">Orçamento estimado</label>
-            <input class="form-control" id="f-valor" placeholder="R$ 0,00"/>
+            <label class="form-label" for="f-valor">Valor estimado</label>
+            <input class="form-control" id="f-valor" placeholder="R$ 0,00" maxlength="60"/>
           </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Descrição <span class="req">*</span></label>
-          <textarea class="form-control" id="f-desc" rows="3" placeholder="Descreva o que precisa..."></textarea>
-        </div>
+        <div class="form-hint" id="f-linked" hidden></div>
       </div>
 
       <div class="form-block">
         <div class="form-block-title">Acompanhamento</div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Status</label>
-            <select class="form-control" id="f-status">
-              <option value="PENDING">Pendente</option>
-              <option value="REPLIED">Respondido</option>
-              <option value="CLOSED">Fechado</option>
-              <option value="CANCELLED">Cancelado</option>
-            </select>
+            <label class="form-label" for="f-status">Acompanhamento</label>
+            <select class="form-control" id="f-status"><!-- Helpers.QUOTE_STATUS --></select>
           </div>
           <div class="form-group">
             <label class="form-label">Notas internas</label>
@@ -337,11 +310,13 @@ const PER_PAGE = 10;
 let debounceT = null;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-const STATUS_LABEL = { PENDING:'Pendente', REPLIED:'Respondido', CLOSED:'Fechado', CANCELLED:'Cancelado' };
-const STATUS_BADGE = { PENDING:'badge-yellow', REPLIED:'badge-green', CLOSED:'badge-blue', CANCELLED:'badge-red' };
+// Acompanhamento do orçamento (não é status financeiro nem andamento do trabalho)
+const STATUS_LABEL = Object.fromEntries(Object.entries(Helpers.QUOTE_STATUS).map(([k, v]) => [k, v.label]));
 
-function statusBadge(s){
-  return `<span class="badge ${STATUS_BADGE[s] || 'badge-grey'}"><span class="badge-dot"></span>${STATUS_LABEL[s] || s}</span>`;
+function statusBadge(s){ return Helpers.quoteStatusBadge(s); }
+function statusOptions(current){
+  return Object.entries(STATUS_LABEL)
+    .map(([k, l]) => `<option value="${k}"${k === current ? ' selected' : ''}>${l}</option>`).join('');
 }
 function fmtDate(s){ return s ? new Date(s).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'}) : '—'; }
 function ini(n){ return (n||'?').split(' ').map(x=>x[0]||'').join('').slice(0,2).toUpperCase(); }
@@ -388,13 +363,18 @@ function openModal(item){
   editingId = item?.id || null;
   document.getElementById('modal-title').textContent = item ? 'Editar Orçamento' : 'Criar Orçamento';
   document.getElementById('f-nome').value    = item?.name             || '';
-  document.getElementById('f-email').value   = item?.email            || '';
   document.getElementById('f-whats').value   = item?.whatsapp         || '';
-  document.getElementById('f-empresa').value = item?.company          || '';
-  document.getElementById('f-tipo').value    = item?.projectType      || '';
+  // Tipo antigo (texto do site) é convertido para a categoria padrão quando reconhecido
+  const typeCode = Catalog.quoteTypeCode(item?.projectType) || item?.projectType || '';
+  document.getElementById('f-tipo').innerHTML = Catalog.categoryOptions(typeCode);
+  document.getElementById('f-tipo').dataset.original = item?.projectType || '';
   document.getElementById('f-valor').value   = item?.estimatedBudget  || '';
-  document.getElementById('f-desc').value    = item?.description      || '';
-  document.getElementById('f-status').value  = item?.status           || 'PENDING';
+  document.getElementById('f-status').innerHTML = statusOptions(item?.status || 'PENDING');
+  const linked = document.getElementById('f-linked');
+  linked.hidden = !item?.projectId;
+  linked.innerHTML = item?.projectId
+    ? `Vinculado ao pedido <a class="text-gold" href="pedidos.html?id=${encodeURIComponent(item.projectId)}">${escHtml(item.project?.title || 'ver pedido')}</a>. Prazo de entrega e andamento ficam no projeto.`
+    : '';
   const notes = document.getElementById('f-notes');
   if (notes) notes.value = item?.adminNotes || '';
   Modal.open('modal-orcamento');
@@ -403,37 +383,41 @@ function closeModal(id){ Modal.close(id); }
 window.closeModal = closeModal;
 
 // ── Save ─────────────────────────────────────────────────────────────────────
+let saving = false;
 async function saveOrcamento(){
-  const name        = document.getElementById('f-nome').value.trim();
-  const email       = document.getElementById('f-email').value.trim();
-  const whatsapp    = document.getElementById('f-whats').value.trim();
-  const projectType = document.getElementById('f-tipo').value;
-  const description = document.getElementById('f-desc').value.trim();
-  const status      = document.getElementById('f-status').value;
-  const adminNotes  = document.getElementById('f-notes')?.value?.trim() || null;
+  if (saving) return;
+  const name            = document.getElementById('f-nome').value.trim();
+  const whatsapp        = document.getElementById('f-whats').value.trim();
+  const projectType     = document.getElementById('f-tipo').value;
+  const estimatedBudget = document.getElementById('f-valor').value.trim() || null;
+  const status          = document.getElementById('f-status').value;
+  const adminNotes      = document.getElementById('f-notes')?.value?.trim() || null;
+  const digits          = whatsapp.replace(/\D/g, '').replace(/^0+/, '');
 
   if (!name)        return Toast.error('Nome é obrigatório');
-  if (!email)       return Toast.error('E-mail é obrigatório');
-  if (!whatsapp)    return Toast.error('WhatsApp é obrigatório');
+  if (!whatsapp)    return Toast.error('Telefone é obrigatório');
+  if (digits.length < 10 || digits.length > 13) return Toast.error('Telefone inválido. Use DDD + número.');
   if (!projectType) return Toast.error('Tipo de projeto é obrigatório');
-  if (!description) return Toast.error('Descrição é obrigatória');
 
+  const btn = document.getElementById('btn-save');
+  saving = true;
+  Helpers.setButtonLoading(btn, true);
   try {
+    const payload = { name, whatsapp, projectType, estimatedBudget, status, adminNotes };
     if (editingId) {
-      await API.patch(`/quotes/${editingId}/status`, { status, adminNotes });
-      Toast.success('Status atualizado');
+      await API.put(`/quotes/${editingId}`, payload);
+      Toast.success('Orçamento atualizado');
     } else {
-      const company        = document.getElementById('f-empresa').value.trim() || null;
-      const estimatedBudget= document.getElementById('f-valor').value.trim()   || null;
-      await API.post('/quotes', {
-        name, email, whatsapp, company, projectType, description, estimatedBudget,
-      });
+      await API.post('/quotes/manual', payload);
       Toast.success('Orçamento criado');
     }
     Modal.close('modal-orcamento');
     await loadData();
   } catch (err) {
     Toast.error(err.message || 'Erro ao salvar');
+  } finally {
+    saving = false;
+    Helpers.setButtonLoading(btn, false);
   }
 }
 window.saveOrcamento = saveOrcamento;
@@ -456,27 +440,31 @@ function askDelete(id){
 window.askDelete = askDelete;
 
 // ── View ─────────────────────────────────────────────────────────────────────
-function viewItem(id){
-  const d = DATA.find(x => x.id === id);
+async function viewItem(id){
+  let d = DATA.find(x => x.id === id);
+  if (!d) {
+    try { d = (await API.get(`/quotes/${encodeURIComponent(id)}`)).data; }
+    catch (err) { Toast.error(err.message || 'Orçamento não encontrado'); return; }
+  }
   if (!d) return;
   document.getElementById('view-body').innerHTML = `
     <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem">
       <div class="quote-avatar" style="width:42px;height:42px;font-size:.78rem">${ini(d.name)}</div>
       <div style="flex:1;min-width:0">
         <div style="font-weight:600;color:var(--txt);font-size:1rem;line-height:1.2">${escHtml(d.name)}</div>
-        <div style="font-size:.75rem;color:var(--txt-3);margin-top:.1rem">${escHtml(d.company||'—')}</div>
+        <div style="font-size:.75rem;color:var(--txt-3);margin-top:.1rem">${escHtml(d.whatsapp||'—')}</div>
       </div>
       ${statusBadge(d.status)}
     </div>
     <div class="view-quote-grid">
-      <div><div class="lbl">E-mail</div><div class="val">${escHtml(d.email)}</div></div>
-      <div><div class="lbl">WhatsApp</div><div class="val">${escHtml(d.whatsapp||'—')}</div></div>
-      <div><div class="lbl">Tipo</div><div class="val">${escHtml(d.projectType||'—')}</div></div>
-      <div><div class="lbl">Orçamento</div><div class="val text-gold" style="font-weight:600">${escHtml(d.estimatedBudget||'—')}</div></div>
+      <div><div class="lbl">Telefone</div><div class="val">${escHtml(d.whatsapp||'—')}</div></div>
+      <div><div class="lbl">Tipo de projeto</div><div class="val">${escHtml(Catalog.quoteTypeLabel(d.projectType))}</div></div>
+      <div><div class="lbl">Valor estimado</div><div class="val text-gold" style="font-weight:600">${escHtml(d.estimatedBudget||'—')}</div></div>
       <div><div class="lbl">Recebido em</div><div class="val">${fmtDate(d.createdAt)}</div></div>
-      <div><div class="lbl">Respondido em</div><div class="val">${fmtDate(d.repliedAt)}</div></div>
+      ${d.project ? `<div><div class="lbl">Entrega prevista</div><div class="val">${escHtml(DateOnly.format(d.project.deliveryDate))}</div></div>
+      <div><div class="lbl">Pedido</div><div class="val"><a class="text-gold" href="pedidos.html?id=${encodeURIComponent(d.project.id)}">${escHtml(d.project.title)} →</a></div></div>` : ''}
     </div>
-    ${d.description ? `<div style="font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.4rem">Descrição</div><div class="view-quote-desc">${escHtml(d.description)}</div>` : ''}
+    ${d.description || d.email ? `<div style="font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:.4rem">Enviado pelo site</div><div class="view-quote-desc">${d.email ? `<div class="text-sm" style="margin-bottom:.35rem">${escHtml(d.email)}</div>` : ''}${escHtml(d.description || '')}</div>` : ''}
     ${d.adminNotes ? `<div class="view-quote-notes"><b>Notas internas:</b> ${escHtml(d.adminNotes)}</div>` : ''}
   `;
   document.getElementById('view-edit-btn').onclick = () => { Modal.close('modal-view'); openModal(d); };
@@ -522,19 +510,14 @@ function render(){
             <div class="quote-avatar">${ini(d.name)}</div>
             <div style="min-width:0">
               <div class="name truncate">${escHtml(d.name)}</div>
-              <div class="company truncate">${escHtml(d.company||'—')}</div>
+              <div class="company truncate">${escHtml(d.whatsapp||'—')}</div>
             </div>
           </div>
         </td>
-        <td>${escHtml(d.projectType||'—')}</td>
+        <td>${escHtml(Catalog.quoteTypeLabel(d.projectType))}${d.projectId ? `<div class="text-xs"><a class="text-gold" href="pedidos.html?id=${encodeURIComponent(d.projectId)}">ver pedido</a></div>` : ''}</td>
         <td>${d.estimatedBudget ? `<span class="text-gold" style="font-weight:600">${escHtml(d.estimatedBudget)}</span>` : '<span class="text-muted">—</span>'}</td>
         <td>
-          <select class="status-select" onchange="changeStatus('${d.id}', this.value)">
-            <option value="PENDING"   ${d.status==='PENDING'  ?'selected':''}>Pendente</option>
-            <option value="REPLIED"   ${d.status==='REPLIED'  ?'selected':''}>Respondido</option>
-            <option value="CLOSED"    ${d.status==='CLOSED'   ?'selected':''}>Fechado</option>
-            <option value="CANCELLED" ${d.status==='CANCELLED'?'selected':''}>Cancelado</option>
-          </select>
+          <select class="status-select" aria-label="Acompanhamento" onchange="changeStatus('${d.id}', this.value)">${statusOptions(d.status)}</select>
         </td>
         <td class="text-muted text-sm">${fmtDate(d.createdAt)}</td>
         <td>
@@ -542,7 +525,7 @@ function render(){
             <button class="btn btn-ghost btn-icon" title="Visualizar" type="button" onclick="viewItem('${d.id}')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
-            <button class="btn btn-ghost btn-icon" title="Editar" type="button" onclick='openModal(${JSON.stringify(d).replace(/'/g,"&#39;")})'>
+            <button class="btn btn-ghost btn-icon" title="Editar" type="button" onclick="editItem('${d.id}')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
             <button class="btn btn-ghost btn-icon" title="Excluir" type="button" style="color:var(--red)" onclick="askDelete('${d.id}')">
@@ -577,6 +560,8 @@ function render(){
 }
 
 window.openModal = openModal;
+function editItem(id){ const d = DATA.find(x => x.id === id); if (d) openModal(d); }
+window.editItem = editItem;
 
 // ── Events ───────────────────────────────────────────────────────────────────
 document.querySelectorAll('.filter-btn[data-f]').forEach(btn => {
@@ -605,6 +590,8 @@ document.querySelectorAll('[data-close-modal]').forEach(btn => {
 
 // Init
 loadData();
+const openId = new URLSearchParams(location.search).get('id');
+if (openId) viewItem(openId);
 
 } // fim do else do requireAuth
 </script>

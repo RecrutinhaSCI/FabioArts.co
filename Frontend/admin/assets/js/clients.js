@@ -40,11 +40,15 @@
 
   // Form Fields
   const fieldName       = document.getElementById('field-name');
-  const fieldCompany    = document.getElementById('field-company');
+  // Rótulos na tela: instagram → "Contato", website → "Instagram",
+  // testimonial → "Feedback do cliente" (colunas do banco preservadas).
+  const fieldPhone      = document.getElementById('field-phone');
   const fieldInstagram  = document.getElementById('field-instagram');
   const fieldWebsite    = document.getElementById('field-website');
   const fieldTestimonial= document.getElementById('field-testimonial');
-  const fieldLogo       = document.getElementById('field-logo');
+  const projectsBlock   = document.getElementById('client-projects');
+  const projectsList    = document.getElementById('client-projects-list');
+  const btnClientOrder  = document.getElementById('btn-client-new-order');
   const fieldActive     = document.getElementById('field-active');
   const statusFilter    = document.getElementById('clients-status-filter');
   const fieldErrors     = document.querySelectorAll('.field-error');
@@ -106,11 +110,14 @@
 
     const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
     const status = statusFilter ? statusFilter.value : 'all';
+    const qDigits = query.replace(/\D/g, '');
     const filtered = list
       .filter(c => status === 'all' || (status === 'active' ? c.isActive !== false : c.isActive === false))
       .filter(c => !query ||
-          (c.name    || '').toLowerCase().includes(query) ||
-          (c.company || '').toLowerCase().includes(query)
+          (c.name      || '').toLowerCase().includes(query) ||
+          (c.instagram || '').toLowerCase().includes(query) ||
+          (c.website   || '').toLowerCase().includes(query) ||
+          (qDigits.length >= 4 && String(c.phone || '').replace(/\D/g, '').includes(qDigits))
       );
 
     if (totalCount) totalCount.textContent = filtered.length;
@@ -126,35 +133,41 @@
       tr.className = 'fa-table__row';
       tr.dataset.id = client.id;
 
-      const logoHtml = client.logo
-        ? `<img src="${escHtml(client.logo)}" alt="${escHtml(client.name)}" class="client-logo-thumb" onerror="this.style.display='none'">`
-        : `<div class="client-logo-placeholder">${getInitials(client.name)}</div>`;
+      const logoHtml = `<div class="client-logo-placeholder">${escHtml(getInitials(client.name))}</div>`;
 
-      const instagramHtml = client.instagram
-        ? `<a href="https://instagram.com/${escHtml(client.instagram.replace('@',''))}" target="_blank" class="fa-link">@${escHtml(client.instagram.replace('@',''))}</a>`
+      // "Contato" (coluna instagram): texto livre — historicamente o telefone
+      const contactHtml = client.instagram
+        ? `<span class="text-sm">${escHtml(client.instagram)}</span>`
         : '<span class="fa-muted">—</span>';
 
-      const websiteHtml = client.website
-        ? `<a href="${escHtml(client.website)}" target="_blank" class="fa-link">${escHtml(shortenUrl(client.website))}</a>`
+      // "Instagram" (coluna website): @usuario ou URL
+      const igHtml = instagramLink(client.website);
+
+      const projectsHtml = client.projectsCount
+        ? `<span class="badge">${client.projectsCount} ${client.projectsCount === 1 ? 'projeto' : 'projetos'}</span>`
         : '<span class="fa-muted">—</span>';
 
       tr.innerHTML = `
         <td class="td-logo">${logoHtml}</td>
         <td class="td-name">
           <span class="client-name">${escHtml(client.name)}</span>
-          ${client.company ? `<span class="client-company">${escHtml(client.company)}</span>` : ''}
+          ${client.phone ? `<span class="client-company">${escHtml(client.phone)}</span>` : ''}
         </td>
-        <td class="td-instagram">${instagramHtml}</td>
-        <td class="td-website">${websiteHtml}</td>
+        <td class="td-instagram">${contactHtml}</td>
+        <td class="td-website">${igHtml}</td>
         <td class="td-testimonial">
           ${client.testimonial
             ? `<span class="testimonial-preview" title="${escHtml(client.testimonial)}">${escHtml(truncate(client.testimonial, 60))}</span>`
             : '<span class="fa-muted">—</span>'}
         </td>
+        <td>${projectsHtml}</td>
         <td class="td-status">${client.isActive !== false
             ? '<span class="badge badge-green"><span class="badge-dot"></span>Ativo</span>'
             : '<span class="badge badge-grey"><span class="badge-dot"></span>Inativo</span>'}</td>
         <td class="td-actions">
+          <a class="fa-btn fa-btn--icon fa-btn--ghost" href="pedidos.html?clientId=${encodeURIComponent(client.id)}" title="Novo pedido para este cliente" aria-label="Novo pedido para este cliente">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>
+          </a>
           <button class="fa-btn fa-btn--icon fa-btn--ghost btn-edit" data-id="${client.id}" title="Editar">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
           </button>
@@ -174,12 +187,12 @@
     if (modalTitle) modalTitle.textContent = client ? 'Editar Cliente' : 'Novo Cliente';
 
     fieldName.value        = client ? (client.name        || '') : '';
-    fieldCompany.value     = client ? (client.company     || '') : '';
+    fieldPhone.value       = client ? (client.phone       || '') : '';
     fieldInstagram.value   = client ? (client.instagram   || '') : '';
     fieldWebsite.value     = client ? (client.website     || '') : '';
     fieldTestimonial.value = client ? (client.testimonial || '') : '';
-    fieldLogo.value        = client ? (client.logo        || '') : '';
     if (fieldActive) fieldActive.checked = client ? client.isActive !== false : true;
+    loadClientProjects(client);
 
     modal.classList.add('is-open');
     document.body.classList.add('modal-open');
@@ -195,7 +208,7 @@
 
   function clearFormErrors() {
     fieldErrors.forEach(el => { el.textContent = ''; el.style.display = 'none'; });
-    [fieldName, fieldCompany, fieldInstagram, fieldWebsite, fieldTestimonial, fieldLogo]
+    [fieldName, fieldPhone, fieldInstagram, fieldWebsite, fieldTestimonial]
       .forEach(f => f && f.classList.remove('is-invalid'));
   }
 
@@ -212,6 +225,11 @@
       showFieldError(fieldName, 'Nome é obrigatório.');
       valid = false;
     }
+    const digits = fieldPhone.value.replace(/\D/g, '').replace(/^0+/, '');
+    if (fieldPhone.value.trim() && (digits.length < 10 || digits.length > 13)) {
+      showFieldError(fieldPhone, 'Telefone inválido. Use DDD + número, ex.: (54) 99999-9999.');
+      valid = false;
+    }
     return valid;
   }
 
@@ -224,13 +242,13 @@
   async function saveClient() {
     if (!validateForm()) return;
 
+    // Empresa e logo saíram do painel: não são enviados (valores antigos preservados).
     const payload = {
       name:        fieldName.value.trim(),
-      company:     fieldCompany.value.trim()     || null,
+      phone:       fieldPhone.value.trim()       || null,
       instagram:   fieldInstagram.value.trim()   || null,
       website:     fieldWebsite.value.trim()     || null,
       testimonial: fieldTestimonial.value.trim() || null,
-      logo:        fieldLogo.value.trim()        || null,
       isActive:    fieldActive ? fieldActive.checked : true,
     };
 
@@ -246,10 +264,48 @@
       closeModal();
       await loadClients();
     } catch (err) {
+      if (err.status === 409 || /telefone/i.test(err.message || '')) showFieldError(fieldPhone, err.message);
       toast(`Erro: ${err.message}`, 'error');
     } finally {
       setSaveLoading(false);
     }
+  }
+
+  // ─── PROJETOS DO CLIENTE ─────────────────────────────────────────────────────
+  async function loadClientProjects(client) {
+    if (!projectsBlock) return;
+    projectsBlock.hidden = !client;
+    if (!client) return;
+    btnClientOrder.href = `pedidos.html?clientId=${encodeURIComponent(client.id)}`;
+    projectsList.innerHTML = '<span class="fa-muted text-sm">Carregando projetos...</span>';
+    try {
+      const res = await API.get(`/projects?clientId=${encodeURIComponent(client.id)}&limit=50`);
+      const items = res.data || [];
+      if (!items.length) {
+        projectsList.innerHTML = '<span class="fa-muted text-sm">Nenhum projeto vinculado ainda.</span>';
+        return;
+      }
+      projectsList.innerHTML = items.map(p => `
+        <a class="client-project-item" href="pedidos.html?id=${encodeURIComponent(p.id)}">
+          <span>${escHtml(p.title)}
+            <span class="meta"> · ${escHtml(Catalog.categoryLabel(p.category))}${p.deliveryDate ? ' · entrega ' + escHtml(DateOnly.format(p.deliveryDate)) : ''}</span>
+          </span>
+          ${Catalog.workStatusBadge(p.workStatus)}
+        </a>`).join('');
+    } catch (err) {
+      projectsList.innerHTML = `<span class="fa-muted text-sm">Erro ao carregar projetos: ${escHtml(err.message)}</span>`;
+    }
+  }
+
+  function instagramLink(value) {
+    const v = String(value || '').trim();
+    if (!v) return '<span class="fa-muted">—</span>';
+    if (/^https?:\/\//i.test(v)) {
+      return `<a href="${escHtml(v)}" target="_blank" rel="noopener" class="fa-link">${escHtml(shortenUrl(v))}</a>`;
+    }
+    const handle = v.replace(/^@/, '').replace(/[^\w.]/g, '');
+    if (!handle) return `<span class="text-sm">${escHtml(v)}</span>`;
+    return `<a href="https://instagram.com/${encodeURIComponent(handle)}" target="_blank" rel="noopener" class="fa-link">@${escHtml(handle)}</a>`;
   }
 
   // ─── MODAL DELETE ────────────────────────────────────────────────────────────
@@ -371,5 +427,13 @@
 
   // ─── INIT ────────────────────────────────────────────────────────────────────
   loadClients();
+
+  // clients.html?id=... (atalho vindo de Pedidos) abre a ficha do cliente
+  const openId = new URLSearchParams(location.search).get('id');
+  if (openId) {
+    apiFetch(`${ENDPOINT}/${encodeURIComponent(openId)}`)
+      .then(data => openModal(data.data || data))
+      .catch(err => toast(`Erro ao carregar cliente: ${err.message}`, 'error'));
+  }
 
 })();

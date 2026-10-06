@@ -6,6 +6,9 @@
    Mantém identidade dark/gold; corrige layout/espaçamento.
    ════════════════════════════════════════════════════════════════════ */
 
+/* O atributo hidden sempre vence (classes com display:flex/grid não o anulam) */
+[hidden] { display: none !important; }
+
 :root {
   --shell-sidebar-w:     240px;
   --shell-sidebar-w-col: 72px;

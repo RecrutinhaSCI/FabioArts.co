@@ -78,7 +78,7 @@
       <div class="page-header">
         <div>
           <h1 class="page-title">Projetos</h1>
-          <p class="page-subtitle">Gerencie o portfólio que aparece no site público.</p>
+          <p class="page-subtitle">Trabalhos dos pedidos e portfólio do site. Projetos lançados em Pedidos nascem como rascunho — complete descrição e imagem, depois publique.</p>
         </div>
         <div class="page-actions">
           <button class="btn btn-secondary btn-sm" id="btn-refresh">
@@ -139,13 +139,7 @@
       <!-- FILTROS -->
       <div class="filters-bar">
         <div class="filters-row">
-          <button class="filter-btn active" data-filter="all">Todos</button>
-          <button class="filter-btn" data-filter="AUTOMOTIVE">Automotivo</button>
-          <button class="filter-btn" data-filter="TSHIRT">Camisetas</button>
-          <button class="filter-btn" data-filter="STICKER">Adesivos</button>
-          <button class="filter-btn" data-filter="BRANDING">Branding</button>
-          <button class="filter-btn" data-filter="LOGO">Logo</button>
-          <button class="filter-btn" data-filter="SOCIAL_MEDIA">Social</button>
+          <span id="category-filters" style="display:contents"><!-- gerado do Catalog (admin.js) --></span>
           <span class="filter-sep"></span>
           <label class="check-pill" style="padding:.32rem .7rem;font-size:.74rem">
             <input type="checkbox" id="filter-featured"> Destaque
@@ -172,7 +166,9 @@
               <tr>
                 <th>Projeto</th>
                 <th>Categoria</th>
-                <th>Status</th>
+                <th>Andamento</th>
+                <th>Entrega</th>
+                <th>Site</th>
                 <th>Data</th>
                 <th style="width:120px;text-align:right">Ações</th>
               </tr>
@@ -200,7 +196,7 @@
     <div class="modal-header">
       <div>
         <div class="modal-title" id="modal-project-title">Novo Projeto</div>
-        <div class="modal-subtitle">Preencha os blocos abaixo para publicar no portfólio.</div>
+        <div class="modal-subtitle">Complete o trabalho e, quando quiser, publique no portfólio.</div>
       </div>
       <button class="modal-close" data-modal-close="modal-project" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -240,18 +236,7 @@
           <div class="form-row">
             <div class="form-group">
               <label class="form-label" for="f-category">Categoria <span class="req">*</span></label>
-              <select class="form-control" id="f-category">
-                <option value="">Selecione...</option>
-                <option value="AUTOMOTIVE">Automotivo</option>
-                <option value="TSHIRT">Camisetas</option>
-                <option value="STICKER">Adesivos</option>
-                <option value="BRANDING">Branding</option>
-                <option value="SOCIAL_MEDIA">Social Media</option>
-                <option value="LOGO">Logo</option>
-                <option value="PACKAGING">Embalagem</option>
-                <option value="ILLUSTRATION">Ilustração</option>
-                <option value="OTHER">Outro</option>
-              </select>
+              <select class="form-control" id="f-category"><!-- opções do Catalog (admin.js) --></select>
             </div>
             <div class="form-group" hidden><!-- sem efeito no site: oculto (valor preservado) -->
               <label class="form-label" for="f-tags">Tags <span class="form-hint" style="display:inline;font-size:.66rem;color:var(--txt-3)">(separadas por vírgula)</span></label>
@@ -260,16 +245,32 @@
           </div>
         </div>
 
-        <!-- Bloco 3: Cliente -->
-        <div class="form-block" hidden><!-- sem efeito no site: oculto (valor preservado) -->
-          <div class="form-block-title">Cliente</div>
-          <div class="form-group">
-            <label class="form-label" for="f-client">Vincular cliente</label>
-            <select class="form-control" id="f-client">
-              <option value="">— Sem cliente —</option>
-            </select>
-            <div class="form-hint">O nome do cliente aparece como crédito no portfólio.</div>
+        <!-- Bloco 3: Pedido (cliente, andamento, entrega) -->
+        <div class="form-block">
+          <div class="form-block-title">Pedido</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f-client">Cliente</label>
+              <select class="form-control" id="f-client">
+                <option value="">— Sem cliente —</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-car">Modelo do carro</label>
+              <input type="text" class="form-control" id="f-car" placeholder="Ex: Golf GTI" maxlength="120"/>
+            </div>
           </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="f-work">Andamento</label>
+              <select class="form-control" id="f-work"><!-- opções do Catalog --></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="f-delivery">Data de entrega</label>
+              <input type="date" class="form-control" id="f-delivery"/>
+            </div>
+          </div>
+          <div class="form-hint">Andamento é o status do trabalho. Pagamento fica no Financeiro.</div>
         </div>
 
         <!-- Bloco 4: Imagem -->

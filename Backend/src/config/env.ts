@@ -10,7 +10,8 @@ if (fs.existsSync(envPath)) {
     const trimmed = line.trim();
     if (trimmed && !trimmed.startsWith('#')) {
       const [key, ...valueParts] = trimmed.split('=');
-      if (key) {
+      // Não sobrescreve variáveis já definidas (host/CI/testes têm prioridade sobre o .env)
+      if (key && process.env[key.trim()] === undefined) {
         process.env[key.trim()] = valueParts.join('=').trim();
       }
     }

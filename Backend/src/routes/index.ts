@@ -10,6 +10,7 @@ import dashboardRoutes from './dashboard.routes';
 import contentRoutes   from './content.routes';
 import financialRoutes from './financial.routes';
 import reviewsRoutes   from './reviews.routes';
+import ordersRoutes    from './orders.routes';
 
 const router = Router();
 
@@ -25,6 +26,7 @@ router.use('/dashboard', dashboardRoutes);
 router.use('/',          contentRoutes);   // about-stats, courses, footer-*, etc
 router.use('/financial', financialRoutes);
 router.use('/reviews',   reviewsRoutes);
+router.use('/orders',    ordersRoutes);
 
 // ─── API info ─────────────────────────────────────────────────────────────────
 
@@ -66,6 +68,11 @@ router.get('/', (_req, res) => {
       'PUT    /api/settings',
       'GET    /api/dashboard/stats',
       'GET    /api/dashboard/recent',
+      'GET    /api/dashboard/deliveries',
+      'GET    /api/orders',
+      'GET    /api/orders/client-lookup?phone=',
+      'GET    /api/orders/:id',
+      'POST   /api/orders',
     ],
   });
 });

@@ -7,8 +7,13 @@
 
   if (typeof Auth === 'undefined' || !Auth.requireAuth()) return;
 
-  const STATUS_LABEL = { PAID:'Pago', PENDING:'Pendente', CANCELLED:'Cancelado' };
-  const STATUS_BADGE = { PAID:'badge-green', PENDING:'badge-yellow', CANCELLED:'badge-grey' };
+  // Status financeiro e métodos de pagamento vêm do Catalog (admin.js)
+  const statusFilters = document.getElementById('status-filters');
+  if (statusFilters) {
+    statusFilters.innerHTML = [{ code: 'all', label: 'Qualquer status' }, ...Catalog.financialStatuses]
+      .map(s => `<button class="filter-btn${s.code === 'all' ? ' active' : ''}" data-status="${s.code}" type="button">${s.label}</button>`)
+      .join('');
+  }
 
   // ─── State ──────────────────────────────────────────────────────────────────
   let entries = [];
@@ -55,9 +60,11 @@
   }
   function fmtDate(d) {
     if (!d) return '—';
-    return new Date(d).toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'2-digit' });
+    // DateOnly evita a data "voltar um dia" no fuso do Brasil
+    const [y, m, day] = DateOnly.of(d).split('-').map(Number);
+    return new Date(y, m - 1, day).toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'2-digit' });
   }
-  function todayISO() { return new Date().toISOString().slice(0,10); }
+  function todayISO() { return DateOnly.today(); }
   function currentMonth() { return new Date().toISOString().slice(0,7); }
 
   // ─── Stats ──────────────────────────────────────────────────────────────────
@@ -141,10 +148,10 @@
           <td>${typeBadge}</td>
           <td><span class="${valClass}">${valSign} ${fmtBRL(e.amount)}</span></td>
           <td>${e.category ? `<span class="badge">${escHtml(e.category)}</span>` : '<span class="text-muted">—</span>'}</td>
-          <td><span class="badge ${STATUS_BADGE[e.status]||''}"><span class="badge-dot"></span>${STATUS_LABEL[e.status]||e.status}</span></td>
+          <td>${Catalog.financialStatusBadge(e.status)}</td>
           <td class="text-muted text-sm">${fmtDate(e.occurredAt)}</td>
           <td class="text-muted text-sm">${fmtDate(e.dueDate)}</td>
-          <td class="text-muted text-sm">${escHtml(e.paymentMethod || '—')}</td>
+          <td class="text-muted text-sm">${escHtml(Catalog.paymentLabel(e.paymentMethod))}</td>
           <td>
             <div class="flex gap-1 justify-end">
               <button class="btn btn-ghost btn-icon" data-action="edit" data-id="${e.id}" title="Editar" type="button">
@@ -214,12 +221,14 @@
     modalTitle.textContent = e ? 'Editar lançamento' : 'Novo lançamento';
     f('type').value          = e?.type          || 'INCOME';
     f('amount').value        = e?.amount != null ? e.amount : '';
-    f('status').value        = e?.status        || 'PAID';
+    // Cancelado só aparece se o lançamento antigo já estiver assim (compatibilidade)
+    f('status').innerHTML    = Catalog.options(Catalog.financialStatuses, e?.status || 'PAID', { legacy: c => Catalog.financialStatusLabel(c) });
     f('description').value   = e?.description   || '';
     f('category').value      = e?.category      || '';
-    f('paymentMethod').value = e?.paymentMethod || '';
-    f('occurredAt').value    = e?.occurredAt    ? e.occurredAt.slice(0,10) : todayISO();
-    f('dueDate').value       = e?.dueDate       ? e.dueDate.slice(0,10) : '';
+    const pm = e?.paymentMethod ? (Catalog.paymentMethods.find(x => x.code === String(e.paymentMethod).toUpperCase())?.code || e.paymentMethod) : '';
+    f('paymentMethod').innerHTML = Catalog.options(Catalog.paymentMethods, pm, { placeholder: '—' });
+    f('occurredAt').value    = e?.occurredAt    ? DateOnly.of(e.occurredAt) : todayISO();
+    f('dueDate').value       = e?.dueDate       ? DateOnly.of(e.dueDate) : '';
     f('clientId').value      = e?.clientId      || '';
     f('projectId').value     = e?.projectId     || '';
     f('quoteId').value       = e?.quoteId       || '';
@@ -236,7 +245,7 @@
       status:        f('status').value,
       description:   f('description').value.trim(),
       category:      f('category').value.trim()      || null,
-      paymentMethod: f('paymentMethod').value.trim() || null,
+      paymentMethod: f('paymentMethod').value || null,
       occurredAt:    f('occurredAt').value,
       dueDate:       f('dueDate').value || null,
       clientId:      f('clientId').value  || null,
@@ -247,6 +256,7 @@
   }
 
   async function save() {
+    if (btnSave.disabled) return; // evita duplo envio
     const payload = buildPayload();
     if (!payload.description) return Toast.error('Descrição é obrigatória');
     if (!payload.amount && payload.amount !== 0) return Toast.error('Valor é obrigatório');
@@ -349,5 +359,9 @@
   // ─── INIT ───────────────────────────────────────────────────────────────────
   filterMonthEl.value = currentMonth();
   filterMonth = '';   // default: lista todos os meses; stats usa mês corrente
-  Promise.all([loadLookups(), loadStats(), loadList()]);
+  Promise.all([loadLookups(), loadStats(), loadList()]).then(() => {
+    // finances.html?id=... (atalho vindo de Pedidos) abre o lançamento
+    const openId = new URLSearchParams(location.search).get('id');
+    if (openId) startEdit(openId);
+  });
 })();

@@ -27,8 +27,19 @@
     }
     .client-name { font-weight: 600; color: var(--txt); font-size: .85rem; line-height: 1.25; }
     .client-company { font-size: .7rem; color: var(--txt-3); margin-top: .12rem; }
+    .td-name .client-name, .td-name .client-company { display: block; white-space: nowrap; }
+    .client-projects { margin-top: .25rem; }
+    .client-projects-list { display: flex; flex-direction: column; gap: .4rem; margin-top: .5rem; }
+    .client-project-item {
+      display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+      padding: .5rem .7rem; border-radius: var(--radius);
+      background: var(--bg-card-hover); border: 1px solid var(--border);
+      font-size: .8rem; color: var(--txt); text-decoration: none;
+    }
+    .client-project-item:hover { border-color: var(--gold-border); }
+    .client-project-item .meta { font-size: .7rem; color: var(--txt-3); }
     .testimonial-preview {
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;
       overflow: hidden; color: var(--txt-2); font-size: .76rem;
       max-width: 260px; line-height: 1.4;
     }
@@ -67,7 +78,7 @@
       <div class="page-header">
         <div>
           <h1 class="page-title">Clientes</h1>
-          <p class="page-subtitle">Clientes ativos com depoimento aparecem no site como avaliações (bloco "Avaliações no Google").</p>
+          <p class="page-subtitle">Cada cliente aparece uma vez, com todos os seus projetos. Clientes ativos com feedback aparecem no site como avaliações.</p>
         </div>
         <div class="page-actions">
           <button class="btn btn-primary" id="btn-new-client" type="button">
@@ -81,7 +92,7 @@
       <div class="filters-bar">
         <div class="filter-search" style="flex:1;max-width:320px;margin-left:0">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" id="clients-search" placeholder="Buscar por nome ou empresa..." autocomplete="off"/>
+          <input type="text" id="clients-search" placeholder="Buscar por nome, telefone ou contato..." autocomplete="off"/>
         </div>
         <select id="clients-status-filter" class="form-control" style="max-width:170px" aria-label="Filtrar por status">
           <option value="all">Todos</option>
@@ -112,11 +123,12 @@
             <thead>
               <tr>
                 <th colspan="2">Cliente</th>
+                <th>Contato</th>
                 <th>Instagram</th>
-                <th>Website</th>
-                <th>Depoimento</th>
+                <th>Feedback</th>
+                <th>Projetos</th>
                 <th>Status</th>
-                <th style="width:120px;text-align:right">Ações</th>
+                <th style="width:150px;text-align:right">Ações</th>
               </tr>
             </thead>
             <tbody id="clients-tbody"></tbody>
@@ -134,7 +146,7 @@
     <div class="modal-header">
       <div>
         <div class="modal-title" id="modal-title">Novo Cliente</div>
-        <div class="modal-subtitle">Cadastre marcas que aparecem no portfólio.</div>
+        <div class="modal-subtitle">Para um trabalho novo, use Pedidos → Novo Pedido.</div>
       </div>
       <button class="modal-close" data-close-modal type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -149,42 +161,46 @@
             <div class="field-error"></div>
           </div>
           <div class="form-group">
-            <label class="form-label">Empresa</label>
-            <input id="field-company" type="text" class="form-control" placeholder="Ex: Acme Ltda"/>
+            <label class="form-label">Telefone</label>
+            <input id="field-phone" type="tel" inputmode="tel" class="form-control" placeholder="(54) 99999-9999"/>
+            <div class="form-hint">Identifica o cliente nos pedidos (não pode repetir).</div>
             <div class="field-error"></div>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Instagram</label>
-            <input id="field-instagram" type="text" class="form-control" placeholder="@usuario"/>
+            <label class="form-label">Contato</label>
+            <input id="field-instagram" type="text" class="form-control" placeholder="Outro telefone, e-mail..."/>
             <div class="field-error"></div>
           </div>
           <div class="form-group">
-            <label class="form-label">Website</label>
-            <input id="field-website" type="url" class="form-control" placeholder="https://..."/>
+            <label class="form-label">Instagram</label>
+            <input id="field-website" type="text" class="form-control" placeholder="@usuario"/>
             <div class="field-error"></div>
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label">URL do logo</label>
-          <input id="field-logo" type="url" class="form-control" placeholder="https://...imagem.png"/>
-          <div class="form-hint">Cole a URL direta da imagem do logo.</div>
-          <div class="field-error"></div>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Depoimento</label>
-          <textarea id="field-testimonial" class="form-control" rows="3" placeholder="O que o cliente disse sobre o serviço..."></textarea>
-          <div class="form-hint">Com o cliente ativo, este texto aparece no site como avaliação (5 estrelas, bloco "Avaliações no Google"). Use o texto exato da avaliação.</div>
+          <label class="form-label">Feedback do cliente</label>
+          <textarea id="field-testimonial" class="form-control" rows="3" placeholder="Avaliação ou comentário que o cliente deixou sobre o trabalho..."></textarea>
+          <div class="form-hint">Com o cliente ativo, este feedback aparece no site como avaliação (5 estrelas, bloco "Avaliações no Google"). Use o texto exato do cliente.</div>
           <div class="field-error"></div>
         </div>
         <div class="form-group">
           <label class="check-pill" style="cursor:pointer">
             <input type="checkbox" id="field-active" checked/> Ativo
           </label>
-          <div class="form-hint">Inativo: fica guardado no painel e não aparece no site. Os demais campos (empresa, Instagram, website, logo) são só para controle interno.</div>
+          <div class="form-hint">Inativo: fica guardado no painel e não aparece no site. Telefone, contato e Instagram são só para controle interno — nunca aparecem no site.</div>
         </div>
       </form>
+
+      <!-- Projetos do cliente (só na edição) -->
+      <div class="form-block client-projects" id="client-projects" hidden>
+        <div class="form-block-title" style="display:flex;justify-content:space-between;align-items:center;gap:.5rem">
+          <span>Projetos deste cliente</span>
+          <a class="btn btn-primary btn-sm" id="btn-client-new-order" href="pedidos.html">Novo pedido para este cliente</a>
+        </div>
+        <div class="client-projects-list" id="client-projects-list"></div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" data-close-modal type="button">Cancelar</button>

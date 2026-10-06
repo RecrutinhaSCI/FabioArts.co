@@ -15,6 +15,8 @@ let categoryChart = null;
 document.addEventListener('DOMContentLoaded', async () => {
   if (!Auth.requireAuth()) return;
 
+  loadDeliveries(); // independente: não espera os gráficos
+
   try {
 
     await loadStats();
@@ -63,6 +65,69 @@ async function loadStats() {
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value;
+}
+
+// ─── PRÓXIMAS ENTREGAS ───────────────────────────────────────────────────────
+// Janela móvel: hoje até hoje + 14 dias. Atrasados (trabalho ainda aberto)
+// aparecem primeiro; concluídos/cancelados não entram (filtrado no backend).
+
+function escHtmlDash(s) {
+  return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+async function loadDeliveries() {
+  const summary = document.getElementById('deliv-summary');
+  const list    = document.getElementById('deliv-list');
+  if (!summary || !list) return;
+  try {
+    const res = await API.get('/dashboard/deliveries');
+    const d = res.data || {};
+    const items = d.items || [];
+    const upcoming = items.filter(i => !i.overdue);
+    const late     = items.filter(i => i.overdue);
+    const project = i => i.carModel ? `${Catalog.categoryLabel(i.category)} — ${i.carModel}` : Catalog.categoryLabel(i.category);
+
+    if (!items.length) {
+      summary.textContent = 'Nenhuma entrega prevista para os próximos 15 dias.';
+      list.innerHTML = '';
+      return;
+    }
+
+    const parts = [];
+    if (upcoming.length) {
+      parts.push(`Você possui <b>${upcoming.length} ${upcoming.length === 1 ? 'pedido' : 'pedidos'}</b> com entrega prevista nos próximos 15 dias.`);
+      const next = upcoming[0];
+      parts.push(`Próxima entrega: <b>${escHtmlDash(next.client?.name || '—')}</b> — ${escHtmlDash(project(next))} — ${escHtmlDash(DateOnly.format(next.deliveryDate))}.`);
+    } else {
+      parts.push('Nenhuma entrega prevista para os próximos 15 dias.');
+    }
+    if (late.length) {
+      parts.unshift(`<span class="late">${late.length} ${late.length === 1 ? 'entrega atrasada' : 'entregas atrasadas'}.</span>`);
+    }
+    summary.innerHTML = parts.join(' ');
+
+    const weekday = iso => {
+      const [y, m, dd] = iso.split('-').map(Number);
+      return new Date(y, m - 1, dd).toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+    };
+    list.innerHTML = items.map(i => {
+      const cls  = i.overdue ? ' late' : i.isToday ? ' today' : '';
+      const when = i.overdue ? 'atrasada' : i.isToday ? 'hoje' : weekday(i.deliveryDate);
+      return `
+        <a class="deliv-item${cls}" href="pedidos.html?id=${encodeURIComponent(i.projectId)}"
+           title="${escHtmlDash(DateOnly.delivery(i.deliveryDate, i.workStatus).text)}">
+          <div class="deliv-date">${escHtmlDash(DateOnly.format(i.deliveryDate, true))}<small>${escHtmlDash(when)}</small></div>
+          <div class="deliv-main">
+            <div class="who">${escHtmlDash(i.client?.name || 'Sem cliente')}</div>
+            <div class="what">${escHtmlDash(project(i))}</div>
+          </div>
+          ${Catalog.workStatusBadge(i.workStatus)}
+        </a>`;
+    }).join('');
+  } catch (err) {
+    summary.textContent = 'Não foi possível carregar as entregas.';
+    list.innerHTML = '';
+  }
 }
 
 // ─── GRÁFICO — FATURAMENTO MENSAL ────────────────────────────────────────────
@@ -221,14 +286,14 @@ async function loadRecentQuotes(data) {
           <div class="table-user">
             <div class="table-avatar">${Helpers.initials(q.name)}</div>
             <div>
-              <div class="table-user-name">${q.name}</div>
-              <div class="table-user-email">${q.email}</div>
+              <div class="table-user-name">${escHtmlDash(q.name)}</div>
+              <div class="table-user-email">${escHtmlDash(q.whatsapp || q.email || '')}</div>
             </div>
           </div>
         </td>
-        <td><span class="text-sm">${q.projectType || '—'}</span></td>
+        <td><span class="text-sm">${escHtmlDash(Catalog.quoteTypeLabel(q.projectType))}</span></td>
         <td>${q.estimatedBudget
-              ? `<span class="text-gold font-medium">${q.estimatedBudget}</span>`
+              ? `<span class="text-gold font-medium">${escHtmlDash(q.estimatedBudget)}</span>`
               : '<span class="text-muted">—</span>'}</td>
         <td>${Helpers.quoteStatusBadge(q.status)}</td>
         <td class="text-muted text-sm">${Helpers.formatDateRelative(q.createdAt)}</td>
@@ -266,17 +331,11 @@ async function loadRecentClients(data) {
     container.innerHTML = clients.map(c => `
       <div class="recent-client-item">
         <div class="table-avatar" style="width:38px;height:38px;font-size:.8rem;">
-          ${c.logo
-            ? `<img 
-                  src="${c.logo}" 
-                  alt="${c.name}"
-                  onerror="this.parentElement.innerHTML='${Helpers.initials(c.name)}'"
->`
-            : Helpers.initials(c.name)}
+          ${escHtmlDash(Helpers.initials(c.name))}
         </div>
         <div class="flex-1" style="flex:1;min-width:0;">
-          <div class="table-user-name truncate">${c.name}</div>
-          <div class="table-user-email truncate">${c.company || '—'}</div>
+          <div class="table-user-name truncate">${escHtmlDash(c.name)}</div>
+          <div class="table-user-email truncate">${escHtmlDash(c.phone || '—')}</div>
         </div>
         <span class="text-muted text-xs">${Helpers.formatDateRelative(c.createdAt)}</span>
       </div>

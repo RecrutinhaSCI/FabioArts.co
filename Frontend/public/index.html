@@ -903,7 +903,7 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
         <button class="filter-btn" data-filter="auto">Automotivo</button>
         <button class="filter-btn" data-filter="camiseta">Camisetas</button>
         <button class="filter-btn" data-filter="adesivo">Adesivos</button>
-        <button class="filter-btn" data-filter="brand">Branding</button>
+        <button class="filter-btn" data-filter="brand">Identidade Visual</button>
       </div>
     </div>
     <div class="port-grid" id="port-grid">
@@ -1192,13 +1192,13 @@ footer{background:var(--bg0);border-top:1px solid var(--border);padding:4rem 2re
           <label class="qf-label" for="qf-type">Tipo de projeto *</label>
           <select class="qf-input" id="qf-type" required>
             <option value="">Selecione...</option>
-            <option>Design Automotivo</option>
-            <option>Camiseta / Streetwear</option>
-            <option>Adesivos</option>
-            <option>Identidade Visual</option>
-            <option>Social Media</option>
-            <option>Branding Completo</option>
-            <option>Outro</option>
+            <!-- Mesmas categorias do Admin (Backend/src/constants/catalog.ts) -->
+            <option value="AUTOMOTIVE">Design Automotivo</option>
+            <option value="TSHIRT">Camiseta</option>
+            <option value="STICKER">Adesivo</option>
+            <option value="BRANDING">Identidade Visual</option>
+            <option value="COMBO">Combos</option>
+            <option value="OTHER">Outros</option>
           </select>
         </div>
         <div class="qf-group">
@@ -1319,12 +1319,13 @@ async function apiPost(path, body){
 const CAT_TO_FILTER = {
   AUTOMOTIVE:'auto', TSHIRT:'camiseta', STICKER:'adesivo',
   BRANDING:'brand', LOGO:'brand', SOCIAL_MEDIA:'all',
-  PACKAGING:'all', ILLUSTRATION:'all', OTHER:'all',
+  PACKAGING:'all', ILLUSTRATION:'all', OTHER:'all', COMBO:'all',
 };
 const CAT_LABEL = {
   AUTOMOTIVE:'Automotivo', TSHIRT:'Camiseta', STICKER:'Adesivo',
-  BRANDING:'Branding', LOGO:'Logo', SOCIAL_MEDIA:'Social Media',
-  PACKAGING:'Embalagem', ILLUSTRATION:'Ilustração', OTHER:'Outro',
+  BRANDING:'Identidade Visual', COMBO:'Combos', OTHER:'Outros',
+  // legado (registros antigos)
+  LOGO:'Logo', SOCIAL_MEDIA:'Social Media', PACKAGING:'Embalagem', ILLUSTRATION:'Ilustração',
 };
 const colors=['port-color-1','port-color-2','port-color-3','port-color-4','port-color-5'];
 

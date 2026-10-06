@@ -8,6 +8,13 @@
       "port": 3333
     },
     {
+      "name": "backend-localdb",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "Backend", "run", "dev"],
+      "env": { "DATABASE_URL": "postgresql://postgres:test@localhost:55432/prodcopy", "NODE_ENV": "development" },
+      "port": 3333
+    },
+    {
       "name": "backend-prod",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "Backend", "start"],

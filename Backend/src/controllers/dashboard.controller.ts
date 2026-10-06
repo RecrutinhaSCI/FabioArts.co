@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { DashboardService }                from '../services/dashboard.service';
 import { ApiResponse }                     from '../utils/ApiResponse';
+import { OrdersService }                   from '../services/orders.service';
 
 export const DashboardController = {
 
@@ -19,6 +20,16 @@ export const DashboardController = {
     try {
       const recent = await DashboardService.getRecent();
       ApiResponse.success(res, recent, 'Dados recentes carregados');
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  // GET /api/dashboard/deliveries
+  async getDeliveries(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await OrdersService.deliveries();
+      ApiResponse.success(res, data, 'Próximas entregas');
     } catch (err) {
       next(err);
     }

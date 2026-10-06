@@ -12,6 +12,22 @@ export const QuoteController = {
     } catch (err) { next(err); }
   },
 
+  // POST /api/quotes/manual — admin (lançamento manual, sem rate limit público)
+  async createManual(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await QuotesService.createManual(req.body ?? {});
+      ApiResponse.success(res, data, 'Orçamento criado', 201);
+    } catch (err) { next(err); }
+  },
+
+  // PUT /api/quotes/:id — admin
+  async update(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await QuotesService.update(req.params.id, req.body ?? {});
+      ApiResponse.success(res, data, 'Orçamento atualizado');
+    } catch (err) { next(err); }
+  },
+
   // GET /api/quotes — admin
   async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
