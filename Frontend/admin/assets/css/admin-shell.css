@@ -471,6 +471,10 @@ body.sidebar-collapsed .admin-main { margin-left: var(--shell-sidebar-w-col); }
   padding: 3rem 1rem;
   text-align: center; color: var(--txt-3); font-size: .85rem;
 }
+/* Celular: tabela vazia não precisa do cabeçalho largo (a mensagem cabe na tela) */
+@media (max-width: 640px) {
+  .table:has(.state-block) thead { display: none; }
+}
 .text-muted { color: var(--txt-3); }
 .text-sm    { font-size: .76rem; }
 .text-gold  { color: var(--gold); }
