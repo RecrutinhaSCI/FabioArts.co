@@ -11,7 +11,25 @@ import {
   PAYMENT_METHODS, normalizePaymentMethod, isActiveCategory,
 } from '../src/constants/catalog';
 
+import { clientIp } from '../src/utils/clientIp';
+
 const ADMIN_DIR = resolve(__dirname, '../../Frontend/admin');
+
+describe('rate limit por visitante', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const req = (headers: Record<string, string>, ip = '10.0.0.5') => ({ headers, ip, socket: {} }) as any;
+  test('usa o IP real enviado pelo Cloudflare', () => {
+    assert.equal(clientIp(req({ 'cf-connecting-ip': '177.10.20.30' })), '177.10.20.30');
+    assert.equal(clientIp(req({ 'cf-connecting-ip': '2804:14c::1' })), '2804:14c::1');
+  });
+  test('visitantes diferentes atrás do mesmo proxy têm chaves diferentes', () => {
+    assert.notEqual(clientIp(req({ 'cf-connecting-ip': '177.1.1.1' })), clientIp(req({ 'cf-connecting-ip': '177.2.2.2' })));
+  });
+  test('cabeçalho ausente ou inválido cai no req.ip', () => {
+    assert.equal(clientIp(req({})), '10.0.0.5');
+    assert.equal(clientIp(req({ 'cf-connecting-ip': 'nao-e-ip' })), '10.0.0.5');
+  });
+});
 
 describe('telefone', () => {
   test('formatos diferentes do mesmo número são iguais', () => {

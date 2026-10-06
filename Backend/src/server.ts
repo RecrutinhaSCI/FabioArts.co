@@ -13,6 +13,7 @@ import { logger, httpLogger, requestIdMiddleware } from './middlewares/logger.mi
 import { notFoundHandler, globalErrorHandler }     from './middlewares/error.middleware';
 import prisma                           from './prisma/client';
 import router                           from './routes';
+import { rateLimitKeyOptions }          from './utils/clientIp';
 
 // ─── App ──────────────────────────────────────────────────────────────────────
 
@@ -64,7 +65,10 @@ app.use(cors({
 
 // ─── Rate Limiting ────────────────────────────────────────────────────────────
 
+// Chave = IP real do visitante (CF-Connecting-IP); sem isso, atrás do
+// Cloudflare/Render todos compartilhariam o mesmo limite.
 const limiter = rateLimit({
+  ...rateLimitKeyOptions,
   windowMs:         env.RATE_LIMIT_WINDOW_MS,
   max:              env.RATE_LIMIT_MAX_REQUESTS,
   standardHeaders:  true,
@@ -83,6 +87,7 @@ app.use(limiter);
 
 // Rate limit mais restrito para auth
 const authLimiter = rateLimit({
+  ...rateLimitKeyOptions,
   windowMs: 15 * 60 * 1000, // 15 min
   max:      20,
   message: {

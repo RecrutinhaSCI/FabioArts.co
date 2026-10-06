@@ -2,12 +2,14 @@ import { Router } from 'express';
 import rateLimit   from 'express-rate-limit';
 import { requireAdmin } from '../middlewares/auth.middleware';
 import { QuoteController } from '../controllers/quote.controller';
+import { rateLimitKeyOptions } from '../utils/clientIp';
 
 const router = Router();
 
 // ── Anti-spam: público POST /quotes ─────────────────────────────────
 // 5 envios por IP a cada 60min. Suficiente para uso legítimo, freia bots.
 const publicQuoteLimiter = rateLimit({
+  ...rateLimitKeyOptions,
   windowMs: 60 * 60 * 1000, // 1h
   max: 5,
   standardHeaders: true,
