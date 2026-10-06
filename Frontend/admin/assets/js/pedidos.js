@@ -269,7 +269,7 @@
     wz.found = client;
     $('wz-found-title').textContent = `Cliente já cadastrado: ${client.name}`;
     const n = client.projectsCount || 0;
-    $('wz-found-sub').textContent = `${client.phone || ''} · ${n} ${n === 1 ? 'projeto' : 'projetos'} vinculados`;
+    $('wz-found-sub').textContent = `${client.phone || ''} · ${n} ${n === 1 ? 'projeto vinculado' : 'projetos vinculados'}`;
     $('wz-found').hidden = false;
   }
 

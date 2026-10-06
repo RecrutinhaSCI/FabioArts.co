@@ -211,7 +211,7 @@
       .concat(projectsCache.map(p => `<option value="${p.id}">${escHtml(p.title)}</option>`))
       .join('');
     f('quoteId').innerHTML = ['<option value="">— Sem orçamento —</option>']
-      .concat(quotesCache.map(q => `<option value="${q.id}">${escHtml(q.name)} · ${escHtml(q.projectType || '')}</option>`))
+      .concat(quotesCache.map(q => `<option value="${q.id}">${escHtml(q.name)} · ${escHtml(Catalog.quoteTypeLabel(q.projectType))}</option>`))
       .join('');
   }
 
