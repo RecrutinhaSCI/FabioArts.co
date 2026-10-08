@@ -54,13 +54,14 @@ export function categoryLabel(code: string): string {
 export const WORK_STATUSES = [
   { code: 'NOT_STARTED', label: 'Não iniciado' },
   { code: 'IN_PROGRESS', label: 'Em andamento' },
+  { code: 'AWAITING_APPROVAL', label: 'Aguardando aprovação' },
   { code: 'COMPLETED',   label: 'Concluído' },
   { code: 'CANCELLED',   label: 'Cancelado' },
 ] as const;
 export type WorkStatusCode = (typeof WORK_STATUSES)[number]['code'];
 export const WORK_STATUS_CODES: string[] = WORK_STATUSES.map(s => s.code);
 /** Trabalhos que ainda exigem ação (entram na agenda de entregas). */
-export const OPEN_WORK_STATUSES: WorkStatusCode[] = ['NOT_STARTED', 'IN_PROGRESS'];
+export const OPEN_WORK_STATUSES: WorkStatusCode[] = ['NOT_STARTED', 'IN_PROGRESS', 'AWAITING_APPROVAL'];
 
 // ── Status financeiro ──────────────────────────────────────────────
 // Visíveis em novos cadastros. CANCELLED segue válido por compatibilidade.

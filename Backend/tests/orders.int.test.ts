@@ -179,7 +179,7 @@ describe('Pedidos (integração)', { skip: !enabled && 'defina TEST_DATABASE_URL
     assert.equal(d.today, '2026-10-17');
     assert.equal(d.until, '2026-10-31');
     // 16/10 (aberto) está atrasado; o de 09/10 foi concluído → fora da agenda
-    assert.ok(d.items.every((i: Any) => ['NOT_STARTED', 'IN_PROGRESS'].includes(i.workStatus)));
+    assert.ok(d.items.every((i: Any) => ['NOT_STARTED', 'IN_PROGRESS', 'AWAITING_APPROVAL'].includes(i.workStatus)));
     assert.equal(d.items[0].overdue, true);
     assert.equal(d.items[0].deliveryDate, '2026-10-16');
     assert.ok(!d.items.some((i: Any) => i.deliveryDate === '2026-10-09'));
@@ -208,6 +208,32 @@ describe('Pedidos (integração)', { skip: !enabled && 'defina TEST_DATABASE_URL
     const [a, b] = await Promise.all([OrdersService.create(payload), OrdersService.create(payload)]);
     assert.equal(a.client.id, b.client.id);
     assert.equal(await prisma.client.count({ where: { phoneNormalized: '48966665555' } }), 1);
+  });
+
+  test('Status "Aguardando aprovação": salva, relê, filtra e segue na agenda', async () => {
+    const r = await OrdersService.create(base('(51) 95555-4444', {
+      client: { name: 'Cliente Aprovação', phone: '(51) 95555-4444' },
+      commercial: { amount: 10, launchDate: '2026-10-06', deliveryDate: '2026-10-10', financialStatus: 'PENDING', paymentMethod: 'PIX' },
+    }));
+    const id = r.project.id;
+    await ProjectsService.updateProject(id, { workStatus: 'AWAITING_APPROVAL' });
+    assert.equal((await ProjectsService.getProjectById(id)).workStatus, 'AWAITING_APPROVAL'); // reabrir mantém
+    const filtered = await ProjectsService.listProjects({ workStatus: 'AWAITING_APPROVAL', isAdmin: true });
+    assert.ok(filtered.data.some((p: Any) => p.id === id));
+    const orders = await OrdersService.list({ workStatus: 'AWAITING_APPROVAL' });
+    assert.ok(orders.data.some((o: Any) => o.id === id));
+    // ainda não entregue → continua na agenda (atrasado após a data)
+    const d = await OrdersService.deliveries(new Date('2026-10-12T15:00:00Z'));
+    const item = d.items.find((i: Any) => i.projectId === id);
+    assert.equal(item.workStatus, 'AWAITING_APPROVAL');
+    assert.equal(item.overdue, true);
+    // financeiro não muda junto
+    assert.equal((await prisma.financialEntry.findUnique({ where: { id: r.financial.id } })).status, 'PENDING');
+    // as demais opções continuam funcionando
+    for (const st of ['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'AWAITING_APPROVAL']) {
+      await ProjectsService.updateProject(id, { workStatus: st });
+      assert.equal((await ProjectsService.getProjectById(id)).workStatus, st);
+    }
   });
 
   test('Faturamento mensal: soma real por mês, sem estimar e sem escrever', async () => {

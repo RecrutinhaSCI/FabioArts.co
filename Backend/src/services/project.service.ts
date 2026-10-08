@@ -68,7 +68,7 @@ const VALID_CATEGORIES = ALL_CATEGORY_CODES;
 function assertWorkStatus(value: unknown) {
   if (value !== undefined && !WORK_STATUS_CODES.includes(String(value))) {
     throw Object.assign(
-      new Error('Status de andamento inválido (Não iniciado, Em andamento, Concluído ou Cancelado).'),
+      new Error('Status de andamento inválido (Não iniciado, Em andamento, Aguardando aprovação, Concluído ou Cancelado).'),
       { status: 400 }
     );
   }

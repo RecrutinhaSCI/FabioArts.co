@@ -49,6 +49,7 @@ enum ProjectCategory {
 enum WorkStatus {
   NOT_STARTED
   IN_PROGRESS
+  AWAITING_APPROVAL
   COMPLETED
   CANCELLED
 }

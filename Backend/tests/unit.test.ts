@@ -106,7 +106,7 @@ describe('Cenário 7: status separados', () => {
   test('nenhum código/rótulo em comum entre andamento e financeiro', () => {
     const work = WORK_STATUSES.map(s => s.label);
     const fin  = FINANCIAL_STATUSES.map(s => s.label);
-    assert.deepEqual(work, ['Não iniciado', 'Em andamento', 'Concluído', 'Cancelado']);
+    assert.deepEqual(work, ['Não iniciado', 'Em andamento', 'Aguardando aprovação', 'Concluído', 'Cancelado']);
     assert.deepEqual(fin, ['Pendente', 'Parcialmente pago', 'Pago']);
     assert.equal(work.some(l => fin.includes(l)), false);
   });

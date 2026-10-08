@@ -377,6 +377,7 @@ const Catalog = {
   workStatuses: [
     { code: 'NOT_STARTED', label: 'Não iniciado' },
     { code: 'IN_PROGRESS', label: 'Em andamento' },
+    { code: 'AWAITING_APPROVAL', label: 'Aguardando aprovação' },
     { code: 'COMPLETED', label: 'Concluído' },
     { code: 'CANCELLED', label: 'Cancelado' },
   ],
@@ -391,7 +392,7 @@ const Catalog = {
     { code: 'BOLETO', label: 'Boleto' },
   ],
 
-  WORK_BADGE: { NOT_STARTED: 'badge-grey', IN_PROGRESS: 'badge-blue', COMPLETED: 'badge-green', CANCELLED: 'badge-red' },
+  WORK_BADGE: { NOT_STARTED: 'badge-grey', IN_PROGRESS: 'badge-blue', AWAITING_APPROVAL: 'badge-gold', COMPLETED: 'badge-green', CANCELLED: 'badge-red' },
   FIN_BADGE:  { PENDING: 'badge-yellow', PARTIAL: 'badge-blue', PAID: 'badge-green', CANCELLED: 'badge-grey' },
 
   // Textos antigos de Orçamento (formulário do site antes da padronização)
@@ -488,7 +489,7 @@ const DateOnly = {
   delivery(deliveryDate, workStatus) {
     const iso = this.of(deliveryDate);
     if (!iso) return { state: 'none', text: 'Sem data de entrega' };
-    const open = workStatus === 'NOT_STARTED' || workStatus === 'IN_PROGRESS';
+    const open = workStatus === 'NOT_STARTED' || workStatus === 'IN_PROGRESS' || workStatus === 'AWAITING_APPROVAL';
     const diff = this.diffDays(iso);
     const date = this.format(iso);
     if (!open) return { state: 'closed', text: `Entrega: ${date}` };
