@@ -79,7 +79,7 @@
           </td>
           <td><span class="badge">${escHtml(c.category)}</span></td>
           <td><span class="badge ${LEVEL_BADGE[c.level]||''}">${LEVEL_LABEL[c.level]||c.level}</span></td>
-          <td><span class="text-gold" style="font-weight:600">${escHtml(c.price || '—')}</span></td>
+          <td><span class="text-gold" style="font-weight:600">${c.price ? Privacy.html(c.price, true) : '—'}</span></td>
           <td>${c.isActive
               ? '<span class="badge badge-green"><span class="badge-dot"></span>Ativo</span>'
               : '<span class="badge badge-grey"><span class="badge-dot"></span>Inativo</span>'}</td>

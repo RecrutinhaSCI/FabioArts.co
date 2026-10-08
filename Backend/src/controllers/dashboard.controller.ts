@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { DashboardService }                from '../services/dashboard.service';
 import { ApiResponse }                     from '../utils/ApiResponse';
 import { OrdersService }                   from '../services/orders.service';
+import { RevenueService }                  from '../services/revenue.service';
 
 export const DashboardController = {
 
@@ -20,6 +21,16 @@ export const DashboardController = {
     try {
       const recent = await DashboardService.getRecent();
       ApiResponse.success(res, recent, 'Dados recentes carregados');
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  // GET /api/dashboard/revenue?period=6m|12m|year (somente leitura)
+  async getRevenue(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const data = await RevenueService.monthly(req.query.period as string | undefined);
+      ApiResponse.success(res, data, 'Faturamento mensal');
     } catch (err) {
       next(err);
     }

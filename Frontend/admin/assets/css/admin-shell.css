@@ -246,6 +246,19 @@ body.sidebar-collapsed .admin-main { margin-left: var(--shell-sidebar-w-col); }
   color: var(--txt);
 }
 .topbar-btn svg { width: 18px; height: 18px; }
+
+/* Modo Privacidade — botão "Ocultar / Mostrar valores" */
+.privacy-btn { width: auto; padding: 0 .7rem; gap: .45rem; font: 500 .74rem var(--ff, inherit); white-space: nowrap; }
+.privacy-btn .eye-closed { display: none; }
+.privacy-on .privacy-btn { color: var(--gold); border-color: var(--gold-border); background: var(--gold-dim); }
+.privacy-on .privacy-btn .eye-open { display: none; }
+.privacy-on .privacy-btn .eye-closed { display: block; }
+@media (max-width: 720px) {
+  .privacy-btn { width: 38px; padding: 0; }
+  .privacy-btn .privacy-label { display: none; }
+}
+/* Valores mascarados não quebram linha nem chamam atenção */
+.money { white-space: nowrap; }
 .topbar-notif-dot {
   position: absolute; top: 8px; right: 8px;
   width: 8px; height: 8px; border-radius: 50%;

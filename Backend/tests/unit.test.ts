@@ -12,6 +12,7 @@ import {
 } from '../src/constants/catalog';
 
 import { clientIp } from '../src/utils/clientIp';
+import { monthsForPeriod } from '../src/services/revenue.service';
 
 const ADMIN_DIR = resolve(__dirname, '../../Frontend/admin');
 
@@ -115,5 +116,26 @@ describe('Cenário 7: status separados', () => {
     assert.equal(normalizePaymentMethod('boleto'), 'BOLETO');
     assert.equal(normalizePaymentMethod('dinheiro'), 'dinheiro'); // legado preservado
     assert.equal(normalizePaymentMethod(''), null);
+  });
+});
+
+describe('faturamento — meses do período', () => {
+  const now = new Date('2026-10-08T15:00:00Z');
+  test('últimos 6 meses terminam no mês atual', () => {
+    assert.deepEqual(monthsForPeriod('6m', now), ['2026-05', '2026-06', '2026-07', '2026-08', '2026-09', '2026-10']);
+  });
+  test('últimos 12 meses atravessam a virada de ano', () => {
+    const m = monthsForPeriod('12m', now);
+    assert.equal(m.length, 12);
+    assert.equal(m[0], '2025-11');
+    assert.equal(m[11], '2026-10');
+  });
+  test('ano atual vai de janeiro até o mês atual', () => {
+    assert.deepEqual(monthsForPeriod('year', now), ['2026-01','2026-02','2026-03','2026-04','2026-05','2026-06','2026-07','2026-08','2026-09','2026-10']);
+    assert.deepEqual(monthsForPeriod('year', new Date('2027-01-05T12:00:00Z')), ['2027-01']);
+  });
+  test('mês atual usa o fuso do Brasil', () => {
+    // 01/11 02:00 UTC ainda é 31/10 em São Paulo
+    assert.equal(monthsForPeriod('6m', new Date('2026-11-01T02:00:00Z')).at(-1), '2026-10');
   });
 });

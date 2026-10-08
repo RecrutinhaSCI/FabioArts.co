@@ -214,7 +214,7 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="f-valor">Valor estimado</label>
-            <input class="form-control" id="f-valor" placeholder="R$ 0,00" maxlength="60"/>
+            <input class="form-control" id="f-valor" placeholder="R$ 0,00" maxlength="60" data-money-input/>
           </div>
         </div>
         <div class="form-hint" id="f-linked" hidden></div>
@@ -459,7 +459,7 @@ async function viewItem(id){
     <div class="view-quote-grid">
       <div><div class="lbl">Telefone</div><div class="val">${escHtml(d.whatsapp||'—')}</div></div>
       <div><div class="lbl">Tipo de projeto</div><div class="val">${escHtml(Catalog.quoteTypeLabel(d.projectType))}</div></div>
-      <div><div class="lbl">Valor estimado</div><div class="val text-gold" style="font-weight:600">${escHtml(d.estimatedBudget||'—')}</div></div>
+      <div><div class="lbl">Valor estimado</div><div class="val text-gold" style="font-weight:600">${d.estimatedBudget ? Privacy.html(d.estimatedBudget, true) : '—'}</div></div>
       <div><div class="lbl">Recebido em</div><div class="val">${fmtDate(d.createdAt)}</div></div>
       ${d.project ? `<div><div class="lbl">Entrega prevista</div><div class="val">${escHtml(DateOnly.format(d.project.deliveryDate))}</div></div>
       <div><div class="lbl">Pedido</div><div class="val"><a class="text-gold" href="pedidos.html?id=${encodeURIComponent(d.project.id)}">${escHtml(d.project.title)} →</a></div></div>` : ''}
@@ -515,7 +515,7 @@ function render(){
           </div>
         </td>
         <td>${escHtml(Catalog.quoteTypeLabel(d.projectType))}${d.projectId ? `<div class="text-xs"><a class="text-gold" href="pedidos.html?id=${encodeURIComponent(d.projectId)}">ver pedido</a></div>` : ''}</td>
-        <td>${d.estimatedBudget ? `<span class="text-gold" style="font-weight:600">${escHtml(d.estimatedBudget)}</span>` : '<span class="text-muted">—</span>'}</td>
+        <td>${d.estimatedBudget ? `<span class="text-gold" style="font-weight:600">${Privacy.html(d.estimatedBudget, true)}</span>` : '<span class="text-muted">—</span>'}</td>
         <td>
           <select class="status-select" aria-label="Acompanhamento" onchange="changeStatus('${d.id}', this.value)">${statusOptions(d.status)}</select>
         </td>

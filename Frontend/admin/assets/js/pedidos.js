@@ -40,7 +40,8 @@
   // ─── HELPERS ────────────────────────────────────────────────────────────────
   function escHtml(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function ini(n) { return (n || '?').split(' ').filter(Boolean).map(x => x[0]).join('').slice(0, 2).toUpperCase(); }
-  function brl(v) { return v == null ? '—' : Helpers.formatCurrency(v); }
+  // Valores passam pelo Modo Privacidade (admin.js → Privacy)
+  function brl(v) { return v == null ? '—' : Privacy.html(v); }
   function phoneDigits(v) {
     let d = String(v || '').replace(/\D/g, '').replace(/^0+/, '');
     if (d.length >= 12 && d.startsWith('55')) d = d.slice(2);
@@ -368,7 +369,7 @@
       row('Projeto', escHtml(project.title)),
       row('Publicado / Destaque', 'Não / Não'),
       row('Entrega prevista', escHtml(DateOnly.format(project.deliveryDate))),
-      row('Orçamento', escHtml(quote.estimatedBudget || '—')),
+      row('Orçamento', quote.estimatedBudget ? Privacy.html(quote.estimatedBudget, true) : '—'),
       row('Financeiro', `${Catalog.financialStatusBadge(financial.status)} · ${escHtml(Catalog.paymentLabel(financial.paymentMethod))}`),
     ].join('');
     const link = (href, label) => `<a class="btn btn-secondary btn-sm" href="${href}">${label}</a>`;
@@ -464,7 +465,7 @@
         </div>
         <div class="od-box">
           <h4>Orçamento ${q ? `<a href="orcamentos.html?id=${encodeURIComponent(q.id)}">Abrir →</a>` : ''}</h4>
-          ${q ? row('Valor estimado', escHtml(q.estimatedBudget || '—')) + row('Acompanhamento', Helpers.quoteStatusBadge(q.status))
+          ${q ? row('Valor estimado', q.estimatedBudget ? Privacy.html(q.estimatedBudget, true) : '—') + row('Acompanhamento', Helpers.quoteStatusBadge(q.status))
               : '<div class="text-muted text-sm">Sem orçamento vinculado.</div>'}
         </div>
         <div class="od-box">

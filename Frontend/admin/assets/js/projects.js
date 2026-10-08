@@ -466,6 +466,13 @@
     return `<span class="text-sm" style="color:${color};white-space:nowrap" title="${escAttr(d.text)}">${escHtml(label)}</span>`;
   }
 
+  // projects.html?category=CODE (atalho do gráfico "Projetos por Categoria")
+  const qsCategory = new URLSearchParams(location.search).get('category');
+  if (qsCategory && document.querySelector(`.filter-btn[data-filter="${CSS.escape(qsCategory)}"]`)) {
+    filterCategory = qsCategory;
+    document.querySelectorAll('.filter-btn[data-filter]').forEach(b => b.classList.toggle('active', b.dataset.filter === qsCategory));
+  }
+
   // ─── INIT ───────────────────────────────────────────────────────────────────
   Promise.all([loadClients(), loadStats(), loadList()]).then(() => {
     // projects.html?id=... (atalho vindo de Pedidos) abre a edição

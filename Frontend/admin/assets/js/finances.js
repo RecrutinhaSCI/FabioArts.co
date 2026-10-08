@@ -55,9 +55,8 @@
 
   // ─── Helpers ────────────────────────────────────────────────────────────────
   function escHtml(s){ return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function fmtBRL(v) {
-    return new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' }).format(v || 0);
-  }
+  // Valores passam pelo Modo Privacidade (admin.js → Privacy)
+  function fmtBRL(v) { return Privacy.html(v || 0); }
   function fmtDate(d) {
     if (!d) return '—';
     // DateOnly evita a data "voltar um dia" no fuso do Brasil
@@ -68,15 +67,23 @@
   function currentMonth() { return new Date().toISOString().slice(0,7); }
 
   // ─── Stats ──────────────────────────────────────────────────────────────────
+  // No Modo Privacidade o saldo fica sem cor (verde/vermelho revelaria lucro/prejuízo)
+  let lastBalance = null;
+  function paintBalance() {
+    if (lastBalance === null) return;
+    stBalance.style.color = Privacy.isOn() ? '' : (lastBalance >= 0 ? 'var(--green)' : 'var(--red)');
+  }
+  document.addEventListener('privacychange', paintBalance);
+
   async function loadStats() {
     try {
       const month = filterMonth || currentMonth();
       const res = await API.get(`/financial/stats?month=${month}`);
       const s = res.data;
-      stIncome.textContent       = fmtBRL(s.incomeMonth);
-      stExpense.textContent      = fmtBRL(s.expenseMonth);
-      stBalance.textContent      = fmtBRL(s.balanceMonth);
-      stPending.textContent      = fmtBRL(s.pendingTotal);
+      stIncome.innerHTML         = fmtBRL(s.incomeMonth);
+      stExpense.innerHTML        = fmtBRL(s.expenseMonth);
+      stBalance.innerHTML        = fmtBRL(s.balanceMonth);
+      stPending.innerHTML        = fmtBRL(s.pendingTotal);
       stIncomeCount.textContent  = `${s.incomeCount} ${s.incomeCount === 1 ? 'lançamento' : 'lançamentos'}`;
       stExpenseCount.textContent = `${s.expenseCount} ${s.expenseCount === 1 ? 'lançamento' : 'lançamentos'}`;
       stPendingCount.textContent = `${s.pendingCount} ${s.pendingCount === 1 ? 'lançamento' : 'lançamentos'} no total`;
@@ -84,7 +91,8 @@
       const [y, m] = s.month.split('-');
       const mLabel = new Date(Number(y), Number(m)-1, 1).toLocaleDateString('pt-BR', { month:'long', year:'numeric' });
       stMonthLabel.textContent = `Saldo de ${mLabel}`;
-      stBalance.style.color = s.balanceMonth >= 0 ? 'var(--green)' : 'var(--red)';
+      lastBalance = s.balanceMonth;
+      paintBalance();
     } catch (err) {
       console.warn('stats:', err.message);
     }
@@ -359,6 +367,9 @@
   // ─── INIT ───────────────────────────────────────────────────────────────────
   filterMonthEl.value = currentMonth();
   filterMonth = '';   // default: lista todos os meses; stats usa mês corrente
+  // finances.html?month=YYYY-MM (atalho do gráfico de faturamento)
+  const qsMonth = new URLSearchParams(location.search).get('month');
+  if (qsMonth && /^\d{4}-\d{2}$/.test(qsMonth)) { filterMonth = qsMonth; filterMonthEl.value = qsMonth; }
   Promise.all([loadLookups(), loadStats(), loadList()]).then(() => {
     // finances.html?id=... (atalho vindo de Pedidos) abre o lançamento
     const openId = new URLSearchParams(location.search).get('id');

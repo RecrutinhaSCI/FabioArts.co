@@ -68,6 +68,7 @@ router.get('/', (_req, res) => {
       'PUT    /api/settings',
       'GET    /api/dashboard/stats',
       'GET    /api/dashboard/recent',
+      'GET    /api/dashboard/revenue?period=6m|12m|year',
       'GET    /api/dashboard/deliveries',
       'GET    /api/orders',
       'GET    /api/orders/client-lookup?phone=',

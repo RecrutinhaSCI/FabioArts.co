@@ -27,6 +27,29 @@
     .revenue-chart-wrap { height: 220px; }
     .category-chart-wrap { height: 220px; }
 
+    /* ── Gráficos interativos (R19) ── */
+    .chart-sub { font-size: .74rem; color: var(--txt-2); margin-top: .2rem; }
+    .chart-period {
+      background: var(--bg-input); color: var(--txt); border: 1px solid var(--border);
+      border-radius: 8px; padding: .35rem .55rem; font: 500 .74rem var(--ff); cursor: pointer;
+    }
+    .chart-period:focus { outline: none; border-color: var(--border-focus); }
+    .revenue-chart-wrap, .category-chart-wrap { padding: 0 1.1rem; position: relative; }
+    .chart-detail {
+      margin: .8rem 1.1rem 0; padding: .7rem .85rem; min-height: 2.6rem;
+      border-radius: var(--radius); background: var(--bg-input); border: 1px solid var(--border);
+      font-size: .8rem; color: var(--txt-2);
+    }
+    .chart-hint { color: var(--txt-3); font-size: .76rem; }
+    .chart-detail .ttl { font-weight: 700; color: var(--txt); margin-bottom: .45rem; display: flex; justify-content: space-between; gap: .5rem; align-items: center; }
+    .chart-detail .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: .35rem .9rem; }
+    .chart-detail .k { font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; color: var(--txt-3); }
+    .chart-detail .v { font-size: .86rem; color: var(--txt); font-weight: 600; }
+    .chart-detail a { color: var(--gold); text-decoration: none; font-size: .76rem; font-weight: 600; white-space: nowrap; }
+    .chart-detail .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: .4rem; vertical-align: middle; }
+    .chart-note { font-size: .68rem; color: var(--txt-3); margin: .55rem 1.1rem 1rem; }
+    .category-chart-wrap + .chart-detail { margin-bottom: 1rem; }
+
     .quick-actions {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -261,28 +284,41 @@
       <!-- CHARTS ROW -->
       <div class="grid-cols-6-4 section-gap">
 
-        <!-- Faturamento -->
+        <!-- Faturamento (dados reais de /dashboard/revenue — somente leitura) -->
         <div class="card animate-fade-up">
           <div class="card-header">
             <div>
               <div class="card-title">Faturamento Mensal</div>
+              <div class="chart-sub" id="revenue-total">Carregando…</div>
             </div>
-            <div class="flex gap-1 items-center">
-              <span class="text-xs text-muted">Últimos 6 meses</span>
-            </div>
+            <select class="chart-period" id="revenue-period" aria-label="Período do faturamento">
+              <option value="6m" selected>Últimos 6 meses</option>
+              <option value="12m">Últimos 12 meses</option>
+              <option value="year">Ano atual</option>
+            </select>
           </div>
           <div class="revenue-chart-wrap">
-            <canvas id="revenue-chart"></canvas>
+            <canvas id="revenue-chart" role="img" aria-label="Gráfico de faturamento mensal"></canvas>
           </div>
+          <div class="chart-detail" id="revenue-detail" aria-live="polite">
+            <span class="chart-hint">Toque ou clique em um mês para ver o resumo.</span>
+          </div>
+          <p class="chart-note">Receitas lançadas no Financeiro em cada mês (exceto canceladas), pela data do lançamento.</p>
         </div>
 
         <!-- Categorias -->
         <div class="card animate-fade-up">
           <div class="card-header">
-            <div class="card-title">Projetos por Categoria</div>
+            <div>
+              <div class="card-title">Projetos por Categoria</div>
+              <div class="chart-sub" id="category-total">Carregando…</div>
+            </div>
           </div>
           <div class="category-chart-wrap">
-            <canvas id="category-chart"></canvas>
+            <canvas id="category-chart" role="img" aria-label="Gráfico de projetos por categoria"></canvas>
+          </div>
+          <div class="chart-detail" id="category-detail" aria-live="polite">
+            <span class="chart-hint">Toque ou clique em uma categoria.</span>
           </div>
         </div>
 

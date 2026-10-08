@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!Auth.requireAuth()) return;
 
   loadDeliveries(); // independente: não espera os gráficos
+  const periodSel = document.getElementById('revenue-period');
+  periodSel?.addEventListener('change', () => loadRevenue(periodSel.value));
+  loadRevenue(periodSel?.value || '6m');
 
   try {
 
@@ -47,17 +50,14 @@ async function loadStats() {
     setText('stat-quotes',    s.totalQuotes    ?? 0);
     setText('stat-services',  s.totalServices  ?? 0);
     setText('stat-pending',   s.pendingQuotes  ?? 0);
-    setText('stat-revenue',   Helpers.formatCurrency(s.totalRevenue ?? 0));
     setText('stat-published', s.publishedProjects ?? 0);
     setText('stat-featured',  s.featuredProjects  ?? 0);
 
-    // Renderiza gráficos com dados reais
-    renderRevenueChart(s.revenueByMonth   || []);
+    // Projetos por categoria (dados reais). O faturamento vem de loadRevenue().
     renderCategoryChart(s.projectsByCategory || []);
 
   } catch (err) {
     console.warn('Stats error:', err.message);
-    renderRevenueChart([]);
     renderCategoryChart([]);
   }
 }
@@ -131,43 +131,113 @@ async function loadDeliveries() {
 }
 
 // ─── GRÁFICO — FATURAMENTO MENSAL ────────────────────────────────────────────
+// Dados reais de GET /dashboard/revenue (somente leitura). Barras por mês;
+// passar o mouse/tocar mostra tooltip; clicar seleciona o mês e abre o resumo.
+// Todo valor exibido passa pelo Modo Privacidade (Privacy.text / Privacy.html):
+// a escala continua real, mas nenhum número financeiro aparece com o modo ativo.
 
-function renderRevenueChart(data) {
+const REVENUE_COLOR      = '#ffc000';
+const REVENUE_COLOR_DIM  = 'rgba(255,192,0,0.28)';
+let revenueData = [];
+let revenueSelected = null; // índice do mês selecionado
+
+function monthLabel(ym, style = 'long') {
+  const [y, m] = ym.split('-').map(Number);
+  const d = new Date(y, m - 1, 1);
+  if (style === 'short') return d.toLocaleDateString('pt-BR', { month: 'short' }).replace('.', '') + '/' + String(y).slice(2);
+  const txt = d.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  return txt.charAt(0).toUpperCase() + txt.slice(1);
+}
+
+async function loadRevenue(period = '6m') {
+  const totalEl = document.getElementById('revenue-total');
+  try {
+    const res = await API.get(`/dashboard/revenue?period=${encodeURIComponent(period)}`);
+    revenueData = res.data?.months || [];
+    revenueSelected = null;
+    renderRevenueChart();
+    renderRevenueTotal(res.data);
+    renderRevenueDetail();
+  } catch (err) {
+    console.warn('revenue:', err.message);
+    revenueData = [];
+    renderRevenueChart();
+    if (totalEl) totalEl.textContent = 'Não foi possível carregar o faturamento.';
+  }
+}
+
+function renderRevenueTotal(d) {
+  const el = document.getElementById('revenue-total');
+  if (!el || !d) return;
+  const label = { '6m': 'nos últimos 6 meses', '12m': 'nos últimos 12 meses', year: 'no ano' }[d.period] || '';
+  el.innerHTML = `${Privacy.html(d.total)} ${label}`;
+}
+
+function renderRevenueDetail() {
+  const box = document.getElementById('revenue-detail');
+  if (!box) return;
+  const m = revenueSelected !== null ? revenueData[revenueSelected] : null;
+  if (!m) {
+    box.innerHTML = '<span class="chart-hint">Toque ou clique em um mês para ver o resumo.</span>';
+    return;
+  }
+  const item = (k, v) => `<div><div class="k">${k}</div><div class="v">${v}</div></div>`;
+  const payments = `${m.payments} ${m.payments === 1 ? 'pagamento' : 'pagamentos'}`;
+  box.innerHTML = `
+    <div class="ttl"><span>${escHtmlDash(monthLabel(m.month))}</span>
+      <a href="finances.html?month=${encodeURIComponent(m.month)}">Ver no Financeiro →</a></div>
+    <div class="grid">
+      ${item('Faturamento', Privacy.html(m.total))}
+      ${item('Recebido', Privacy.html(m.paid) + ` <span class="text-xs text-muted">· ${payments}</span>`)}
+      ${m.pending ? item('Pendente', Privacy.html(m.pending)) : ''}
+      ${m.partial ? item('Parcialmente pago', Privacy.html(m.partial)) : ''}
+      ${item('Lançamentos', m.entries)}
+    </div>`;
+}
+
+function revenueColors() {
+  return revenueData.map((_, i) => (revenueSelected === null || revenueSelected === i) ? REVENUE_COLOR : REVENUE_COLOR_DIM);
+}
+
+function renderRevenueChart() {
   const ctx = document.getElementById('revenue-chart');
   if (!ctx || typeof Chart === 'undefined') return;
 
-  const months   = data.map(d => d.month || '');
-  const values   = data.map(d => d.total || 0);
-
-  // Fallback: últimos 6 meses vazios
-  const labels = months.length ? months : getLastMonths(6);
-  const vals   = values.length ? values : new Array(6).fill(0);
+  const labels = revenueData.map(m => monthLabel(m.month, 'short'));
+  const values = revenueData.map(m => m.total);
+  const priv = Privacy.isOn();
 
   if (revenueChart) revenueChart.destroy();
 
   revenueChart = new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels,
       datasets: [{
-        label:           'Faturamento (R$)',
-        data:            vals,
-        borderColor:     '#ffc000',
-        backgroundColor: 'rgba(255,192,0,0.08)',
-        borderWidth:     2,
-        fill:            true,
-        tension:         0.4,
-        pointBackgroundColor: '#ffc000',
-        pointBorderColor:    '#0d0d0f',
-        pointBorderWidth:    2,
-        pointRadius:         4,
-        pointHoverRadius:    6,
+        label: 'Faturamento',
+        data: values,
+        backgroundColor: revenueColors(),
+        hoverBackgroundColor: REVENUE_COLOR,
+        borderRadius: 4,
+        borderSkipped: 'bottom',
+        maxBarThickness: 42,
+        minBarLength: 2, // mês com R$ 0,00 continua visível e clicável
       }],
     },
     options: {
-      responsive:          true,
+      responsive: true,
       maintainAspectRatio: false,
-      interaction:  { mode: 'index', intersect: false },
+      interaction: { mode: 'index', intersect: false }, // área de toque = coluna inteira
+      onClick: (_e, els) => {
+        if (!els.length) return;
+        const i = els[0].index;
+        revenueSelected = revenueSelected === i ? null : i;
+        // Atualiza o gráfico existente (recriar dentro do clique perdia a seleção)
+        revenueChart.data.datasets[0].backgroundColor = revenueColors();
+        revenueChart.update('none');
+        renderRevenueDetail();
+      },
+      onHover: (e, els) => { e.native.target.style.cursor = els.length ? 'pointer' : 'default'; },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -175,26 +245,35 @@ function renderRevenueChart(data) {
           borderColor:     'rgba(255,255,255,0.08)',
           borderWidth:     1,
           titleColor:      '#f4f4f5',
-          bodyColor:       '#a1a1aa',
+          bodyColor:       '#d4d4d8',
           padding:         10,
+          displayColors:   false,
           callbacks: {
-            label: ctx => ` ${Helpers.formatCurrency(ctx.raw)}`,
+            // Modo privado: o tooltip mostra "R$ ****", nunca o valor real
+            title: items => monthLabel(revenueData[items[0].dataIndex].month),
+            label: item => {
+              const m = revenueData[item.dataIndex];
+              return [`Faturamento: ${Privacy.text(m.total)}`, `Pagamentos: ${m.payments}`];
+            },
           },
         },
       },
       scales: {
         x: {
-          grid:  { color: 'rgba(255,255,255,0.04)' },
-          ticks: { color: '#52525b', font: { size: 11 } },
+          grid:  { display: false },
+          ticks: { color: '#a1a1aa', font: { size: 11 }, maxRotation: 0, autoSkip: true },
         },
         y: {
-          grid:  { color: 'rgba(255,255,255,0.04)' },
-          ticks: {
-            color: '#52525b',
-            font:  { size: 11 },
-            callback: v => 'R$' + (v >= 1000 ? (v/1000).toFixed(0) + 'k' : v),
-          },
           beginAtZero: true,
+          grid:  { color: 'rgba(255,255,255,0.04)' },
+          border: { display: false },
+          ticks: {
+            display: !priv, // eixo monetário some no modo privado
+            color: '#71717a',
+            font:  { size: 11 },
+            maxTicksLimit: 5,
+            callback: v => 'R$' + (v >= 1000 ? (v / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'k' : v),
+          },
         },
       },
     },
@@ -202,69 +281,131 @@ function renderRevenueChart(data) {
 }
 
 // ─── GRÁFICO — PROJETOS POR CATEGORIA ────────────────────────────────────────
+// Cores fixas por categoria (ordem do Catalog), validadas para o fundo escuro.
+// A cor segue a categoria — nunca a posição no ranking.
+
+const CATEGORY_COLORS = {
+  AUTOMOTIVE: '#3987e5', TSHIRT: '#d95926', STICKER: '#199e70',
+  BRANDING:   '#c98500', COMBO:  '#d55181', OTHER:   '#9085e9',
+};
+const CATEGORY_LEGACY_COLOR = '#71717a';
+let categoryData = [];
+let categorySelected = null;
 
 function renderCategoryChart(data) {
   const ctx = document.getElementById('category-chart');
   if (!ctx || typeof Chart === 'undefined') return;
 
-  const defaults = [
-    { category: 'AUTOMOTIVE', count: 0 },
-    { category: 'TSHIRT',     count: 0 },
-    { category: 'STICKER',    count: 0 },
-    { category: 'BRANDING',   count: 0 },
-    { category: 'OTHER',      count: 0 },
-  ];
-
-  const source = data.length ? data : defaults;
-  const labels = source.map(d => Helpers.categoryLabel(d.category));
-  const values = source.map(d => d.count || 0);
-
-  const colors = ['#ffc000', '#3b82f6', '#22c55e', '#a855f7', '#f59e0b'];
+  // Ordem fixa do catálogo; categorias antigas (legado) entram no fim
+  const order = Catalog.categories.map(c => c.code);
+  categoryData = (data || [])
+    .filter(d => d.count > 0)
+    .sort((a, b) => {
+      const ia = order.indexOf(a.category), ib = order.indexOf(b.category);
+      return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+    });
+  const total = categoryData.reduce((s, d) => s + d.count, 0);
+  const totalEl = document.getElementById('category-total');
+  if (totalEl) totalEl.textContent = total ? `${total} ${total === 1 ? 'projeto' : 'projetos'} cadastrados` : 'Nenhum projeto cadastrado';
 
   if (categoryChart) categoryChart.destroy();
+  if (!categoryData.length) { renderCategoryDetail(); return; }
 
   categoryChart = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels,
+      labels: categoryData.map(d => Catalog.categoryLabel(d.category)),
       datasets: [{
-        data:             values,
-        backgroundColor:  colors.map(c => c + '30'),
-        borderColor:      colors,
-        borderWidth:      2,
-        hoverOffset:      6,
+        data: categoryData.map(d => d.count),
+        backgroundColor: categoryColors(),
+        borderColor: '#111113', // separação de 2px entre fatias
+        borderWidth: 2,
+        hoverOffset: 6,
+        offset: categoryOffsets(),
       }],
     },
     options: {
-      responsive:          true,
+      responsive: true,
       maintainAspectRatio: false,
-      cutout:              '72%',
+      cutout: '68%',
+      onClick: (_e, els) => {
+        if (!els.length) return;
+        selectCategory(els[0].index, total);
+      },
+      onHover: (e, els) => { e.native.target.style.cursor = els.length ? 'pointer' : 'default'; },
       plugins: {
         legend: {
           position: 'bottom',
-          labels: {
-            color:     '#a1a1aa',
-            font:      { size: 11 },
-            padding:   14,
-            boxWidth:  10,
-            boxHeight: 10,
-          },
+          labels: { color: '#d4d4d8', font: { size: 11 }, padding: 12, boxWidth: 10, boxHeight: 10, usePointStyle: true, pointStyle: 'rectRounded' },
+          onClick: (_e, item) => selectCategory(item.index, total), // legenda também seleciona
         },
         tooltip: {
           backgroundColor: '#161618',
           borderColor:     'rgba(255,255,255,0.08)',
           borderWidth:     1,
           titleColor:      '#f4f4f5',
-          bodyColor:       '#a1a1aa',
+          bodyColor:       '#d4d4d8',
           padding:         10,
           callbacks: {
-            label: ctx => ` ${ctx.label}: ${ctx.raw} projeto(s)`,
+            title: items => items[0].label,
+            label: item => {
+              const n = item.raw;
+              const pct = total ? (n / total * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) : '0';
+              return ` ${n} ${n === 1 ? 'projeto' : 'projetos'} · ${pct}%`;
+            },
           },
         },
       },
     },
   });
+  renderCategoryDetail(total);
 }
+
+const categoryColorOf = c => CATEGORY_COLORS[c] || CATEGORY_LEGACY_COLOR;
+function categoryColors() {
+  return categoryData.map((d, i) =>
+    categorySelected === null || categorySelected === i ? categoryColorOf(d.category) : categoryColorOf(d.category) + '40');
+}
+function categoryOffsets() {
+  return categoryData.map((_, i) => (categorySelected === i ? 8 : 0));
+}
+function selectCategory(i, total) {
+  categorySelected = categorySelected === i ? null : i;
+  const ds = categoryChart.data.datasets[0];
+  ds.backgroundColor = categoryColors();
+  ds.offset = categoryOffsets();
+  categoryChart.update('none');
+  renderCategoryDetail(total);
+}
+
+function renderCategoryDetail(total) {
+  const box = document.getElementById('category-detail');
+  if (!box) return;
+  const d = categorySelected !== null ? categoryData[categorySelected] : null;
+  if (!d) {
+    box.innerHTML = '<span class="chart-hint">Toque ou clique em uma categoria.</span>';
+    return;
+  }
+  const pct = total ? (d.count / total * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) : '0';
+  const color = CATEGORY_COLORS[d.category] || CATEGORY_LEGACY_COLOR;
+  box.innerHTML = `
+    <div class="ttl"><span><span class="swatch" style="background:${color}"></span>${escHtmlDash(Catalog.categoryLabel(d.category))}</span>
+      <a href="projects.html?category=${encodeURIComponent(d.category)}">Ver projetos →</a></div>
+    <div class="grid">
+      <div><div class="k">Projetos</div><div class="v">${d.count}</div></div>
+      <div><div class="k">Do total</div><div class="v">${pct}%</div></div>
+    </div>`;
+}
+
+// Modo Privacidade alternado: redesenha o gráfico (tooltip e eixo) e resumos
+document.addEventListener('privacychange', () => {
+  if (revenueChart) {
+    revenueChart.options.scales.y.ticks.display = !Privacy.isOn();
+    revenueChart.tooltip.setActiveElements([], { x: 0, y: 0 }); // fecha tooltip aberto com o modo anterior
+    revenueChart.update('none');
+  }
+  renderRevenueDetail();
+});
 
 // ─── ÚLTIMOS ORÇAMENTOS ───────────────────────────────────────────────────────
 
@@ -293,7 +434,7 @@ async function loadRecentQuotes(data) {
         </td>
         <td><span class="text-sm">${escHtmlDash(Catalog.quoteTypeLabel(q.projectType))}</span></td>
         <td>${q.estimatedBudget
-              ? `<span class="text-gold font-medium">${escHtmlDash(q.estimatedBudget)}</span>`
+              ? `<span class="text-gold font-medium">${Privacy.html(q.estimatedBudget, true)}</span>`
               : '<span class="text-muted">—</span>'}</td>
         <td>${Helpers.quoteStatusBadge(q.status)}</td>
         <td class="text-muted text-sm">${Helpers.formatDateRelative(q.createdAt)}</td>
@@ -345,16 +486,3 @@ async function loadRecentClients(data) {
     container.innerHTML = `<p class="text-muted text-sm" style="text-align:center;padding:2rem">Erro ao carregar</p>`;
   }
 }
-
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
-
-function getLastMonths(n) {
-  const months = [];
-  for (let i = n - 1; i >= 0; i--) {
-    const d = new Date();
-    d.setMonth(d.getMonth() - i);
-    months.push(d.toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }));
-  }
-  return months;
-}
-

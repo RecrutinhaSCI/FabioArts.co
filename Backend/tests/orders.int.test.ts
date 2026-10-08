@@ -24,6 +24,7 @@ let OrdersService: Any;
 let ClientsService: Any;
 let ProjectsService: Any;
 let pool: Any;
+let RevenueService: Any;
 
 const base = (phone: string, extra: Record<string, unknown> = {}) => ({
   client:  { name: 'João Silva', phone },
@@ -48,6 +49,7 @@ describe('Pedidos (integração)', { skip: !enabled && 'defina TEST_DATABASE_URL
     ClientsService  = await import('../src/services/clients.service');
     ProjectsService = await import('../src/services/project.service');
     pool            = (await import('../src/config/pool')).default;
+    RevenueService  = (await import('../src/services/revenue.service')).RevenueService;
   });
 
   after(async () => {
@@ -206,5 +208,38 @@ describe('Pedidos (integração)', { skip: !enabled && 'defina TEST_DATABASE_URL
     const [a, b] = await Promise.all([OrdersService.create(payload), OrdersService.create(payload)]);
     assert.equal(a.client.id, b.client.id);
     assert.equal(await prisma.client.count({ where: { phoneNormalized: '48966665555' } }), 1);
+  });
+
+  test('Faturamento mensal: soma real por mês, sem estimar e sem escrever', async () => {
+    // Base isolada: só os lançamentos criados aqui contam (limpa a tabela do banco DE TESTE)
+    await prisma.financialEntry.deleteMany({});
+    const mk = (amount: number, status: string, occurredAt: string, type = 'INCOME') =>
+      prisma.financialEntry.create({ data: { type, amount, status, description: 'teste', occurredAt: new Date(occurredAt) } });
+    await mk(1000, 'PAID',      '2026-09-05T12:00:00Z');
+    await mk(250,  'PAID',      '2026-09-30T00:00:00Z'); // lançamento antigo à meia-noite UTC
+    await mk(400,  'PENDING',   '2026-09-10T12:00:00Z');
+    await mk(300,  'PARTIAL',   '2026-09-11T12:00:00Z');
+    await mk(999,  'CANCELLED', '2026-09-12T12:00:00Z'); // fora do faturamento
+    await mk(777,  'PAID',      '2026-09-13T12:00:00Z', 'EXPENSE'); // despesa não é faturamento
+    await mk(50,   'PAID',      '2026-10-01T00:00:00Z');
+    await mk(80,   'PAID',      '2026-03-01T12:00:00Z'); // fora dos 6 meses
+
+    const before = await prisma.financialEntry.count();
+    const r = await RevenueService.monthly('6m', new Date('2026-10-08T15:00:00Z'));
+    assert.equal(await prisma.financialEntry.count(), before); // somente leitura
+
+    assert.deepEqual(r.months.map((m: Any) => m.month), ['2026-05','2026-06','2026-07','2026-08','2026-09','2026-10']);
+    const set = r.months.find((m: Any) => m.month === '2026-09');
+    assert.deepEqual({ ...set }, { month: '2026-09', total: 1950, paid: 1250, pending: 400, partial: 300, entries: 4, payments: 2 });
+    const out = r.months.find((m: Any) => m.month === '2026-10');
+    assert.equal(out.total, 50);
+    const zero = r.months.find((m: Any) => m.month === '2026-06');
+    assert.deepEqual({ ...zero }, { month: '2026-06', total: 0, paid: 0, pending: 0, partial: 0, entries: 0, payments: 0 });
+    assert.equal(r.total, 2000);
+
+    const year = await RevenueService.monthly('year', new Date('2026-10-08T15:00:00Z'));
+    assert.equal(year.months.length, 10);
+    assert.equal(year.total, 2080); // inclui março
+    await assert.rejects(RevenueService.monthly('5y'), /Período inválido/);
   });
 });

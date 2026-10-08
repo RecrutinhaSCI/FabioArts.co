@@ -22,6 +22,13 @@ router.get('/stats', DashboardController.getStats);
 router.get('/recent', DashboardController.getRecent);
 
 /**
+ * @route  GET /api/dashboard/revenue?period=6m|12m|year
+ * @desc   Faturamento mensal real (receitas não canceladas por mês) — somente leitura
+ * @access Admin
+ */
+router.get('/revenue', DashboardController.getRevenue);
+
+/**
  * @route  GET /api/dashboard/deliveries
  * @desc   Próximas entregas: trabalhos em aberto até hoje + 14 dias (atrasados primeiro)
  * @access Admin

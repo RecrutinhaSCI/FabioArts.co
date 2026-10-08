@@ -498,14 +498,100 @@ const DateOnly = {
   },
 };
 
+// ─── MODO PRIVACIDADE (ocultar valores) ──────────────────────────────────────
+// Recurso de APRESENTAÇÃO (Stories, gravações, demos): esconde valores
+// monetários na interface. Não altera API nem banco.
+//
+// Uso nas páginas:
+//   Privacy.html(850)               → <span class="money" data-mid="7">R$ 850,00</span>
+//   Privacy.html('R$ 1,00', true)   → texto livre (ex.: estimatedBudget)
+//   Privacy.text(850)               → string pura (tooltips de gráfico etc.)
+// O valor real fica só na memória (Map), nunca em atributo do HTML; com o
+// modo ativo o DOM recebe apenas "R$ ****". Inputs monetários marcados com
+// data-money-input viram type=password enquanto o modo estiver ativo.
+// Preferência salva no localStorage (por navegador) e sincronizada entre abas.
+
+const Privacy = {
+  KEY:  'fabioarts_privacy_mode',
+  MASK: 'R$ ****',
+  _values: new Map(),
+  _seq: 0,
+
+  isOn() {
+    try { return localStorage.getItem(this.KEY) === '1'; } catch { return !!this._memory; }
+  },
+
+  set(on) {
+    try { localStorage.setItem(this.KEY, on ? '1' : '0'); } catch { /* sem storage: vale só nesta página */ this._memory = on; }
+    this.apply();
+    document.dispatchEvent(new CustomEvent('privacychange', { detail: { on: !!on } }));
+  },
+
+  toggle() { this.set(!this.isOn()); },
+
+  /** Formata número em BRL (sem considerar o modo). */
+  formatBRL(value) {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(value) || 0);
+  },
+
+  /** Texto já respeitando o modo — para tooltips, legendas e eixos. */
+  text(value, isRawText = false) {
+    if (this.isOn()) return this.MASK;
+    return isRawText ? String(value ?? '') : this.formatBRL(value);
+  },
+
+  /** Span atualizável ao alternar o modo. Não coloca o valor real em atributos. */
+  html(value, isRawText = false) {
+    const id = ++this._seq;
+    const real = isRawText ? String(value ?? '') : this.formatBRL(value);
+    this._values.set(String(id), real);
+    const shown = this.isOn() ? this.MASK : real;
+    const esc = String(shown).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `<span class="money" data-mid="${id}">${esc}</span>`;
+  },
+
+  /** Reaplica o modo em toda a página (spans, inputs e botão da topbar). */
+  apply() {
+    const on = this.isOn();
+    document.documentElement.classList.toggle('privacy-on', on);
+    document.querySelectorAll('.money[data-mid]').forEach(el => {
+      const real = this._values.get(el.dataset.mid);
+      if (real !== undefined) el.textContent = on ? this.MASK : real;
+    });
+    document.querySelectorAll('input[data-money-input]').forEach(inp => {
+      if (!inp.dataset.moneyType) inp.dataset.moneyType = inp.type || 'text';
+      inp.type = on ? 'password' : inp.dataset.moneyType;
+    });
+    document.querySelectorAll('[data-action="toggle-privacy"]').forEach(btn => {
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.title = on ? 'Mostrar valores' : 'Ocultar valores';
+      btn.setAttribute('aria-label', btn.title);
+      const lbl = btn.querySelector('.privacy-label');
+      if (lbl) lbl.textContent = btn.title;
+    });
+  },
+};
+
+// Botão da topbar (layout.js) e sincronização entre abas abertas
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-action="toggle-privacy"]')) Privacy.toggle();
+});
+window.addEventListener('storage', e => {
+  if (e.key === Privacy.KEY) {
+    Privacy.apply();
+    document.dispatchEvent(new CustomEvent('privacychange', { detail: { on: Privacy.isOn() } }));
+  }
+});
+// Inputs/elementos que aparecem depois (modais) também respeitam o modo
+document.addEventListener('DOMContentLoaded', () => Privacy.apply());
+
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
 const Helpers = {
+  // Respeita o Modo Privacidade. Para HTML que precisa atualizar ao alternar
+  // o modo, prefira Privacy.html(value).
   formatCurrency(value) {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value || 0);
+    return Privacy.text(value || 0);
   },
 
   formatDate(dateStr) {
